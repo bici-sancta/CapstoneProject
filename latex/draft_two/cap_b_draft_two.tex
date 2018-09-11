@@ -22,6 +22,8 @@
 %
 \documentclass{llncs}
 %
+% additional packages added to comply wth format recommendations
+%
 \usepackage{makeidx}  % allows for indexgeneration
 \usepackage[strings]{underscore} % allows underscore
 \usepackage{float} % position tables inline
@@ -127,9 +129,11 @@ The focus of many pedestrian safety studies is the interaction between pedestria
 \section{Data Sets}
 %
 %
-CAGIS, Cincinnati Area Geographic Information System launched an online survey from Feb 2018 to April 2018 for pedestrian safety \cite{cvg2018city}. Users login to http://cagisonline.hamilton-co.org/pedsafetysurvey/ . The survey screen provides users with view of the city, with a dropdown of neighborhoods, and a list of issue categories. The user then selects a neighborhood, and selects a pre-defined issue type to report, and writes their comment. If another user selects the same location and issue type, comments are appended as additional comments. This gives an idea of number of users having same issue at a particular location. Survey submissions are anonymous.
+CAGIS, Cincinnati Area Geographic Information System launched an online survey from Feb 2018 to April 2018 for pedestrian safety \cite{cvg2018city}. Users login to http://cagisonline.hamilton-co.org/pedsafetysurvey/ . The survey screen provides users with view of the city, with a drop down of neighborhoods, and a list of issue categories. The user then selects a neighborhood, and selects a pre-defined issue type to report, and writes their comment. If another user selects the same location and issue type, comments are appended as additional comments. This gives an idea of number of users having same issue at a particular location. Survey submissions are anonymous.
 
-Additionally, the date of the issue created, typical mode of user (walk, drive, bicycle), and intersection of the location selected are captured. There are 3788 records in our survey dataset with 8 useable columns.  There are missing data and categorical data in incorrect format. These require EDA to clean-up and update missing information. Other than the survey data, we have various sources of data which would be combined to form the dataset for the project. All acquired from the City of Cincinnati are listed in Table ~\ref{table:cincinnatidatasets}. Supplementary data sets from external sources are listed in Table ~\ref{table:supplementarydatasets}. 
+Additionally, the date of the issue created, typical mode of user (walk, drive, bicycle), and intersection of the location selected are captured. There are 3788 records in our survey dataset with 8 usable columns. There are missing data and categorical data in incorrect format. These require EDA to clean-up and update missing information. Other than the survey data, we have various sources of data which would be combined to form the dataset for the project. All acquired from the City of Cincinnati are listed in Table ~\ref{table:cincinnatidatasets}. Supplementary data sets from external sources are listed in Table ~\ref{table:supplementarydatasets}.
+
+One of the primary supplementary datasets used in analysis was acquired from Strava, a social media platform for athletes which allows them to upload their GPS-recorded workouts for friends and followers to see. Strava provided data of pedestrian workouts in the city of Cincinnati, which include latitude and longitudinal data of members' public workouts. This dataset was gathered through the Strava API, and Strava Metro service.
 
 \FloatBarrier
 \begin{table}
@@ -170,7 +174,7 @@ Data Set
 \hline
 Census and demographic
 	&https://www.cincinnati-oh.gov/planning/reports-data/census-demographics
-	&Contains census data for each neighborhood, split into cencus tracts\newline
+	&Contains census data for each neighborhood, split into census tracts\newline
 	Data is organized at the neighborhood level, not street level as our final dataset is\\
 Cincinnati open data
 	&https://data.cincinnati-oh.gov
@@ -186,7 +190,7 @@ Income and house price
 	&http://www.city-data.com/nbmaps/neigh-Cincinnati-Ohio.html
 	& Contains statistics on age, house prices, income and more\newline
 	Data gathered as a collection of public and private sources\newline
-	Data organized at both the neightborhood, and census block group level\\
+	Data organized at both the neighborhood, and census block group level\\
 Traffic crash reports
 	&https://data.cincinnati-oh.gov/Safer-Streets/Traffic-Crash-Reports-CPD-/rvmt-pkmq
 	& Crash details at intersection is available, with details on person ages and injury level \newline
@@ -242,9 +246,9 @@ Zillow
 \section{Methods and Experiments}
 Analysis approach
 
-For this project, our approach consisted of two parts. Part 1 involved extensive EDA, using unsupervised techniques to identify clusters and trends within the data. Part 2 consisted of adding cost of injury as in Table ~\ref{table:eventseverity} to our dataset to perform regression. The dataset was simplified using correlation metrics. Feature importance  of each regression method was tabulated. This approach  aiedd in quantifying the intensity of accidents and predicting how expensive accidents might be. Models with high R$^{2}$ and low RMSE are  considered  good models.
-Additional algorithms were   used in conjunction with above 2 approaches. T-SNe was used as a visualization tool to view clustering in 2-dimensional space, and PCA was used to reduce the dimensionality of the data set for regression. Furthermore, natural language processing was used to extract sentiment from the survey data comment field.
-The dataset was shuffle split into 80:20, 20\% holdout for cross-validation. 80\% will be split into 80:20 for training and testing. Machine learning and deep learning algorithms were used as listed in Table ~\ref{table:algorithmsandmethods}. Models were compared with each other on different performance metrics. 
+For this project, our approach consisted of two parts. Part 1 involved extensive exploratory data analysis, using unsupervised techniques to identify clusters and trends within the data. Part 2 consisted of adding cost of injury as in Table ~\ref{table:eventseverity} to our dataset to perform regression. The dataset was simplified using correlation metrics. Feature importance  of each regression method was tabulated so that only significant variables would be used in modeling. This approach aided in quantifying the intensity of accidents and predicting how expensive accidents might be. Models with high R$^{2}$, a measurement of how well data fits to the modelled regression line, and low root mean square error, a measure of the difference between the modelled regression line and the data, were considered good models.
+Additional algorithms were used in conjunction with above 2 approaches. T-distributed stochastic neighbor embedding (t-SNE) was used as a visualization tool to view clustering in 2-dimensional space, and principal component analysis (PCA) was used to reduce the dimensionality of the data set for regression, resulting in fewer variables within the dataset. Furthermore, natural language processing was used to extract sentiment from the survey data comment field.
+The dataset was shuffle split into 80:20, 20\% holdout for cross-validation. The 80\% was then split into a further 80:20 for training and testing. Machine learning and deep learning algorithms were used as listed in Table ~\ref{table:algorithmsandmethods}. Models were compared with each other on different performance metrics, such as the area under curve and brier score.
 %
 \FloatBarrier
 \begin{table}
@@ -283,140 +287,20 @@ Additional 	&	1.        T-Distributed Stochastic Neighbor Embedding	\newline
 %
 \section{Ethics}
 %
-\FloatBarrier
-\begin{table}
-\begin{center}
-\caption{ACM Code of Ethics}
-\label{table:codeofethics}
-\begin{tabular}{ p{.05\textwidth}  p{.70\textwidth}  p{.10\textwidth} p{.14\textwidth}}
-\hline
-\rule{0pt}{12pt}
-	&	section	&	YnNA	&	Comment\\[2pt]
-\hline
-1,0
-&GENERAL ETHICAL PRINCIPLES.
-&
-&	\\
-1,1
-&Contribute to society and to human well-being, acknowledging that all people are stakeholders in computing.
-&
-&	\\
-1,2
-&Avoid harm.
-&
-&	\\
-1,3
-&Be honest and trustworthy.
-&
-&	\\
-1,4
-&Be fair and take action not to discriminate.
-&
-&	\\
-1,5
-&Respect the work required to produce new ideas, inventions, creative works, and computing artifacts.
-&
-&	\\
-1,6
-&Respect privacy.
-&
-&	\\
-1,7
-&Honor confidentiality.
-&
-&	\\
-\arrayrulecolor[gray]{.8}\hline
-2,0
-&PROFESSIONAL RESPONSIBILITIES.
-&
-&	\\
-2,1
-&Strive to achieve high quality in both the processes and products of professional work.
-&
-&	\\
-2,2
-&Maintain high standards of professional competence, conduct, and ethical practice.
-&
-&	\\
-2,3
-&Know and respect existing rules pertaining to professional work.
-&
-&	\\
-2,4
-&Accept and provide appropriate professional review.
-&
-&	\\
-2,5
-&Give comprehensive and thorough evaluations of computer systems and their impacts, including analysis of possible risks.
-&
-&	\\
-2,6
-&Perform work only in areas of competence.
-&
-&	\\
-2,7
-&Foster public awareness and understanding of computing, related technologies, and their consequences.
-&
-&	\\
-2,8
-&Access computing and communication resources only when authorized or when compelled by the public good.
-&
-&	\\
-2,9
-&Design and implement systems that are robustly and usably secure.
-&
-&	\\
-\hline
-3,0
-&PROFESSIONAL LEADERSHIP PRINCIPLES.
-&
-&	\\
-3,1
-&Ensure that the public good is the central concern during all professional computing work.
-&
-&	\\
-3,2
-&Articulate, encourage acceptance of, and evaluate fulfillment of social responsibilities by members of the organization or group.
-&
-&	\\
-3,3
-&Manage personnel and resources to enhance the quality of working life.
-&
-&	\\
-3,4
-&Articulate, apply, and support policies and processes that reflect the principles of the Code.
-&
-&	\\
-3,5
-&Create opportunities for members of the organization or group to grow as professionals.
-&
-&	\\
-3,6
-&Use care when modifying or retiring systems.
-&
-&	\\
-3,7
-&Recognize and take special care of systems that become integrated into the infrastructure of society.
-&
-&	\\
-\hline
-4,0
-&COMPLIANCE WITH THE CODE.
-&
-&	\\
-4,1
-&Uphold, promote, and respect the principles of the Code.
-&
-&	\\
-4,2
-&Treat violations of the Code as inconsistent with membership in the ACM.
-&
-&	\\
-\arrayrulecolor{black}\hline
-\end{tabular}
-\end{center}
-\end{table}
-\FloatBarrier
+As a means to evaluate compliance with ethical considerations, we use the model of the ACM Code of Ethics  (the Code). Within the Code, there are four primary sections, e.g., General Ethical Principles, Professional Leadership Principles, etc., with each primary section providing additional subsections for self-assessment compliance to the Code. For each sub-section, we self-scored categorically as either Y, n/a, or D, where Y indicates that the work completed for this project rather obviously complies with the Code, n/a indicates that that section of the Code is less obviously significant for this project, and D indicates that that section of the Code identifies a potential ethical dilemma that is worthy of additional discussion to demonstrate compliance or at least point out the potential ethical challenge identified from this self-assessment.
+The most significant elements that we self-assess as D are : \S 1.2 - Avoid harm; \S 1.4 - Be fair and take action not to discriminate; and \S 3.7 - Recognize and take special care of systems that become integrated into the infrastructure of society.
+
+From these three elements, we consider that the significant question to evaluate is: how may these research findings be interpreted and used ?
+
+The result of this project provides a recommended prioritization for the allocation of municipal resources for the purpose of improving a pedestrian safety problem. Allocation of  public resources is often as much a political challenge as it is a scientific challenge. There is no global objective function that assigns absolute social value to any decision of resource allocation. That is, in fact, the work and challenge of public officials. Within the general framework of public decision making it is recognized that facts, reports, and recommendations which are or were essentially the result of objective research are frequently interpreted in a way that suits the interpreter for their own agenda – in some cases for personal gain – financially or politically. We have to admit for this case, then, that this evaluation is potentially subject to a personally motivated interpretation. The debate about using scientific research to guide public policy is long and continuing. With that recognition, the task falls to us to identify what steps are taken to reduce the risk of unintended uses of this report.
+
+First, the report as written has limited scope for direct application to policy. The recommendations included are applicable to the specific time period and data evaluation associated to the City of Cincinnati. The methods presented here can be widely applied (and in fact, that is the goal of this research), but in current form it would be difficult to justify using these results for direct resource allocation in any other municipality. The model developed here used very specific local experiences – accidents, reported near accidents, local conditions survey, property valuations, social media, and all other elements that contributed to this model are local and specific to the City of Cincinnati and to the current time period. As such, the specific recommendations are not generalizable. The method is generalizable; the specific results may provide indications of what local elements in other municipalities may prove indicative or at least useful for a similar exercise, but in any rational discourse, it would be difficult to extend the specific recommendations from this study to municipalities beyond the extent of this study.
+
+Secondly, this report is submitted to representatives of the Cincinnati City Council and the Department of Safety . By distributing the results to more than one department and to a reasonably broad audience reduces risk of information being used for narrowly scoped  or interests which are not generally aligned with good public discussion, debate, and utilization. Further, the data and methods deployed here were developed based on early and continuing input from representatives of these multiple departments within the City. Thus, early and often participation of multiple stakeholders provided the opportunity to have balanced input to the research, thus improving likelihood of balanced output and utilization. And, by respecting and incorporating the input from multiple perspectives from within the City provides higher likelihood of acceptance (and perhaps adoption) of the resulting recommendations.
+
+Thirdly, within the City of Cincinnati, there are currently several on-going initiatives dedicated to improving pedestrian safety. The other initiatives are, in some cases, significantly funded, and are the work product of several departments within the City, predominantly the Department of Safety, that are the prime stakeholders in promoting public safety in the City. These other initiatives are an order of magnitude more significant, both from resource commitment, and for intended impact, than is this study. It is not our aim to minimize the potential impact of the recommendations from this study, but we are cognizant of the relative significance of this study within the larger context of the on-going programs within the City. In any decision making forum for the City, we consider the likelihood of these results having the capability to be used for unintended or inappropriate outcomes to be sufficiently unlikely.
+
+The ethical considerations associated to this project are adequately assessed in the spirit of the ACM Code. The identified risks are appropriately mitigated.
 %
 \section{Conclusions (and Future Work)}
 %
