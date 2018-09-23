@@ -5,8 +5,7 @@ library(rgeos)
 library(maptools)
 library(dplyr)
 
-setwd("/home/mcdevitt/_ds/_smu/_srclibrary(ggrepel)
-/CapstoneProject/data/ZillowNeighborhoods-OH")
+setwd("/home/mcdevitt/_ds/_smu/_src/CapstoneProject/data/ZillowNeighborhoods-OH")
 
 oh_shapefile <- readOGR("ZillowNeighborhoods-OH.shp", layer="ZillowNeighborhoods-OH")
 
@@ -32,7 +31,7 @@ neighborhoods
 
 neighborhoods +
     geom_point(data = street_cl, color = "lightgrey", size = 0.1, alpha = 0.2) +
-    geom_point(data = ped_srvy, color = "forestgreen", size = 1.0) +
+    geom_point(data = ped_srvy, color = "dodgerblue3", size = 1.0) +
     geom_point(data = near_miss, color = "red", size = 2.0) +
     geom_point(data = grid_pts, color = "darkgrey", size = 0.1, alpha = 0.3) +
 #    geom_point(data = fire_event, color = "darkorchid4", size = 1.0, shape = 23, alpha = 0.8) +
