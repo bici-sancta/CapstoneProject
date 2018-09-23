@@ -18,6 +18,11 @@ library(ggplot2)
 
 printf <- function(...) invisible(cat(sprintf(...)))
 
+home_dir <- ("/home/mcdevitt/_ds/_smu/_src/CapstoneProject/")
+data_dir <- ("./data/")
+
+setwd(home_dir)
+
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # ...   function to generate intermediate point (lat, lon) between 2 given
 # ...   geo-coordinates and a fractional distance between them
@@ -164,18 +169,56 @@ for (iy in seq(1 : (n_y_pts+1)))
     }
 }
 
+# ...   give each cell a centroid and an identity
+
+grid_center <- data.frame(ix = integer(),
+                    iy = integer(),
+                    cell_id = character(),
+                    lat = double(),
+                    long = double())
+
+for (iy in seq(1 : n_y_pts))
+{
+    lat <- grid_pts[grid_pts$ix == ix && grid_pts$iy == iy, 3]
+    
+    for (ix in seq(1 : n_x_pts))
+    {
+        lat1 <- grid_pts[grid_pts$iy == iy, 3][ix]
+        lat2 <- grid_pts[grid_pts$iy == iy+1, 3][ix+1]
+        lon1 <- grid_pts[grid_pts$ix == ix, 4][iy]
+        lon2 <- grid_pts[grid_pts$ix == ix+1, 4][iy+1]
+        f <- 0.5
+        
+        centroid <- geo_intermediate_points(lat1, lon1, lat2, lon2, f)
+        
+        lat3 <- centroid[[1]]
+        lon3 <- centroid[[2]]
+        
+        id_string <- paste0(sprintf("%04d", ix), sprintf("%04d", iy))
+        
+        nxt <- as.data.frame(list("ix"= ix, "iy" = iy, "cell_id" = id_string, "lat"  = lat3, "long" = lon3))
+        
+        grid_center <- rbind(grid_center, nxt)
+    }
+}
+
 # ...   make a plot to view the result
 
 grid_plot <- ggplot(grid_pts, aes(x = long, y = lat)) +
-    geom_point(size = 0.1, color = "dodgerblue4", alpha = 0.4)
-grid_plot
+    geom_point(size = 0.1, color = "dodgerblue4", alpha = 0.8)
+
+grid_plot +
+    geom_point(data = grid_center, color = "salmon", size = 0.2, shape = 19, alpha = 0.6)
 
 # ...   write grid data frame to csv file
 
-data_dir <- "./../data/"
 setwd(data_dir)
 
 write.table(grid_pts, file = "grid_points_250m.csv", sep = ",",
+            row.names = FALSE,
+            col.names = TRUE)
+
+write.table(grid_center, file = "grid_centroids_250m.csv", sep = ",",
             row.names = FALSE,
             col.names = TRUE)
 
