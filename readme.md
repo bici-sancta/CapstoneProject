@@ -3,7 +3,7 @@
 ![](./plots/Rplot.png)
 
 
-1. ~~write routine to assign a geo-coordinate to its approrpriate grid cell
+1. ~~write routine to assign a geo-coordinate to its approrpriate grid cell~~
 	- each grid cell is defined by 4 corner points (geo-coordinates)
 	- any data value (e.g., survey response) has its own geo-coordinate
 	- what grid cell does it belong to ?
@@ -16,7 +16,7 @@
 	- evaluate if some factors can be grouped together for more logical features
 		* e.g., in 311 non-emergency data set, there is a column $service_code, there are > 600 unique values in this column. can these be grouped into 10 or 20 categories, or is this just non useful for our purposes ?
 
-3. ~~write routine to assign a geo-coordinate to its appropriate Cincy neighborhood
+3. ~~write routine to assign a geo-coordinate to its appropriate Cincy neighborhood~~
 	- neighborhoods are defined in shape file  :
 		* _CapstoneProject/data/ZillowNeighborhoods-OH/ZillowNeighborhoods-OH.shp_
 	- similar idea to to-do item 1, except irregular shaped polygon instead of grid cell~~
