@@ -52,29 +52,41 @@ setwd(data_dir)
 infile <- "grid_centroids_250m"
 cell_centroids <- read.csv(paste0('./', infile, '.csv'), stringsAsFactors = FALSE, header = TRUE)
 
+
 cells <- data.frame(Longitude = cell_centroids$long,
                   Latitude = cell_centroids$lat,
                   id = cell_centroids$cell_id)
 
 points(cells, col = "dodgerblue3", cex = 0.1)
 
+infile <- "pedestrian_survey_final_20180618_geocoded"
+ped_srvy <- read.table(paste0('./', infile, '.txt'), sep = "|", stringsAsFactors = FALSE, header = TRUE)
+ped_pts <- data.frame(Longitude = ped_srvy$long,
+                  Latitude = ped_srvy$lat,
+                  strsegid = ped_srvy$strsegid)
+
 # Assignment modified according
 
 coordinates(cells) <- ~ Longitude + Latitude
+coordinates(ped_pts) <- ~ Longitude + Latitude
 
 # Set the projection of the SpatialPointsDataFrame using the projection of the shapefile
 
+# ...   grid cells
+# ...       bind result to data frame 
+# ...       subset to only grids that are in a neighborhood
 proj4string(cells) <- proj4string(cvg_shapefile)
-
 assignment <- over(cells, cvg_shapefile)
-
-# ...   bind result to data frame 
-
 cells_w_neighborhood <- cbind(cell_centroids, assignment)
-
-# ...   subset to only grids that are in a neighborhood
-
 cells_w_neighborhood <- cells_w_neighborhood[!is.na(cells_w_neighborhood$Name), ]
+
+# ...   pedestrian survey
+# ...       bind result to data frame 
+# ...       subset to only grids that are in a neighborhood
+proj4string(ped_pts) <- proj4string(cvg_shapefile)
+assignment <- over(ped_pts, cvg_shapefile)
+ped_pts_w_neighborhood <- cbind(ped_srvy, assignment)
+ped_pts_w_neighborhood <- ped_pts_w_neighborhood[!is.na(ped_pts_w_neighborhood$Name), ]
 
 # ...   make a plot to view result
 
@@ -87,11 +99,20 @@ png(filename = "grid_cells_mapped_2_neighborhood.png",
     height = 18, 
     pointsize = 12, 
     res = 72)
-
 plot(cvg_shapefile)
 points(cells, col = "darkgrey", cex = 0.4)
 points(cells_w_neighborhood$lat ~ cells_w_neighborhood$long, col = "blue", cex = 0.8)
+dev.off()
 
+png(filename = "pedestrian_survey_mapped_2_neighborhood.png", 
+    units = "in", 
+    width = 24,
+    height = 18, 
+    pointsize = 12, 
+    res = 72)
+plot(cvg_shapefile)
+points(ped_pts, col = "darkgrey", cex = 0.4)
+points(ped_pts_w_neighborhood$lat ~ ped_pts_w_neighborhood$long, col = "forestgreen", cex = 0.8)
 dev.off()
 
 # ...   write results to .csv file
@@ -103,6 +124,9 @@ write.table(cells_w_neighborhood, file = "grid_points_250m_w_neighborhood.csv", 
             row.names = FALSE,
             col.names = TRUE)
 
+write.table(ped_pts_w_neighborhood, file = "pedestrian_survey_w_neighborhood.csv", sep = ",",
+            row.names = FALSE,
+            col.names = TRUE)
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # ...   end_of_file
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

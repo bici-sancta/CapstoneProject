@@ -29,6 +29,7 @@
 	- one-hot-encode categorical features
 	- outlier removal on continuous valued columns
 	- aggregation / counts / other ideas ?
+	- __count number of occurrences of event type that occur in grid cell__
 	- do the full monty of multiply / add / subtract / divide between each pair of data values, à là the method demonstrated during last week's cap b seminar (fantasy football guy) ??
 	- keep running log of what we are doing, so we can revise, edit not duplicate
 

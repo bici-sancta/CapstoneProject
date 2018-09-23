@@ -24,6 +24,7 @@ library(geosphere)
 
 home_dir <- ("/home/mcdevitt/_ds/_smu/_src/CapstoneProject/")
 data_dir <- ("./data/")
+plot_dir <- ("./plots/")
 
 setwd(home_dir)
 setwd(data_dir)
@@ -35,10 +36,10 @@ setwd(data_dir)
 infile <- "pedestrian_near_miss_incidents_geocodes"
 near_miss <- read.csv(paste0('./', infile, '.csv'), stringsAsFactors = FALSE, header = TRUE)
 
-infile <- "pedestrian_survey_final_20180618_geocoded"
-ped_srvy <- read.table(paste0('./', infile, '.txt'), sep = "|", stringsAsFactors = FALSE, header = TRUE)
+infile <- "pedestrian_survey_w_neighborhood"
+ped_srvy <- read.table(paste0('./', infile, '.csv'), sep = ",", stringsAsFactors = FALSE, header = TRUE)
 
-infile <- "grid_centroids_250m"
+infile <- "grid_points_250m_w_neighborhood"
 grid_centroid <- read.csv(paste0('./', infile, '.csv'), stringsAsFactors = FALSE, header = TRUE)
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -70,27 +71,33 @@ dist <- d[min.d]
 ident <- grid_centroid[min.d, 3]
 lats <- grid_centroid[min.d, 4]
 lons <- grid_centroid[min.d, 5]
+hood <- grid_centroid[min.d, 9]
+hood_id <- grid_centroid[min.d, 10]
 
 # ...   new data frame ... all prior columns + grid centroid identifiers and coords
 
-newdata <- cbind(ped_srvy, dist, ident, lats, lons)
+newdata <- cbind(ped_srvy, dist, ident, lats, lons, hood, hood_id)
 
 # ...   make a plot to visualize result
 
-base_pts <- ggplot(newdata, aes(long, lat)) +
-  geom_point(aes(fill = "dodgerblue4", size = 3, alpha = 0.9))
+base_pts <- ggplot(newdata, aes(x = long, y = lat), size = 0.2) +
+  geom_point(color = "dodgerblue3", shape = 5, alpha = 0.9)
 base_pts
 
+setwd(home_dir)
+setwd(plot_dir)
+
+png(filename = "pedestrian_survey_mapped_2_grid_cell.png", 
+    units = "in", 
+    width = 24,
+    height = 18, 
+    pointsize = 12, 
+    res = 72)
 base_pts +
-    geom_point(data = newdata, aes(x = lons, y = lats, color = "red"), size = 3) +
-    geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2) +
-    xlim(-84.6, -84.4) +
-    ylim(39.1, 39.20)
-    
+    geom_point(data = newdata, aes(x = lons, y = lats), color = "darkorchid3", shape = 15, size = 5) +
+    geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2)
+dev.off()
+
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # ...   end_of_file
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-    
-    
-    
