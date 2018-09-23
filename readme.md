@@ -42,6 +42,14 @@
 
 9. map geo-coordiantes for bus routes 
 
+...
+
+98. make powerpoint charts for Nov 2 presentation
+99. design layout and make poster for Nov 2 poster session
+100. finish editing paper
+101. critique assigned papers
+102. graduate 
+
 Notes :
 
 - I have been using R for the most part. probably does not matter what we use (R, python, mis between the two) as long as we do decent job to comment the code and try to keep it generically functional
