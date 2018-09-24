@@ -29,7 +29,7 @@ setwd(data_dir)
 property_geocode = read.csv("hamilton_county_property_xfer_2008t2018_geocoded.txt",
                             header = TRUE, sep = "|", stringsAsFactors = FALSE)
 
-infile <- "hamilton_county_property_xfer_2008t2018"
+infile <- "/Under Review/hamilton_county_property_xfer_2008t2018"
 hc_xfer <- read.csv(paste0('./', infile, '.csv'), stringsAsFactors = FALSE, header = TRUE)
 
 infile <- "pedestrian_near_miss_incidents_geocodes"
