@@ -17,6 +17,7 @@ rm(list=ls())
 library(ggplot2)
 
 home_dir <- "/home/mcdevitt/_ds/_smu/_src/CapstoneProject/"
+#home_dir <- "G:/JoshuaData/Classes/MSDS61X0 Capstone/CapstoneProject"
 data_dir <- "./data/"
 
 setwd(home_dir)
@@ -52,7 +53,7 @@ infile <- "pat_addresses_geocoded"
 pat_addr <- read.table(paste0('./', infile, '.txt'), sep = "|", stringsAsFactors = FALSE, header = TRUE)
 
 infile <- "2017_NFIRS_Cincinnati_Fire_Department_Incident_Data"
-fire_event <- read.csv(paste0('./', infile, '.csv'), stringsAsFactors = FALSE, header = TRUE)
+fire_event <- read.csv(paste0('./Under Review/', infile, '.csv'), stringsAsFactors = FALSE, header = TRUE)
 names(fire_event) <- tolower(names(fire_event))
 names(fire_event)[names(fire_event) == 'latitude'] <- 'lat'
 names(fire_event)[names(fire_event) == 'longitude'] <- 'long'
@@ -169,9 +170,19 @@ base_plot +
 # ...   add in google map raster image base map
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-library(raster)
-library(ggplot2)
-library(ggmap)
+if(!require(raster)){
+  install.packages("raster")
+  library(raster)
+}
+if(!require(ggmap)){
+  install.packages("ggmap")
+  library(ggmap)
+}    
+if(!require(ggmap)){
+  install.packages("ggmap")
+  library(ggmap)
+}
+
 
 r <- raster(system.file("external/test.grd", package="raster"))
 # just to make it reproducible with ggmap we have to transform to wgs84
