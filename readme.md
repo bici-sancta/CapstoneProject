@@ -9,6 +9,8 @@
 	- what grid cell does it belong to ?
 	- routine needs to be flexible in case we re-define grid pattern
 	- grid cells are not exactly square, since they are mapped in coordinate system associated to curvature of earth~~
+	- __in R_scripts folder file : geo_gridder.R - complete__
+	- __in R_scripts folder, files : 001_gca_xxxx.R map each event to grid cell based on geo_coordinates - complete__
 
 2. review each of the data sets from Cincy Open Data and explore the categorical columns
 	- how many different factors are in each category ?
@@ -20,6 +22,7 @@
 	- neighborhoods are defined in shape file  :
 		* _CapstoneProject/data/ZillowNeighborhoods-OH/ZillowNeighborhoods-OH.shp_
 	- similar idea to to-do item 1, except irregular shaped polygon instead of grid cell~~
+	- __in R_scripts folder file : which_neighborhood.R assigns geo-coordinates to correct neighborhood - complete__
 
 4. text processing : we have a lof text fields. should we start writing code to categorize these texts, either by sentiment analysis, bag-of-words, or word2vec approaches ?
 	- which data fields from which data sets ?
@@ -35,10 +38,12 @@
 
 6. just make a bunch of plots to characterize each data set, so we have runnning reference of what each data set looks like
 	- archive them in a new sub-folder on github : eda_plots
+	- __plots created that show current mapped data for : near_misses, pedestrian_survey, walk_scores, street area, traffic_crashes, and fire_incidents__
+		- most of these show some areas in data sets that need to be cleaned
 
-7. decide what we are gonna do about twitte
+7. decide what we are gonna do about twitter
 
-8. decide what we are gonne do about strava.
+8. decide what we are gonna do about strava.
 	- is there a back-up solution for pedestrian / bicycling movement patterns ?
 
 9. map geo-coordiantes for bus routes 

@@ -36,6 +36,7 @@ printf <- function(...) invisible(cat(sprintf(...)))
 
 home_dir <- ("/home/mcdevitt/_ds/_smu/_src/CapstoneProject/")
 data_dir <- ("./data/")
+grid_mapped_dir <- ("./data/grid_mapped")
 plot_dir <- ("./plots/")
 src_dir <- ("./R_scripts")
 zillow_dir <- ("./data/ZillowNeighborhoods-OH")
@@ -127,7 +128,7 @@ dev.off()
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 setwd(home_dir)
-setwd(data_dir)
+setwd(grid_mapped_dir)
 
 file_name <- paste0(infile, "_mapped_to_grid_cells.csv")
 
