@@ -44,6 +44,7 @@ setwd(home_dir)
 setwd(src_dir)
 
 source("./which_grid_cell_function.R")
+source("./which_grid_cell_function_big.R")
 
 setwd(home_dir)
 setwd(data_dir)
@@ -62,12 +63,51 @@ cincy_zip_code = c("45202", "45203", "45204", "45205", "45206", "45207", "45208"
 infile <- "pedestrian_near_miss_incidents_geocodes"
 near_miss <- read.csv(paste0('./', infile, '.csv'), stringsAsFactors = FALSE, header = TRUE)
 
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
 infile <- "pedestrian_survey_w_neighborhood"
 ped_srvy <- read.table(paste0('./', infile, '.csv'), sep = ",", stringsAsFactors = FALSE, header = TRUE)
+
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 infile <- "grid_points_250m_w_neighborhood"
 grid_centroid <- read.csv(paste0('./', infile, '.csv'), stringsAsFactors = FALSE, header = TRUE)
 
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+infile <- "WalkScoreMasterFileByStreet"
+walk_score <- read.csv(paste0('./', infile, '.csv'), stringsAsFactors = FALSE, header = TRUE)
+names(walk_score) <- tolower(names(walk_score))
+
+cols_2_keep <- c("id", "street", "zipcode", "lat",
+                 "long", "walkscore", "walkscoredesc")
+walk_score <- subset(walk_score, select = cols_2_keep)
+
+cincy_min_latitude <- 39.0
+cincy_max_latitude <- 39.3
+cincy_max_longitude <- -84.3
+cincy_min_longitude <- -84.72
+
+walk_score <- walk_score[walk_score$lat > cincy_min_latitude & walk_score$lat < cincy_max_latitude,]
+walk_score <- walk_score[walk_score$long > cincy_min_longitude & walk_score$long < cincy_max_longitude,]
+
+
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+infile <- "street_centerlines_w_pci_rating"
+streets <- read.csv(paste0('./', infile, '.csv'), stringsAsFactors = FALSE, header = TRUE)
+names(streets) <- tolower(names(streets))
+names(streets)[names(streets) == 'latitude'] <- 'lat'
+names(streets)[names(streets) == 'longitude'] <- 'long'
+
+cols_2_keep <- c("strsegid", "category", "rank", "surface",
+                 "area", "length", "width", "cagclass",
+                 "lane_cnt", "lat", "long")
+streets <- subset(streets, select = cols_2_keep)
+
+#streets = streets[!duplicated(streets$strsegid), ]
+
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 infile <- "traffic_crash_reports_20180918"
 traffic_crash <- read.csv(paste0('./', infile, '.csv'), stringsAsFactors = FALSE, header = TRUE)
@@ -103,6 +143,51 @@ ped_crash$cost <- sapply(ped_crash$injury_type_num, switch,
                   '1' = 0.046)
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+infile <- "2017_NFIRS_Cincinnati_Fire_Department_Incident_Data"
+fire_incident <- read.csv(paste0('./', infile, '.csv'), stringsAsFactors = FALSE, header = TRUE)
+
+names(fire_incident) <- tolower(names(fire_incident))
+
+names(fire_incident)[names(fire_incident) == 'latitude'] <- 'lat'
+names(fire_incident)[names(fire_incident) == 'longitude'] <- 'long'
+
+fire_agg <- fire_incident %>%
+                group_by(incident_type_desc, incident_type_id) %>%
+                summarize(num_incdnt = n())
+
+# ...   fire incidents related to vehicle accidents
+
+incident_2_keep <- c(322, 323, 324, 352, 463)
+
+red1 <- fire_incident[fire_incident$incident_type_id == 322,]
+red2 <- fire_incident[fire_incident$incident_type_id == 323,]
+red3 <- fire_incident[fire_incident$incident_type_id == 324,]
+red4 <- fire_incident[fire_incident$incident_type_id == 352,]
+red5 <- fire_incident[fire_incident$incident_type_id == 463,]
+
+fire_incident_red <- rbind(red1, red2, red3, red4, red5)
+
+# ...   not all have lat& long in original data file ... remove for now, consider to look up geocoords
+# ...   1/2 of motor vehicle accidents DO NOT HAVE LAT/LONG COORDS
+
+fire_incident_red <- fire_incident_red[!is.na(fire_incident_red$lat),]
+
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+infile <- "Cincinnati_Fire_Incidents_CAD_including_EMS_ALS_BLS"
+fire_incident <- read.csv(paste0('./', infile, '.csv'), stringsAsFactors = FALSE, header = TRUE)
+
+names(fire_incident) <- tolower(names(fire_incident))
+
+names(fire_incident)[names(fire_incident) == 'latitude_x'] <- 'lat'
+names(fire_incident)[names(fire_incident) == 'longitude_y'] <- 'long'
+
+# ... 23,500 of 314,009 events do not have lat/long
+# ...   some lat/long are (apparently) reversed
+
+
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # ...   read in shapefile of neighborhoods for plotting
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -121,7 +206,7 @@ cvg_shapefile <- cvg_shapefile[cvg_shapefile$Name != "Forestville", ]
 # ...   assign data values to grid cell
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-df_mapped <- which_grid_cell(grid_centroid, ped_crash)
+df_mapped <- which_grid_cell_big(grid_centroid, streets)
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # ...   accumulate sum of costs in each grid cell
@@ -131,6 +216,21 @@ cell_cost <- df_mapped %>%
                 group_by(cell_id, lat_cell, long_cell) %>%
                 summarize(sum_cost = sum(cost), event_count = n(), sum_num = sum(injury_type_num))
     
+street_agg <- df_mapped %>% 
+                group_by(cell_id, lat_cell, long_cell) %>%
+                summarize(sum_lane_cnt = sum(lane_cnt), sum_width = sum(width), sum_area = sum(area), num_streets = n())
+
+walk_score_agg <- df_mapped %>% 
+                group_by(cell_id, lat_cell, long_cell) %>%
+                summarize(mean_walk_score = mean(walkscore),
+                          min_walk_score = min(walkscore),
+                          max_walk_score = max(walkscore),
+                          num_walk_scores = n())
+
+fire_incd_agg <- df_mapped %>% 
+                group_by(cell_id, lat_cell, long_cell) %>%
+                summarize(num_fire_incd = n())
+
 # ...   make a plot to visualize result
 
 hoods <- ggplot() +  geom_point(data=cvg_shapefile, aes(x=long, y=lat, group=group), size = 0.1, alpha = 0.4)
@@ -138,7 +238,9 @@ hoods <- ggplot() +  geom_point(data=cvg_shapefile, aes(x=long, y=lat, group=gro
 setwd(home_dir)
 setwd(plot_dir)
 
-png(filename = "pedestrianCrashCostMapped2GridCell.png", 
+# ...   Fire Incidents
+
+png(filename = "FireIncidentCountsMapped2Grid.png", 
     units = "in", 
     width = 18,
     height = 9,
@@ -146,19 +248,82 @@ png(filename = "pedestrianCrashCostMapped2GridCell.png",
     res = 72)
 
 hoods +
-    geom_point(data = cell_cost, aes(x = long_cell, y = lat_cell, color = sum_cost), shape = 15, size = 2.5, alpha = 0.8) + 
+    geom_point(data = fire_incd_agg, aes(x = long_cell, y = lat_cell, color = num_fire_incd), shape = 15, size = 2.5, alpha = 0.8) + 
     geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2, alpha = 0.2) +
     geom_point(data = df_mapped, aes(x = long, y = lat), color = "black", shape = 5, size = 0.2, alpha = 0.4) +
-    ggtitle("Pedestrian Accidents - Grid Cell Sum Costs ($)") +
+    ggtitle("2017 Fire Incidents - Vehicle Related - Counts Mapped 2 Grid Cells") +
     xlab("Longitude") + ylab("Latitude") +
 #    theme_void() +
-  scale_color_gradientn(colors = rev(rainbow(9))[3:9])
+  scale_color_gradientn(colors = rev(rainbow(9))[3:9]) +
+    coord_cartesian(xlim = c(-84.25, -84.75), ylim = c(39., 39.25))
+
+
+dev.off()
+
+# ...   Walk Scores
+
+png(filename = "WalkScoreMeanMapped2Grid.png", 
+    units = "in", 
+    width = 18,
+    height = 9,
+    pointsize = 12, 
+    res = 72)
+
+hoods +
+    geom_point(data = walk_score_agg, aes(x = long_cell, y = lat_cell, color = mean_walk_score), shape = 15, size = 2.5, alpha = 0.8) + 
+    geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2, alpha = 0.2) +
+    geom_point(data = df_mapped, aes(x = long, y = lat), color = "black", shape = 5, size = 0.2, alpha = 0.4) +
+    ggtitle("Mean WalkScore mapped 2 Grid Cells") +
+    xlab("Longitude") + ylab("Latitude") +
+#    theme_void() +
+  scale_color_gradientn(colors = rev(rainbow(9))[3:9]) +
+    coord_cartesian(xlim = c(-84.25, -84.75), ylim = c(39., 39.25))
+
+
+dev.off()
+
+png(filename = "WalkScoreCountsMapped2Grid.png", 
+    units = "in", 
+    width = 18,
+    height = 9,
+    pointsize = 12, 
+    res = 72)
+
+hoods +
+    geom_point(data = walk_score_agg, aes(x = long_cell, y = lat_cell, color = num_walk_scores), shape = 15, size = 2.5, alpha = 0.8) + 
+    geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2, alpha = 0.2) +
+    geom_point(data = df_mapped, aes(x = long, y = lat), color = "black", shape = 5, size = 0.2, alpha = 0.4) +
+    ggtitle("WalkScore - number of scores - mapped 2 Grid Cells") +
+    xlab("Longitude") + ylab("Latitude") +
+#    theme_void() +
+  scale_color_gradientn(colors = rev(rainbow(9))[3:9]) +
+    coord_cartesian(xlim = c(-84.25, -84.75), ylim = c(39., 39.25))
+
+
+dev.off()
+
+png(filename = "streetsLaneCountMapped2GridCell_zoom.png", 
+    units = "in", 
+    width = 18,
+    height = 9,
+    pointsize = 12, 
+    res = 72)
+
+hoods +
+    geom_point(data = street_agg, aes(x = long_cell, y = lat_cell, color = sum_lane_cnt), shape = 15, size = 2.5, alpha = 0.8) + 
+    geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2, alpha = 0.2) +
+    geom_point(data = df_mapped, aes(x = long, y = lat), color = "black", shape = 5, size = 0.2, alpha = 0.4) +
+    ggtitle("streetsLaneCountMapped2GridCell") +
+    xlab("Longitude") + ylab("Latitude") +
+#    theme_void() +
+  scale_color_gradientn(colors = rev(rainbow(9))[3:9]) +
+    coord_cartesian(xlim = c(-84.48, -84.55), ylim = c(39.08, 39.15))
 
 dev.off()
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-png(filename = "pedestrianEventCountMapped2GridCell.png", 
+png(filename = "streetSumLaneAreaMapped2GridCell.png", 
     units = "in", 
     width = 18,
     height = 9, 
@@ -166,10 +331,10 @@ png(filename = "pedestrianEventCountMapped2GridCell.png",
     res = 72)
 
 hoods +
-    geom_point(data = cell_cost, aes(x = long_cell, y = lat_cell, color = event_count), shape = 15, size = 2.5, alpha = 0.8) + 
+    geom_point(data = street_agg, aes(x = long_cell, y = lat_cell, color = log10(sum_area)), shape = 15, size = 2.5, alpha = 0.8) + 
     geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2, alpha = 0.2) +
-    geom_point(data = df_mapped, aes(x = long, y = lat), color = "black", shape = 5, size = 0.2, alpha = 0.4) +
-    ggtitle("Pedestrian Accidents - Grid Cell Sum Costs ($)") +
+    geom_point(data = df_mapped, aes(x = long, y = lat), color = "darkgrey", shape = 5, size = 0.1, alpha = 0.2) +
+    ggtitle("streetSumLane Area Mapped2GridCell") +
     xlab("Longitude") + ylab("Latitude") +
 #    theme_void() +
   scale_color_gradientn(colors = rev(rainbow(9))[3:9])

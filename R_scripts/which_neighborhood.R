@@ -52,7 +52,6 @@ setwd(data_dir)
 infile <- "grid_centroids_250m"
 cell_centroids <- read.csv(paste0('./', infile, '.csv'), stringsAsFactors = FALSE, header = TRUE)
 
-
 cells <- data.frame(Longitude = cell_centroids$long,
                   Latitude = cell_centroids$lat,
                   id = cell_centroids$cell_id)
