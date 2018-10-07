@@ -18,15 +18,33 @@
 
 rm(list=ls())
 
-library(sp)
-library(rgeos)
-library(geosphere)
-library(dplyr)
-library(tictoc)
+
+if(!require(sp)){
+  install.packages("sp")
+  library(sp)
+}
+if(!require(rgeos)){
+  install.packages("rgeos")
+  library(rgeos)
+}
+if(!require(geosphere)){
+  install.packages("geosphere")
+  library(geosphere)
+}
+if(!require(dplyr)){
+  install.packages("dplyr")
+  library(dplyr)
+}
+if(!require(tictoc)){
+  install.packages("tictoc")
+  library(tictoc)
+}
+
 
 printf <- function(...) invisible(cat(sprintf(...)))
 
-home_dir <- ("/home/mcdevitt/_ds/_smu/_src/CapstoneProject/")
+home_dir <- "G:/JoshuaData/Classes/MSDS61X0 Capstone/CapstoneProject"
+#home_dir <- ("/home/mcdevitt/_ds/_smu/_src/CapstoneProject/")
 data_dir <- ("./data/")
 plot_dir <- ("./plots/")
 
@@ -152,7 +170,7 @@ base_pts
 setwd(home_dir)
 setwd(plot_dir)
 
-png(filename = "pedestrian_survey_mapped_2_grid_cell.png", 
+png(filename = "PedestrianSurveyMapped2GridCell.png", 
     units = "in", 
     width = 24,
     height = 18, 
@@ -167,7 +185,7 @@ base_pts <- ggplot(traffic_crash, aes(x = long, y = lat), size = 0.2) +
   geom_point(color = "dodgerblue3", shape = 5, alpha = 0.9)
 base_pts
 
-png(filename = "traffic_crash_mapped_2_grid_cell.png", 
+png(filename = "TrafficCrashMapped2GridCell.png", 
     units = "in", 
     width = 24,
     height = 18, 

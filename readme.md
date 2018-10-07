@@ -1,6 +1,6 @@
 # CapstoneProject
 
-![](./plots/Rplot.png)
+![Crash Costs by Grid Cell](./plots/pedestrianCrashCostMapped2GridCell.png)
 
 
 1. ~~write routine to assign a geo-coordinate to its approrpriate grid cell~~
