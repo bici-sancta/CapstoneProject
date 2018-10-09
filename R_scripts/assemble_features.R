@@ -201,5 +201,22 @@ cols_2_keep <- c("sum_cost", "num_fire_incd", "num_prop_sales", "num_streets", "
 
 df_model <- df[, cols_2_keep]
 
-fit1 <- lm(sum_cost ~ ., df_model)
+fit1 <- lm(sum_cost ~ (.)^2, df_model)
 summary(fit1)
+
+df_model$predict <- predict(fit1, df_model)
+
+df_model <- df_model %>% mutate(cost_gt_pred = ifelse(sum_cost > (1.10 * predict), sum_cost, NA))
+
+par(bg = "lightgrey")
+plot(sum_cost ~ predict, data = df_model,
+     col = "darkgrey", 
+     xlim = c(0, 30),
+     ylim = c(0, 30))
+points(cost_gt_pred ~ predict, data = df_model, col = "dodgerblue4")
+abline(a = 0, b = 1, col = "dodgerblue3")
+
+
+
+
+
