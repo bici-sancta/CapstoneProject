@@ -35,7 +35,8 @@ printf <- function(...) invisible(cat(sprintf(...)))
 # ...   define some directory locations
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-home_dir <- ("/home/mcdevitt/_ds/_smu/_src/CapstoneProject/")
+#home_dir <- ("/home/mcdevitt/_ds/_smu/_src/CapstoneProject/")
+home_dir <- ("G:/JoshuaData/Classes/MSDS61X0 Capstone/CapstoneProject")
 data_dir <- ("./data/")
 grid_mapped_dir <- ("./data/grid_mapped")
 plot_dir <- ("./plots/")

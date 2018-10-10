@@ -1,4 +1,5 @@
-# CapstoneProject
+﻿# CapstoneProject
+
 
 ![Crash Costs by Grid Cell](./plots/pedestrianCrashCostMapped2GridCell.png)
 
