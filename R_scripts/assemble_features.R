@@ -29,6 +29,8 @@ library(rgdal)
 library(rgeos)
 library(maptools)
 
+library(car)
+
 printf <- function(...) invisible(cat(sprintf(...)))
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -204,6 +206,9 @@ df_model <- df[, cols_2_keep]
 
 fit1 <- lm(sum_cost ~ (.)^2, df_model)
 summary(fit1)
+options(scipen=999)
+vif(fit1)
+options(scipen=0)
 
 df_model$predict <- predict(fit1, df_model)
 
