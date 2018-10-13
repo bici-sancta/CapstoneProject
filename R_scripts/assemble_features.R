@@ -29,7 +29,7 @@ library(rgdal)
 library(rgeos)
 library(maptools)
 
-library(car)
+library(caret)
 
 printf <- function(...) invisible(cat(sprintf(...)))
 
@@ -77,10 +77,6 @@ infile <- "2017_NFIRS_Cincinnati_Fire_Department_Incident_Data_mapped_to_grid_ce
 fire_incdnt <- read.csv(infile,
                        stringsAsFactors = FALSE, header = TRUE)
 
-infile <- "hamilton_county_property_xfer_2008t2018_mapped_to_grid_cells.csv"
-property <- read.csv(infile,
-                       stringsAsFactors = FALSE, header = TRUE)
-
 infile <- "pedestrian_near_miss_incidents_geocodes_mapped_to_grid_cells.csv"
 near_miss <- read.csv(infile,
                        stringsAsFactors = FALSE, header = TRUE)
@@ -97,9 +93,22 @@ infile <- "traffic_crash_reports_20180918_mapped_to_grid_cells.csv"
 traffic_crash <- read.csv(infile,
                        stringsAsFactors = FALSE, header = TRUE)
 
-infile <- "WalkScoreMasterFileByStreet_mapped_to_grid_cells.csv"
+infile <- "WalkScoreMasterFileByStreet_in_cincinnati_mapped_to_grid_cells.csv"
 walk_score <- read.csv(infile,
                        stringsAsFactors = FALSE, header = TRUE)
+
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+infile <- "hamilton_county_property_xfer_2008t2018_in_cincinnati_mapped_to_grid_cells.csv"
+property <- read.csv(infile,
+                       stringsAsFactors = FALSE, header = TRUE)
+
+infile <- "../dictionaries/hamilton_county_land_use_codes.csv"
+property_codes <- read.csv(infile,
+                       stringsAsFactors = FALSE, header = TRUE)
+
+property <- merge(property, property_codes, by = "property_class", all.x = TRUE)
+property$category <- tolower(property$category)
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -109,6 +118,26 @@ setwd(data_dir)
 grid_file <- "grid_points_250m_w_neighborhood"
 grid_centroid <- read.csv(paste0('./', grid_file, '.csv'), stringsAsFactors = FALSE, header = TRUE)
 
+
+# ...   read in shapefiles from Zillow definitions
+
+zillow_dir <- "./data/ZillowNeighborhoods-OH"
+data_dir <- "./data/"
+plot_dir <- "./plots/"
+
+setwd(home_dir)
+setwd(zillow_dir)
+oh_shapefile <- readOGR("ZillowNeighborhoods-OH.shp", layer="ZillowNeighborhoods-OH")
+cvg_shapefile <- oh_shapefile[oh_shapefile$City == "Cincinnati", ]
+
+# ...   drop 2 neighborhoods which are not in Cincinnati
+
+cvg_shapefile <- cvg_shapefile[cvg_shapefile$Name != "Fruit Hill", ]
+cvg_shapefile <- cvg_shapefile[cvg_shapefile$Name != "Forestville", ]
+
+plot(cvg_shapefile)
+
+
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # ...   aggregate within each data set to consolidate features to unique grid cell
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -117,12 +146,34 @@ fire_incd_agg <- fire_incdnt %>%
                 group_by(cell_id) %>%
                 summarize(num_fire_incd = n())
 
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 property_agg <- property %>% 
+                group_by(cell_id, category) %>%
+                summarize(num_prop_sales = n())
+
+prop_agg_sorted <- property_agg[order(property_agg$cell_id, -property_agg$num_prop_sales),]
+prop_category <- prop_agg_sorted[!duplicated(prop_agg_sorted$cell_id),]
+prop_category$num_prop_sales <- NULL
+
+table(property_agg$category)
+
+property_value_agg <- property %>% 
                 group_by(cell_id) %>%
-                summarize(median_sale_price = median(sale_price),
-                          max_sale_price = max(sale_price),
+                summarize(max_sale_price = max(sale_price),
+                          median_sale_price = median(sale_price),
                           num_prop_sales = n())
+
+property_agg <- merge(property_value_agg, prop_category, by = "cell_id", all.x = TRUE)
+
+dmy <- dummyVars(" ~ .", data = property_agg)
+trsf <- data.frame(predict(dmy, newdata = property_agg))
+
+plot(cvg_shapefile)
+points(property$lat ~ property$long, col = "dodgerblue4", cex = 0.5)
+points(property$lat ~ property$long, col = factor(property$category), cex = 0.5)
+
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 ped_crash_agg <- traffic_crash %>% 
                 group_by(cell_id) %>%
@@ -157,7 +208,7 @@ near_miss_agg <- near_miss %>%
 
 df <- merge(grid_centroid, fire_incd_agg, by = "cell_id", all.x = TRUE)
 
-df <- merge(df, property_agg, by = "cell_id", all.x = TRUE)
+df <- merge(df, trsf, by = "cell_id", all.x = TRUE)
 df <- merge(df, ped_crash_agg, by = "cell_id", all.x = TRUE)
 df <- merge(df, street_agg, by = "cell_id", all.x = TRUE)
 df <- merge(df, walk_score_agg, by = "cell_id", all.x = TRUE)
@@ -198,13 +249,18 @@ df$sum_area.imputed <- ifelse(is.na(df$sum_area), median(df$sum_area, na.rm = TR
 #[25] "num_reports"               "num_near_misses"           "median_sale_price.imputed" "max_sale_price.imputed"    "mean_walk_score.imputed"   "min_walk_score.imputed"   
 #[31] "max_walk_score.imputed"    "sum_lane_cnt.imputed"      "sum_width.imputed"         "sum_area.imputed"         
 
+# "categoryagricultural"     
+# "categorycommercial"        "categoryindustrial"        "categorypublicly.owned"    "categorypublic.utilities"  "categoryresidential"
+
 cols_2_keep <- c("sum_cost", "num_fire_incd", "num_prop_sales", "num_streets", "num_walk_scores",
                  "num_reports", "num_near_misses", "median_sale_price.imputed", "max_sale_price.imputed",
-                 "mean_walk_score.imputed", "min_walk_score.imputed", "max_walk_score.imputed", "sum_lane_cnt.imputed", "sum_width.imputed", "sum_area.imputed")
+                 "mean_walk_score.imputed", "min_walk_score.imputed", "max_walk_score.imputed", "sum_lane_cnt.imputed", "sum_width.imputed", "sum_area.imputed",
+                 "categoryagricultural", "categorycommercial", "categoryindustrial", "categorypublicly.owned",
+                 "categorypublic.utilities","categoryresidential")
 
 df_model <- df[, cols_2_keep]
 
-fit1 <- lm(sum_cost ~ (.)^2, df_model)
+fit1 <- glm(sum_cost ~ (.)^2, df_model)
 summary(fit1)
 options(scipen=999)
 vif(fit1)
