@@ -64,12 +64,50 @@ ped_pts <- data.frame(Longitude = ped_srvy$long,
                   Latitude = ped_srvy$lat,
                   strsegid = ped_srvy$strsegid)
 
-# Assignment modified according
+# ...   walk scores
+
+infile <- "./grid_mapped/WalkScoreMasterFileByStreet_mapped_to_grid_cells.csv"
+walk_score <- read.csv(infile,
+                       stringsAsFactors = FALSE, header = TRUE)
+walk_pts <- data.frame(Longitude = walk_score$long,
+                  Latitude = walk_score$lat,
+                  walk_score_id = walk_score$id)
+
+# ...   property transfers
+
+infile <- "./grid_mapped/hamilton_county_property_xfer_2008t2018_mapped_to_grid_cells.csv"
+property <- read.csv(infile,
+                       stringsAsFactors = FALSE, header = TRUE)
+prop_pts <- data.frame(Longitude = property$long,
+                  Latitude = property$lat,
+                  property_number = property$property_number)
+
+# ...   assignment to longitude and latitude
 
 coordinates(cells) <- ~ Longitude + Latitude
 coordinates(ped_pts) <- ~ Longitude + Latitude
+coordinates(walk_pts) <- ~ Longitude + Latitude
+coordinates(prop_pts) <- ~ Longitude + Latitude
 
-# Set the projection of the SpatialPointsDataFrame using the projection of the shapefile
+
+# ... project selected data set using the projection of the shapefile
+
+# ...   property transfers
+# ...       bind result to data frame 
+# ...       subset to only grids that are in a neighborhood
+
+proj4string(prop_pts) <- proj4string(cvg_shapefile)
+assignment <- over(prop_pts, cvg_shapefile)
+prop_pts_w_neighborhood <- cbind(property, assignment)
+prop_pts_w_neighborhood <- prop_pts_w_neighborhood[!is.na(prop_pts_w_neighborhood$Name), ]
+
+# ...   walk score
+# ...       bind result to data frame 
+# ...       subset to only grids that are in a neighborhood
+proj4string(walk_pts) <- proj4string(cvg_shapefile)
+assignment <- over(walk_pts, cvg_shapefile)
+walk_pts_w_neighborhood <- cbind(walk_score, assignment)
+walk_pts_w_neighborhood <- walk_pts_w_neighborhood[!is.na(walk_pts_w_neighborhood$Name), ]
 
 # ...   grid cells
 # ...       bind result to data frame 
@@ -114,6 +152,28 @@ points(ped_pts, col = "darkgrey", cex = 0.4)
 points(ped_pts_w_neighborhood$lat ~ ped_pts_w_neighborhood$long, col = "forestgreen", cex = 0.8)
 dev.off()
 
+png(filename = "walk_score_mapped_2_neighborhood.png", 
+    units = "in", 
+    width = 24,
+    height = 18, 
+    pointsize = 12, 
+    res = 72)
+plot(cvg_shapefile)
+points(walk_pts, col = "darkgrey", cex = 0.2)
+points(walk_pts_w_neighborhood$lat ~ walk_pts_w_neighborhood$long, col = "forestgreen", cex = 0.5)
+dev.off()
+
+png(filename = "property_xfer_mapped_2_neighborhood.png", 
+    units = "in", 
+    width = 24,
+    height = 18, 
+    pointsize = 12, 
+    res = 72)
+plot(cvg_shapefile)
+points(prop_pts, col = "darkgrey", cex = 0.2)
+points(prop_pts_w_neighborhood$lat ~ prop_pts_w_neighborhood$long, col = "dodgerblue4", cex = 0.5)
+dev.off()
+
 # ...   write results to .csv file
 
 setwd(home_dir)
@@ -124,6 +184,14 @@ write.table(cells_w_neighborhood, file = "grid_points_250m_w_neighborhood.csv", 
             col.names = TRUE)
 
 write.table(ped_pts_w_neighborhood, file = "pedestrian_survey_w_neighborhood.csv", sep = ",",
+            row.names = FALSE,
+            col.names = TRUE)
+
+write.table(walk_pts_w_neighborhood, file = "./grid_mapped/WalkScoreMasterFileByStreet_in_cincinnati_mapped_to_grid_cells.csv", sep = ",",
+            row.names = FALSE,
+            col.names = TRUE)
+
+write.table(prop_pts_w_neighborhood, file = "./grid_mapped/hamilton_county_property_xfer_2008t2018_in_cincinnati_mapped_to_grid_cells.csv", sep = ",",
             row.names = FALSE,
             col.names = TRUE)
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
