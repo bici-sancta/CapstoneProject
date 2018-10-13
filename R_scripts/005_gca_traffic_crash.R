@@ -38,7 +38,8 @@ printf <- function(...) invisible(cat(sprintf(...)))
 # ...   define some directory locations
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-home_dir <- ("/home/mcdevitt/_ds/_smu/_src/CapstoneProject/")
+#home_dir <- ("/home/mcdevitt/_ds/_smu/_src/CapstoneProject/")
+home_dir <- ("G:/JoshuaData/Classes/MSDS61X0 Capstone/CapstoneProject")
 data_dir <- ("./data/")
 grid_mapped_dir <- ("./data/grid_mapped")
 plot_dir <- ("./plots/")
@@ -80,8 +81,8 @@ names(traffic_crash)[names(traffic_crash) == 'longitude_x'] <- 'long'
 
 traffic_crash <- mutate(traffic_crash, long = ifelse(long > 84, long * -1, long))
 
-traffic_crash <- traffic_crash[traffic_crash$lat > 39 & traffic_crash$lat < 39.3,]
-traffic_crash <- traffic_crash[traffic_crash$long > -84.72 & traffic_crash$long < -84.3,]
+traffic_crash <- traffic_crash[traffic_crash$lat > 39.052514 & traffic_crash$lat < 39.220141,]
+traffic_crash <- traffic_crash[traffic_crash$long > -84.711913 & traffic_crash$long < -84.368370,]
 
 traffic_crash <- traffic_crash[!is.na(traffic_crash$long),]
 traffic_crash <- traffic_crash[!is.na(traffic_crash$lat),]

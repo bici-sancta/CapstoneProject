@@ -82,18 +82,18 @@ There are a range of severities associated to the outcomes of pedestrian--vehicl
 \FloatBarrier
 \begin{table}[!h]
 \begin{center}
-\caption{Event Cost Severity, 2012 NSC}
+\caption{Event Cost Severity, 201X NSC NEEDS CITATION!!!}
 \label{table:eventseverity}
 \begin{tabular}{p{50mm}  p{50mm}}
 \hline
 \rule{0pt}{12pt}
 Severity & Unit Cost (\$)\\[2pt]
 \hline
-Fatality 					&	4,538,000\\
-Incapacitating injury 		&	230,000\\
-Non-Incapacitating injury 	&	58,700\\
-Possible injury 			&	28,000\\
-No injury 					&	2,500\\[2pt]
+Fatality 			&10,082,000\\
+Disabling Injury 		&1,103,000\\
+Evident Injury 		&304,000\\
+Possible injury 		&141,000\\
+No Injury Observed		&46,600\\[2pt]
 \hline
 \end{tabular}
 \end{center}
@@ -135,31 +135,6 @@ The Cincinnati Area Geographic Information System is an online survey which was 
 Additionally, the date of the issue created, typical mode of user (walk, drive, bicycle), and intersection of the location selected are captured. There are 3788 records in our survey dataset with 8 usable columns. There are missing data and categorical data in incorrect format which require clean-up and updating of missing information. Other than the survey data, we have various sources of data which would be combined to form the dataset for the project. All acquired from the City of Cincinnati are listed in Table ~\ref{table:cincinnatidatasets}. Datasets that originated from the Open Data Cincinnati are listed in Table ~\ref{table:cincinnatiopendata}.  Supplementary data sets from external sources are listed in Table ~\ref{table:supplementarydatasets}.
 
 
-\FloatBarrier
-\begin{table}
-\begin{center}
-\caption{Survey data attributes}
-\begin{tabular}{l p{80mm}}
-\hline
-\rule{0pt}{12pt}
-Attribute & Description\\[2pt]
-\hline
-REQUESTID	&	Survey key\\
-REQUESTTYP	&	Provides categories for issue	\\
-REQUESTDAT	&	Date on which the issue was raised	\\
-COMMENTS	&	Issue description	\\
-USERTYPE	&	Mode of transport of the user	\\
-NEAR_INTER	&	Intersection nearest to location of issues	\\
-NEAR_STR	&	Street of issue	\\
-STRSEGID	&	ID specific to city of Cincinnati\\
-Additional_COMMENTS	&  Additional descriptions for the same issue by different users	\\
-SNA_NAME & Neighborhood name	\\[2pt]
-\hline
-\end{tabular}
-\end{center}	
-\end{table}
-\FloatBarrier	
-%
 \FloatBarrier
 \begin{table}[!h]
 \begin{center}
@@ -261,7 +236,7 @@ Zillow
 
 For this project, our approach consists of two parts.
 
-Part 1 involves extensive exploratory data analysis, using unsupervised techniques to identify clusters and trends within the data. Geolocation based visual representations are used to derive location based patterns. Data like near miss, public complaints, and accidents plotted on the map of Cincinnati provide compelling evidence of issues in the city.
+Part 1 involves extensive exploratory data analysis, using unsupervised techniques to identify clusters and trends within the data. Geolocation based visual representations are used to derive location based patterns. Data like near miss, public complaints, and accidents plotted on the map of Cincinnati provide compelling evidence of issues in the city. The data is plotted through the use of latitude and longitude data present in the datasets to a grid of the city. The city grid is then converted into a spreadsheet in which each cell on the grid contains the data points which were closest to them.
 
 Part 2 consists of adding cost of injury as in Table ~\ref{table:eventseverity} to our dataset to perform regression analyses. Our dataset consists of accidents with injury, accidents with no injury, and near misses and is simplified using correlation metrics. Feature importance  of each regression method is tabulated so that only significant variables is used in the modeling. This approach aids in quantifying the intensity of accidents and predicting how expensive accidents are. Models with high R$^{2}$, a measurement of how well data fits to the modeled regression line, and low root mean square error, a measure of the difference between the modeled regression line and the data, are considered good models.
 
@@ -300,13 +275,13 @@ Additional 	&	1.        T-Distributed Stochastic Neighbor Embedding	\newline
 %
 \section{Results}
 %
-Initial results from part 1 of our methodology have produced graphs as shown in Figure ~\ref{figure:FatalityPlot}. \newline
+Initial results from part 1 of our methodology have produced graphs as shown in Figure ~\ref{figure:SumCrashPlot}. \newline
 \begin{figure}
-\begin{center}
- 	\includegraphics[height=5cm]{FatalitiesMapped2GridCell}
- 	\caption{Fatalities of traffic accidents within the city of Cincinnati mapped to grid cells.}.
-	\label{figure:FatalityPlot}
-\end{center}
+
+ 	\includegraphics[height=8cm]{TrafficCrashReports20180918SumCostMapped2Grid}
+ 	\caption{Sum cost of traffic crashes reported from 2012 to October 2018 involving pedestrians by grid cells.}
+	\label{figure:SumCrashPlot}
+
 \end{figure}
 %
 \section{Analysis}

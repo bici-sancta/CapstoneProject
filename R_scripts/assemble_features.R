@@ -37,7 +37,8 @@ printf <- function(...) invisible(cat(sprintf(...)))
 # ...   define some directory locations
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-home_dir <- ("/home/mcdevitt/_ds/_smu/_src/CapstoneProject/")
+#home_dir <- ("/home/mcdevitt/_ds/_smu/_src/CapstoneProject/")
+home_dir <- ("G:/JoshuaData/Classes/MSDS61X0 Capstone/CapstoneProject")
 data_dir <- ("./data/")
 grid_mapped_dir <- ("./data/grid_mapped")
 plot_dir <- ("./plots/")
@@ -261,6 +262,9 @@ df_model <- df[, cols_2_keep]
 
 fit1 <- glm(sum_cost ~ (.)^2, df_model)
 summary(fit1)
+options(scipen=999)
+vif(fit1)
+options(scipen=0)
 
 df_model$predict <- predict(fit1, df_model)
 
