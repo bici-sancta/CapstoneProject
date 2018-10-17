@@ -37,8 +37,7 @@ printf <- function(...) invisible(cat(sprintf(...)))
 # ...   define some directory locations
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-#home_dir <- ("/home/mcdevitt/_ds/_smu/_src/CapstoneProject/")
-home_dir <- ("G:/JoshuaData/Classes/MSDS61X0 Capstone/CapstoneProject")
+home_dir <- ("/home/mcdevitt/_ds/_smu/_src/CapstoneProject/")
 data_dir <- ("./data/")
 grid_mapped_dir <- ("./data/grid_mapped")
 plot_dir <- ("./plots/")
@@ -259,7 +258,6 @@ cols_2_keep <- c("cell_id", "lat", "long", "Name", "sum_cost", "num_fire_incd", 
                  "categorypublic.utilities","categoryresidential")
 
 df_model_w_ids <- df[, cols_2_keep]
-write.csv(df_model_w_ids, "df_model_w_lat_long.csv", row.names = FALSE)
 
 cols_2_keep <- c("sum_cost", "num_fire_incd", "num_prop_sales", "num_streets", "num_walk_scores",
                  "num_reports", "num_near_misses", "median_sale_price.imputed", "max_sale_price.imputed",
@@ -268,13 +266,9 @@ cols_2_keep <- c("sum_cost", "num_fire_incd", "num_prop_sales", "num_streets", "
                  "categorypublic.utilities","categoryresidential")
 
 df_model <- df[, cols_2_keep]
-write.csv(df_model, "df_model.csv", row.names = FALSE)
 
 fit1 <- glm(sum_cost ~ (.)^2, df_model)
 summary(fit1)
-options(scipen=999)
-vif(fit1)
-options(scipen=0)
 
 df_model$predict <- predict(fit1, df_model)
 
@@ -288,3 +282,12 @@ plot(sum_cost ~ predict, data = df_model,
 points(cost_gt_pred ~ predict, data = df_model, col = "dodgerblue4")
 abline(a = 0, b = 1, col = "dodgerblue3")
 
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# ... write some .csv files 
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+setwd(home_dir)
+setwd(data_dir)
+
+write.csv(df_model_w_ids, "df_model_w_lat_long.csv", row.names = FALSE)
+write.csv(df_model, "df_model.csv", row.names = FALSE)
