@@ -38,8 +38,7 @@ printf <- function(...) invisible(cat(sprintf(...)))
 # ...   define some directory locations
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-#home_dir <- ("/home/mcdevitt/_ds/_smu/_src/CapstoneProject/")
-home_dir <- ("G:/JoshuaData/Classes/MSDS61X0 Capstone/CapstoneProject")
+home_dir <- ("/home/mcdevitt/_ds/_smu/_src/CapstoneProject/")
 data_dir <- ("./data/")
 grid_mapped_dir <- ("./data/grid_mapped")
 plot_dir <- ("./plots/")
@@ -81,13 +80,45 @@ names(traffic_crash)[names(traffic_crash) == 'longitude_x'] <- 'long'
 
 traffic_crash <- mutate(traffic_crash, long = ifelse(long > 84, long * -1, long))
 
-traffic_crash <- traffic_crash[traffic_crash$lat > 39.052514 & traffic_crash$lat < 39.220141,]
-traffic_crash <- traffic_crash[traffic_crash$long > -84.711913 & traffic_crash$long < -84.368370,]
+traffic_crash <- traffic_crash[traffic_crash$lat > 39 & traffic_crash$lat < 39.3,]
+traffic_crash <- traffic_crash[traffic_crash$long > -84.72 & traffic_crash$long < -84.3,]
 
 traffic_crash <- traffic_crash[!is.na(traffic_crash$long),]
 traffic_crash <- traffic_crash[!is.na(traffic_crash$lat),]
 
 ped_crash <- traffic_crash[traffic_crash$typeofperson == "P - PEDESTRIAN",]
+
+ped_crash$cdate <- strptime(ped_crash$crashdate, "%m/%d/%Y %H:%M:%S")
+ped_crash$cyear <- format(as.Date(ped_crash$cdate, format="%d/%m/%Y"),"%Y")
+ped_crash$cyear <- as.integer(ped_crash$cyear)
+ped_crash <- subset(ped_crash, select = -c(cdate))
+
+ped_bar_plot <- ped_crash %>% 
+                group_by(crashseverity, cyear) %>%
+                summarize(num_events = n())
+
+ped_bar_plot <- transform(ped_bar_plot, num_events = ifelse(crashseverity == "2 - INJURY", num_events/10, num_events))
+ped_bar_plot$crashseverity[ped_bar_plot$crashseverity == "2 - INJURY"] <- "2 - INJURY (Num Events / 10)"
+
+
+png(filename = "number_pedestrian_crash_events.png",
+    units = "in", 
+    width = 18,
+    height = 9,
+    pointsize = 12, 
+    res = 72)
+
+p <- ggplot(data = ped_bar_plot, aes(x = cyear, y = num_events, fill = crashseverity)) +
+        geom_bar(stat = "identity", position = position_dodge()) +
+        xlab("Year") +
+        ylab("Number of Events") +
+        ggtitle("Cincinnati - Pedestrian - Vehicle Crashes")
+
+p + scale_fill_brewer(palette="Set1") +
+#        theme_minimal() +
+        theme(legend.position = c(0.2, 0.8), text = element_text(size = 20))
+
+dev.off()
 
 # ...   Death           $10,082,000
 # ...   Disabling       $1,103,000
@@ -134,12 +165,21 @@ ped_crash_agg <- df_mapped %>%
                 summarize(sum_cost = sum(cost),
                           num_events = n())
 
+
+
+# Get the stacked barplot
+barplot(ped_crash, col=colors()[c(23,89,12)] , border="white", space=0.04, font.axis=2, xlab="year")
+
+# Grouped barplot
+barplot(ped_crash, col = colors()[c(23,89,12)] , border="white", font.axis=2, beside=T, legend=rownames(data), xlab="group", font.lab=2)
+
 # ...   make a plot to visualize result
 
 setwd(home_dir)
 setwd(plot_dir)
 
-hoods <- ggplot() +  geom_point(data=cvg_shapefile, aes(x=long, y=lat, group=group), size = 0.1, alpha = 0.4)
+hoods <- ggplot() +  geom_polygon(data=cvg_shapefile, aes(x=long, y=lat, group=group), size = 0.1, alpha = 0.1) + 
+                        geom_point(data=cvg_shapefile, aes(x=long, y=lat, group=group), size = 0.1, alpha = 0.4)
 
 # ...   Basic map of event severity
 
