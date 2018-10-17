@@ -30,6 +30,7 @@ library(rgeos)
 library(maptools)
 
 library(caret)
+library(car)
 
 printf <- function(...) invisible(cat(sprintf(...)))
 
@@ -266,8 +267,11 @@ cols_2_keep <- c("sum_cost", "num_fire_incd", "num_prop_sales", "num_streets", "
                  "categorypublic.utilities","categoryresidential")
 
 df_model <- df[, cols_2_keep]
+setwd(data_dir)
+write.csv(df_model, file="df_model.csv")
+setwd(home_dir)
 
-fit1 <- glm(sum_cost ~ (.)^2, df_model)
+fit1 <- lm(sum_cost ~ (.)^2, df_model)
 summary(fit1)
 
 df_model$predict <- predict(fit1, df_model)
