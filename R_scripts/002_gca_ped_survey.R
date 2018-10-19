@@ -31,6 +31,7 @@ library(ggrepel)
 library(rgdal)
 library(rgeos)
 library(maptools)
+library(caret)
 
 printf <- function(...) invisible(cat(sprintf(...)))
 
@@ -55,8 +56,11 @@ setwd(data_dir)
 # ...   read in some data sets
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-infile <- "pedestrian_survey_w_neighborhood"
-ped_survey <- read.table(paste0('./', infile, '.csv'), sep = ",", stringsAsFactors = FALSE, header = TRUE)
+infile <- "PedSafety_061818_Final_from_Mel_geocoded"
+ped_survey <- read.table(paste0('./', infile, '.txt'), sep = "|", stringsAsFactors = FALSE, header = TRUE)
+
+infile <- "ped_survey_request_types"
+ped_rqst_type <- read.table(paste0('./', infile, '.csv'), sep = ",", stringsAsFactors = FALSE, header = TRUE)
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -64,7 +68,7 @@ grid_file <- "grid_points_250m_w_neighborhood"
 grid_centroid <- read.csv(paste0('./', grid_file, '.csv'), stringsAsFactors = FALSE, header = TRUE)
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-# ...   read in shapefile of neighborhoods for plotting
+# ...   read in shapefile of neighborhoods for plotting & overlay determination
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 setwd(home_dir)
@@ -79,25 +83,77 @@ cvg_shapefile <- cvg_shapefile[cvg_shapefile$Name != "Fruit Hill", ]
 cvg_shapefile <- cvg_shapefile[cvg_shapefile$Name != "Forestville", ]
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# ...   eliminate points that are outside city boundaries
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+df_overlap <- ped_survey
+df_overlap$Longitude <- df_overlap$long
+df_overlap$Latitude <- df_overlap$lat
+
+coordinates(df_overlap) <- ~Longitude + Latitude
+
+proj4string(df_overlap) <- proj4string(cvg_shapefile)
+
+df_in_city <- over(df_overlap, cvg_shapefile)
+df_srvy_city <- cbind(ped_survey, df_in_city)
+df_srvy_city <- df_srvy_city[!is.na(df_srvy_city$RegionID),]
+
+ped_survey <- df_srvy_city
+
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # ...   assign data values to grid cell
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 df_mapped <- which_grid_cell_big(grid_centroid, ped_survey)
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-# ...   accumulate sum of costs in each grid cell
+# ...   one-hot encode categorical column
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-ped_survey_agg <- df_mapped %>% 
-                group_by(cell_id, lat_cell, long_cell) %>%
-                summarize(num_reports = n())
+survey <- df_mapped
 
+# [1] "requestid"           "requesttyp"          "requestdat"          "comments"            "usertype"           
+# [6] "near_inter"          "near_str"            "strsegid"            "additional_comments" "sna_name"           
+#[11] "srvy_address"        "geo_address"         "lat"                 "long"                "geo_address_type"   
+#[16] "geo_accuracy"        "State"               "County"              "City"                "Name"               
+#[21] "RegionID"            "dist"                "cell_id"             "lat_cell"            "long_cell"          
+#[26] "hood"                "hood_id"            
+
+cols_2_keep <- c("cell_id", "lat_cell", "long_cell", "requestid", "requesttyp", "usertype")
+survey <- survey[, cols_2_keep]
+survey <- merge(survey, ped_rqst_type, by = "requesttyp", all.x = TRUE)
+survey$requesttyp <- NULL
+survey$usertype[survey$usertype == "travels (other)"] <- "other"
+survey$usertype[survey$usertype == "uses an assistive device"] <- "assist"
+
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# ...   aggregate features to each cell id
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+survey_agg <- survey %>% 
+                group_by(cell_id, lat_cell, long_cell, requestid, rqst_factor, usertype) %>%
+                summarize(n_rqst = n())
+
+survey_agg <- as.data.frame(survey_agg)
+
+# ...dummyVars will transform all characters and factors columns
+# ...   (the function never transforms numeric columns)
+# ...       and return the entire data set
+
+dummy_variable <- dummyVars(" ~ .", data = survey_agg)
+survey_encoded <- data.frame(predict(dummy_variable, newdata = survey_agg))
+
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # ...   make a plot to visualize result
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 setwd(home_dir)
 setwd(plot_dir)
 
-hoods <- ggplot() +  geom_point(data=cvg_shapefile, aes(x=long, y=lat, group=group), size = 0.1, alpha = 0.4)
+hoods <- ggplot() +
+        geom_polygon(data=cvg_shapefile, aes(x=long, y=lat, group=group), color = "lightgrey",
+                     size = 0.1,
+                     alpha = 0.2)
 
 # ...   Basic map of event severity
 
@@ -113,7 +169,7 @@ png(filename = paste0(infile, "_mapped_2_grid.png"),
 # ...   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 hoods +
-    geom_point(data = ped_survey_agg, aes(x = long_cell, y = lat_cell, color = num_reports), shape = 15, size = 2.5, alpha = 0.8) + 
+    geom_point(data = survey_encoded, aes(x = long_cell, y = lat_cell, color = n_rqst), shape = 15, size = 2.5, alpha = 0.8) + 
     geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2, alpha = 0.2) +
     geom_point(data = df_mapped, aes(x = long, y = lat), color = "black", shape = 5, size = 0.2, alpha = 0.4) +
     ggtitle(infile) +
@@ -135,6 +191,11 @@ setwd(grid_mapped_dir)
 file_name <- paste0(infile, "_mapped_to_grid_cells.csv")
 
 write.table(df_mapped, file = file_name, sep = ",",
+            row.names = FALSE,
+            col.names = TRUE)
+
+file_name <- "ped_survey_aggregate_n_onehot_encoded.csv"
+write.table(survey_encoded, file = file_name, sep = ",",
             row.names = FALSE,
             col.names = TRUE)
 
