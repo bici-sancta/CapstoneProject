@@ -1,0 +1,16 @@
+requesttyp,rqst_factor
+Walk signal is too short,WLKSIG
+Jaywalking,JYWALK
+Vehicles run red lights or stop signs,VRRLSS
+Speeding,SPEED
+Double Parking,DBLPRK
+Parking too close to intersection,PRKINT
+Vehicles do not yield at crosswalks,DNOTYLD
+Lack of Visibility,LVISIB
+No Sidewalks,NOSWLK
+No Bike Facilities,NOBIKEF
+Parking on the sidewalk,PRKSWLK
+Other,OTHER
+Crosswalk Needed,XWALK
+Accessibility issue,ACCESS
+Long wait for walk signal,LWFWS
