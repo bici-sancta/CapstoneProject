@@ -38,7 +38,8 @@ printf <- function(...) invisible(cat(sprintf(...)))
 # ...   define some directory locations
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-home_dir <- ("/home/mcdevitt/_ds/_smu/_src/CapstoneProject/")
+#home_dir <- ("/home/mcdevitt/_ds/_smu/_src/CapstoneProject/")
+home_dir <- ("G:/JoshuaData/Classes/MSDS61X0 Capstone/CapstoneProject")
 data_dir <- ("./data/")
 grid_mapped_dir <- ("./data/grid_mapped")
 plot_dir <- ("./plots/")
@@ -267,9 +268,8 @@ cols_2_keep <- c("sum_cost", "num_fire_incd", "num_prop_sales", "num_streets", "
                  "categorypublic.utilities","categoryresidential")
 
 df_model <- df[, cols_2_keep]
-setwd(data_dir)
-write.csv(df_model, file="df_model.csv")
-setwd(home_dir)
+
+df_model$PSI <- (df_model$predict*df_model$sum_cost)-df_model$predict
 
 fit1 <- lm(sum_cost ~ (.)^2, df_model)
 summary(fit1)
@@ -285,6 +285,10 @@ plot(sum_cost ~ predict, data = df_model,
      ylim = c(0, 30))
 points(cost_gt_pred ~ predict, data = df_model, col = "dodgerblue4")
 abline(a = 0, b = 1, col = "dodgerblue3")
+
+
+
+
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # ... write some .csv files 
