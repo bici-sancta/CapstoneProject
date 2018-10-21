@@ -123,6 +123,81 @@ cvg_shapefile <- cvg_shapefile[cvg_shapefile$Name != "Fruit Hill", ]
 cvg_shapefile <- cvg_shapefile[cvg_shapefile$Name != "Forestville", ]
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# ...   eliminate points that are outside city boundaries
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+df_overlap <- property
+df_overlap$Longitude <- df_overlap$long
+df_overlap$Latitude <- df_overlap$lat
+
+coordinates(df_overlap) <- ~Longitude + Latitude
+
+proj4string(df_overlap) <- proj4string(cvg_shapefile)
+
+df_in_city <- over(df_overlap, cvg_shapefile)
+df_prop_city <- cbind(property, df_in_city)
+df_prop_city <- df_prop_city[!is.na(df_prop_city$RegionID),]
+
+property <- df_prop_city
+
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# ...   do a little present value adjustment
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+setwd(home_dir)
+setwd(data_dir)
+
+infile <- "zillow_market_appreciation"
+value_adj <- read.csv(paste0('./', infile, '.csv'),
+                       stringsAsFactors = FALSE, header = TRUE)
+
+names(property)[names(property) == "year_of_sale"] <- "year"
+names(property)[names(property) == "Name"] <- "neighborhood"
+
+property <- (merge(value_adj, property, by = 'year'))
+
+property$sale_price_adj <- property$sale_price * property$appreciation
+
+cols_2_drop <- c("median", "appreciation", "month_of_sale", "day_of_sale", "sale_price",
+                 "geo_accuracy", "State", "County", "City", "RegionID")
+
+property[, cols_2_drop] <- list(NULL)
+
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# ...   add property category description
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+setwd(home_dir)
+setwd(grid_mapped_dir)
+
+infile <- "../dictionaries/hamilton_county_land_use_codes.csv"
+property_codes <- read.csv(infile,
+                       stringsAsFactors = FALSE, header = TRUE)
+
+property <- merge(property, property_codes, by = "property_class", all.x = TRUE)
+property$category <- tolower(property$category)
+
+# ...   reduce category types to 4
+
+property$category[property$category == "agricultural"] <- "other"
+property$category[property$category == "public utilities"] <- "other"
+property$category[is.na(property$category)] <- "other"
+property$valid_sale[property$valid_sale == "U"] <- "Y"
+
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# ...   neighborhood characteristics
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+property_hoods <- as.data.frame(property %>%
+                        group_by(neighborhood, category, valid_sale) %>%
+                        summarize(median_sale_price = median(sale_price_adj),
+                                  max_sale_price = max(sale_price_adj),
+                                  num_prop_sales = n()))
+
+property_hood_valid <- property_hoods[property_hoods$valid_sale == "Y", ]
+property_hood_valid_resid <- property_hood_valid[property_hood_valid$category == "residential", ]
+
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # ...   assign data values to grid cell
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -132,11 +207,12 @@ df_mapped <- which_grid_cell_big(grid_centroid, property)
 # ...   accumulate sum of costs in each grid cell
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-property_agg <- df_mapped %>% 
-                group_by(cell_id, lat_cell, long_cell) %>%
-                summarize(median_sale_price = median(sale_price),
-                          max_sale_price = max(sale_price),
-                          num_prop_sales = n())
+property_agg <- as.data.frame(df_mapped %>% 
+                group_by(cell_id, lat_cell, long_cell, category, valid_sale) %>%
+                summarize(median_sale_price = median(sale_price_adj),
+                          max_sale_price = max(sale_price_adj),
+                          num_prop_sales = n()))
+
 
 # ...   make a plot to visualize result
 
@@ -153,67 +229,51 @@ hoods <- ggplot() +  geom_point(data=cvg_shapefile, aes(x=long, y=lat, group=gro
 
 # ...   plot 1
 
-png(filename = paste0(infile, "median_sale_price", "_mapped_2_grid.png"), 
+png(filename = "property_xfers_median_sale_price.png", 
     units = "in", 
-    width = 18,
+    width = 15,
     height = 9,
     pointsize = 12, 
     res = 72)
 
+prop_sub <- property_agg[property_agg$median_sale_price > 50000,]
 
 hoods +
-    geom_point(data = property_agg, aes(x = long_cell, y = lat_cell, color = log10(median_sale_price)), shape = 15, size = 2.5, alpha = 0.8) + 
+    geom_point(data = prop_sub, aes(x = long_cell, y = lat_cell, color = log10(median_sale_price+1)), shape = 19, size = 2.5, alpha = 0.8) + 
+#    geom_point(data = df_mapped, aes(x = long, y = lat), color = "firebrick2", shape = 5, size = 0.1, alpha = 0.1) +
     geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2, alpha = 0.2) +
-#    geom_point(data = df_mapped, aes(x = long, y = lat), color = "lightgrey", shape = 5, size = 0.2, alpha = 0.2) +
-    ggtitle(infile) +
+    ggtitle("Cincinnati - Property Transfers (2008 - 2018)") +
     xlab("Longitude") + ylab("Latitude") +
 #    theme_void() +
-  scale_color_gradientn(colors = rev(rainbow(9))[3:9]) +
-    coord_cartesian(xlim = c(-84.25, -84.75), ylim = c(39., 39.25))
+  scale_color_gradientn(colors = rev(rainbow(8))[3:9], name = "Median Sale Price (log)") +
+    coord_cartesian(xlim = c(-84.35, -84.72), ylim = c(39.04, 39.23)) +
+    theme(legend.position = c(0.01, 0.95), 
+       legend.justification = c(0, 1))
 
 dev.off()
 
-# ...   plot 1
+# ...   plot 2
 
-png(filename = paste0(infile, "max_sale_price", "_mapped_2_grid.png"), 
+png(filename = "property_xfers_num_xfers_price.png", 
     units = "in", 
-    width = 18,
+    width = 15,
     height = 9,
     pointsize = 12, 
     res = 72)
 
+prop_sub2 <- property_agg[property_agg$num_prop_sales < 1000,]
 
 hoods +
-    geom_point(data = property_agg, aes(x = long_cell, y = lat_cell, color = log10(max_sale_price)), shape = 15, size = 2.5, alpha = 0.8) + 
+    geom_point(data = prop_sub2, aes(x = long_cell, y = lat_cell, color = log10(num_prop_sales)), shape = 19, size = 2.5, alpha = 0.8) + 
+#    geom_point(data = df_mapped, aes(x = long, y = lat), color = "firebrick2", shape = 5, size = 0.1, alpha = 0.1) +
     geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2, alpha = 0.2) +
-#    geom_point(data = df_mapped, aes(x = long, y = lat), color = "lightgrey", shape = 5, size = 0.2, alpha = 0.2) +
-    ggtitle(infile) +
+    ggtitle("Cincinnati - Property Transfers (2008 - 2018)") +
     xlab("Longitude") + ylab("Latitude") +
 #    theme_void() +
-  scale_color_gradientn(colors = rev(rainbow(9))[3:9]) +
-    coord_cartesian(xlim = c(-84.25, -84.75), ylim = c(39., 39.25))
-
-dev.off()
-
-# ...   plot 3
-
-png(filename = paste0(infile, "num_property_sales", "_mapped_2_grid.png"), 
-    units = "in", 
-    width = 18,
-    height = 9,
-    pointsize = 12, 
-    res = 72)
-
-
-hoods +
-    geom_point(data = property_agg, aes(x = long_cell, y = lat_cell, color = log10(num_prop_sales)), shape = 15, size = 2.5, alpha = 0.8) + 
-    geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2, alpha = 0.2) +
-#    geom_point(data = df_mapped, aes(x = long, y = lat), color = "lightgrey", shape = 5, size = 0.2, alpha = 0.2) +
-    ggtitle(infile) +
-    xlab("Longitude") + ylab("Latitude") +
-#    theme_void() +
-  scale_color_gradientn(colors = rev(rainbow(9))[3:9]) +
-    coord_cartesian(xlim = c(-84.25, -84.75), ylim = c(39., 39.25))
+  scale_color_gradientn(colors = rev(rainbow(8))[3:9], name = "Number Xfers (log)") +
+    coord_cartesian(xlim = c(-84.35, -84.72), ylim = c(39.04, 39.23)) +
+    theme(legend.position = c(0.01, 0.95), 
+       legend.justification = c(0, 1))
 
 dev.off()
 
@@ -224,9 +284,21 @@ dev.off()
 setwd(home_dir)
 setwd(grid_mapped_dir)
 
-file_name <- paste0(infile, "_mapped_to_grid_cells.csv")
-
+base_name <- "cvg_property_xfers"
+file_name <- paste0(base_name, "_mapped_to_grid_cells.csv")
 write.table(df_mapped, file = file_name, sep = ",",
+            row.names = FALSE,
+            col.names = TRUE)
+
+base_name <- "cvg_property_xfers"
+file_name <- paste0(base_name, "_aggregated_to_cell.csv")
+write.table(property_agg, file = file_name, sep = ",",
+            row.names = FALSE,
+            col.names = TRUE)
+
+base_name <- "cvg_property_xfers"
+file_name <- paste0(base_name, "_neighborhood_medians.csv")
+write.table(property_hood_valid_resid, file = file_name, sep = ",",
             row.names = FALSE,
             col.names = TRUE)
 
