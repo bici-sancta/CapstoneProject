@@ -1,0 +1,47 @@
+"neighborhood","category","valid_sale","median_sale_price","max_sale_price","num_prop_sales"
+"Avondale","residential","Y",27039.35,24256000,1064
+"Bond Hill","residential","Y",46756.25,2094660,996
+"California","residential","Y",90965,844800,16
+"Camp Washington","residential","Y",50085,1153000,171
+"Carthage","residential","Y",44520,1732672,333
+"Central Business District","residential","Y",94647.6,674505,150
+"Clifton","residential","Y",227506.4,3949623.484,907
+"College Hill","residential","Y",84975,2356658.409,1834
+"Columbia-Tusculum","residential","Y",265065,3338219.082,874
+"Corryville","residential","Y",102086.9,3949623.484,268
+"CUF","residential","Y",121814,30051000,1515
+"East End","residential","Y",95122.5,5760000,361
+"East Price Hill","residential","Y",25481.5,1811438,2297
+"East Westwood","residential","Y",17768.225,994001.3,314
+"Evanston","residential","Y",26053.95,1811438,1251
+"Hartwell","residential","Y",55450,1811438,458
+"Hyde Park","residential","Y",380046,4571000,2520
+"Kennedy Heights","residential","Y",74829.7,1810182,722
+"Linwood","residential","Y",138240,830720,157
+"Lower Price Hill","residential","Y",23040,1096305,240
+"Madisonville","residential","Y",69653.91,7758000,1981
+"Mt. Adams","residential","Y",407000,1810200,315
+"Mt. Airy","residential","Y",107229,2997800,777
+"Mt. Auburn","residential","Y",57419.4,5365950,970
+"Mt. Lookout","residential","Y",397070.5,6956250,1522
+"Mt. Washington","residential","Y",161385,9432675,2249
+"North Avondale","residential","Y",152117.25,13705800,594
+"North Fairmount","residential","Y",8063.8815,446920.095,484
+"Northside","residential","Y",101808.35,5760000,3556
+"Oakley","residential","Y",241791,5760000,2095
+"Over-The-Rhine","residential","Y",51720,13705800,577
+"Paddock Hills","residential","Y",131497,357120,162
+"Pendleton","residential","Y",163838.75,5365950,36
+"Pleasant Ridge","residential","Y",172032,1810182,1655
+"Riverside","residential","Y",23060,7111850.24,295
+"Roselawn","residential","Y",57197.25,1732672,544
+"Sayler Park","residential","Y",87924,795106.494,509
+"Sedamsville","residential","Y",6802.7,300800,159
+"South Cumminsville","residential","Y",11395.41,972209.6,260
+"South Fairmount","residential","Y",11520,1680600,938
+"Walnut Hills","residential","Y",44983.5,13705800,824
+"West End","residential","Y",112316,1680600,629
+"West Price HIll","residential","Y",46120,1977460.721,3501
+"Westwood","residential","Y",80166,1977460.721,3232
+"Winton Hills","residential","Y",100184.5,6e+05,76
+"Winton Place","residential","Y",58803,1811438,379
