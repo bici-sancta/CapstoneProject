@@ -1,0 +1,25 @@
+
+Call:
+lm(formula = sum_cost_pedestrian_events ~ num_near_misses + jywalk + 
+    lvisib + prkswlk + drives + other.1, data = RegData)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-4.1376 -0.5151 -0.5151 -0.5151 27.6239 
+
+Coefficients:
+                Estimate Std. Error t value Pr(>|t|)    
+(Intercept)      0.51508    0.03571  14.426  < 2e-16 ***
+num_near_misses  0.31064    0.14568   2.132 0.033038 *  
+jywalk           0.48211    0.14482   3.329 0.000879 ***
+lvisib           0.42386    0.13279   3.192 0.001424 ** 
+prkswlk          0.51325    0.16481   3.114 0.001857 ** 
+drives          -0.04478    0.03812  -1.175 0.240249    
+other.1          0.26089    0.12606   2.070 0.038560 *  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 2.265 on 4189 degrees of freedom
+Multiple R-squared:  0.01314,	Adjusted R-squared:  0.01173 
+F-statistic: 9.298 on 6 and 4189 DF,  p-value: 3.762e-10
+

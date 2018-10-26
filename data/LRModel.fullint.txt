@@ -3,194 +3,200 @@ Call:
 lm(formula = sum_cost_pedestrian_events ~ (.)^2, data = RegData)
 
 Residuals:
-    Min      1Q  Median      3Q     Max 
--6.2349 -0.2799 -0.0691  0.0616 25.8954 
+     Min       1Q   Median       3Q      Max 
+-10.6864  -1.4348  -0.0415   0.5253  12.2847 
 
-Coefficients: (464 not defined because of singularities)
+Coefficients: (442 not defined because of singularities)
                                      Estimate Std. Error t value Pr(>|t|)    
-(Intercept)                        -9.093e-02  4.622e-01  -0.197 0.844060    
-num_near_misses                    -3.823e+00  2.296e+00  -1.665 0.096020 .  
-n_rqst                              3.259e+10  3.348e+10   0.974 0.330368    
-access                             -1.032e+12  3.478e+12  -0.297 0.766641    
-dblprk                             -2.252e+12  7.955e+12  -0.283 0.777163    
-dnotyld                            -2.274e+11  2.417e+11  -0.941 0.346851    
-jywalk                             -5.447e+12  5.286e+12  -1.030 0.302877    
-lvisib                              2.835e+10  1.635e+11   0.173 0.862357    
-lwfws                              -1.074e+12  7.750e+11  -1.386 0.165775    
-nobikef                            -4.705e+10  2.160e+12  -0.022 0.982624    
-noswlk                             -4.790e+10  1.211e+11  -0.396 0.692466    
-other                              -3.259e+10  3.348e+10  -0.973 0.330402    
-prkint                              2.772e+12  2.132e+12   1.300 0.193658    
-prkswlk                            -5.180e+10  1.064e+11  -0.487 0.626344    
-speed                              -3.259e+10  3.348e+10  -0.973 0.330393    
-vrrlss                              3.259e+10  1.175e+11   0.277 0.781444    
-wlksig                              2.993e+11  1.648e+12   0.182 0.855862    
-xwalk                                      NA         NA      NA       NA    
-assist                              3.637e+11  4.858e+11   0.749 0.454118    
-bikes                              -1.001e+11  1.388e+11  -0.721 0.471078    
-drives                              1.104e+01  7.114e+00   1.552 0.120860    
-other.1                            -1.768e+11  2.756e+11  -0.642 0.521080    
-walks                                      NA         NA      NA       NA    
-mean_walk_score                    -3.637e-02  5.535e-01  -0.066 0.947621    
-min_walk_score                     -1.206e-03  2.696e-01  -0.004 0.996430    
-max_walk_score                      3.637e-02  2.899e-01   0.125 0.900196    
-num_walk_scores                    -3.986e-01  2.490e-01  -1.601 0.109587    
-sum_lane_cnt                       -1.937e-02  9.904e-03  -1.955 0.050618 .  
-sum_width                           2.857e-03  9.683e-04   2.951 0.003194 ** 
-sum_area                           -9.193e-08  2.930e-07  -0.314 0.753751    
-num_streets                        -2.752e-02  1.326e-02  -2.076 0.037958 *  
-num_fire_incd                      -2.750e-02  1.163e-01  -0.236 0.813076    
-med_sale_res_y                     -1.226e-06  1.056e-06  -1.161 0.245753    
-med_sale_res_n                      3.540e-06  2.442e-06   1.450 0.147207    
-med_sale_com_y                     -1.299e-07  3.143e-07  -0.413 0.679416    
-med_sale_com_n                      3.144e-07  8.466e-07   0.371 0.710413    
-med_sale_ind_y                     -1.194e-07  5.493e-07  -0.217 0.827984    
-med_sale_ind_n                      5.313e-05  4.447e-05   1.195 0.232193    
-med_sale_pbo_y                      3.079e-04  3.121e-03   0.099 0.921441    
+(Intercept)                         1.987e+15  1.865e+15   1.065 0.286751    
+num_near_misses                     1.324e+13  4.940e+13   0.268 0.788675    
+n_rqst                             -9.218e+13  1.317e+14  -0.700 0.484168    
+access                             -9.663e+13  7.435e+13  -1.300 0.193860    
+dblprk                              7.078e+13  1.188e+14   0.596 0.551491    
+dnotyld                             2.844e+13  3.417e+13   0.832 0.405254    
+jywalk                             -3.259e+13  6.564e+13  -0.497 0.619507    
+lvisib                              3.732e+13  3.180e+13   1.173 0.240702    
+lwfws                               6.288e+13  1.020e+14   0.617 0.537557    
+nobikef                            -1.012e+14  6.382e+13  -1.585 0.113021    
+noswlk                             -1.775e+13  7.050e+13  -0.252 0.801195    
+other                               1.946e+12  3.223e+13   0.060 0.951869    
+prkint                              5.329e+13  5.367e+13   0.993 0.320826    
+prkswlk                            -5.164e+13  3.306e+13  -1.562 0.118364    
+speed                              -5.869e+12  2.416e+13  -0.243 0.808089    
+vrrlss                             -2.731e+13  3.760e+13  -0.726 0.467693    
+wlksig                              1.440e+14  7.723e+13   1.864 0.062411 .  
+xwalk                               4.762e+13  2.396e+13   1.988 0.046955 *  
+assist                              5.955e+11  4.718e+13   0.013 0.989931    
+bikes                              -3.371e+13  4.084e+13  -0.825 0.409277    
+drives                             -1.570e+13  3.112e+13  -0.504 0.613998    
+other.1                             5.342e+13  5.186e+13   1.030 0.303094    
+walks                               6.052e+13  5.899e+13   1.026 0.304999    
+mean_walk_score                    -1.221e+13  9.533e+12  -1.281 0.200337    
+min_walk_score                     -5.258e+12  8.886e+12  -0.592 0.554034    
+max_walk_score                      1.344e+13  6.875e+12   1.955 0.050632 .  
+num_walk_scores                     4.765e+12  9.795e+12   0.486 0.626700    
+sum_lane_cnt                       -2.648e+13  1.682e+14  -0.157 0.874890    
+sum_width                           5.188e+12  1.399e+14   0.037 0.970424    
+sum_area                            4.846e+13  9.056e+13   0.535 0.592569    
+num_streets                        -4.481e+13  4.794e+13  -0.935 0.349989    
+num_fire_incd                       6.296e+13  2.832e+13   2.224 0.026253 *  
+med_sale_res_y                     -3.459e+13  2.970e+13  -1.165 0.244250    
+med_sale_res_n                     -9.806e+13  9.760e+13  -1.005 0.315125    
+med_sale_com_y                      6.559e+12  3.746e+12   1.751 0.080052 .  
+med_sale_com_n                     -1.968e+12  3.595e+12  -0.547 0.584144    
+med_sale_ind_y                     -2.885e+12  5.506e+12  -0.524 0.600330    
+med_sale_ind_n                      3.160e+13  3.553e+13   0.889 0.373901    
+med_sale_pbo_y                     -6.336e+12  9.312e+12  -0.680 0.496315    
 med_sale_pbo_n                             NA         NA      NA       NA    
-dist                                5.726e+00  3.316e+01   0.173 0.862920    
-n_object                            4.423e-02  3.783e-02   1.169 0.242478    
-animals_insects                    -1.120e-01  4.888e-02  -2.292 0.021980 *  
-building.related                    2.806e-02  1.133e-02   2.476 0.013333 *  
-construction                       -5.147e-01  3.026e-01  -1.701 0.089061 .  
-food                                1.694e-01  1.149e-01   1.474 0.140454    
-others                              3.670e-03  7.020e-03   0.523 0.601132    
-police.property                     1.558e-02  5.803e-02   0.269 0.788311    
-service.complaint                   2.128e-01  1.127e-01   1.888 0.059157 .  
-street_sidewalk                     1.830e-02  1.411e-02   1.297 0.194693    
-traffic_sig0l                       4.770e-01  2.692e-01   1.772 0.076527 .  
-trash                              -1.295e-03  3.726e-03  -0.348 0.728207    
-trees_plants                       -3.696e-02  2.800e-02  -1.320 0.186908    
-water.leak                         -1.400e-01  2.424e-01  -0.578 0.563512    
-zoning_parking                     -1.791e-01  9.227e-02  -1.941 0.052293 .  
-n_request                                  NA         NA      NA       NA    
-num_near_misses:n_rqst             -4.015e+10  1.284e+11  -0.313 0.754522    
+sum_cost.y                         -5.317e+13  4.129e+13  -1.288 0.197861    
+num_events.y                        1.748e+13  4.417e+13   0.396 0.692395    
+dist                                3.888e+13  3.906e+13   0.995 0.319716    
+n_object                           -4.174e+13  5.508e+13  -0.758 0.448658    
+animals_insects                    -1.144e+12  6.239e+12  -0.183 0.854586    
+building.related                   -1.421e+13  1.111e+13  -1.278 0.201280    
+construction                       -5.937e+11  1.057e+13  -0.056 0.955230    
+food                                6.119e+12  5.048e+12   1.212 0.225488    
+others                              2.410e+13  2.886e+13   0.835 0.403813    
+police.property                    -5.236e+09  8.490e+12  -0.001 0.999508    
+service.complaint                   2.259e+13  1.449e+13   1.559 0.119117    
+street_sidewalk                    -3.461e+13  1.741e+13  -1.988 0.046912 *  
+traffic_sig0l                      -1.917e+12  7.269e+12  -0.264 0.792013    
+trash                              -4.533e+12  1.117e+13  -0.406 0.684940    
+trees_plants                       -1.343e+12  3.899e+12  -0.344 0.730593    
+water.leak                         -7.722e+11  5.624e+12  -0.137 0.890800    
+zoning_parking                      4.460e+12  8.979e+12   0.497 0.619418    
+n_request                           3.345e+13  3.344e+13   1.000 0.317204    
+num_near_misses:n_rqst             -5.726e+11  1.351e+12  -0.424 0.671659    
 num_near_misses:access                     NA         NA      NA       NA    
-num_near_misses:dblprk             -6.279e+13  5.467e+13  -1.149 0.250795    
-num_near_misses:dnotyld            -1.637e+13  1.135e+13  -1.443 0.149118    
-num_near_misses:jywalk              2.102e+13  1.751e+13   1.200 0.230092    
-num_near_misses:lvisib              2.560e+11  4.454e+11   0.575 0.565449    
+num_near_misses:dblprk              1.536e+12  2.898e+12   0.530 0.596112    
+num_near_misses:dnotyld            -6.462e+11  1.258e+12  -0.514 0.607553    
+num_near_misses:jywalk              6.808e+11  1.101e+12   0.618 0.536543    
+num_near_misses:lvisib              1.142e+12  1.404e+12   0.813 0.416107    
 num_near_misses:lwfws                      NA         NA      NA       NA    
-num_near_misses:nobikef             6.615e+12  3.133e+13   0.211 0.832787    
+num_near_misses:nobikef            -7.447e+11  1.934e+12  -0.385 0.700223    
 num_near_misses:noswlk                     NA         NA      NA       NA    
-num_near_misses:other               2.317e+13  2.225e+13   1.041 0.297749    
-num_near_misses:prkint             -2.996e+13  2.613e+13  -1.146 0.251726    
-num_near_misses:prkswlk             2.606e+13  2.229e+13   1.169 0.242432    
-num_near_misses:speed              -1.636e+13  1.134e+13  -1.443 0.149185    
-num_near_misses:vrrlss              1.108e+13  7.576e+12   1.463 0.143638    
-num_near_misses:wlksig              1.826e+13  1.651e+13   1.106 0.268869    
-num_near_misses:xwalk                      NA         NA      NA       NA    
-num_near_misses:assist              3.062e+13  4.829e+13   0.634 0.526073    
-num_near_misses:bikes              -6.423e+12  3.062e+13  -0.210 0.833847    
-num_near_misses:drives              1.640e+13  1.139e+13   1.440 0.149879    
-num_near_misses:other.1             1.778e+13  2.488e+13   0.715 0.474913    
+num_near_misses:other               6.746e+11  1.315e+12   0.513 0.607981    
+num_near_misses:prkint              8.933e+11  1.391e+12   0.642 0.520929    
+num_near_misses:prkswlk            -7.487e+11  2.650e+12  -0.283 0.777519    
+num_near_misses:speed               4.102e+11  1.174e+12   0.349 0.726786    
+num_near_misses:vrrlss             -2.336e+11  1.299e+12  -0.180 0.857240    
+num_near_misses:wlksig             -1.461e+12  1.354e+12  -1.079 0.280704    
+num_near_misses:xwalk               5.751e+11  1.353e+12   0.425 0.670947    
+num_near_misses:assist             -2.788e+11  2.599e+12  -0.107 0.914572    
+num_near_misses:bikes               1.247e+11  2.502e+12   0.050 0.960259    
+num_near_misses:drives              1.624e+11  9.818e+11   0.165 0.868650    
+num_near_misses:other.1            -3.635e+11  2.642e+12  -0.138 0.890554    
 num_near_misses:walks                      NA         NA      NA       NA    
-num_near_misses:mean_walk_score    -2.076e+00  3.456e+00  -0.601 0.548114    
-num_near_misses:min_walk_score      1.277e+00  1.718e+00   0.743 0.457349    
-num_near_misses:max_walk_score      8.280e-01  1.741e+00   0.476 0.634390    
-num_near_misses:num_walk_scores     1.472e-01  5.763e-01   0.255 0.798466    
-num_near_misses:sum_lane_cnt        6.612e-02  6.943e-02   0.952 0.340962    
-num_near_misses:sum_width          -7.623e-03  6.585e-03  -1.158 0.247070    
-num_near_misses:sum_area            1.191e-06  2.547e-06   0.468 0.640011    
-num_near_misses:num_streets         5.130e-02  6.388e-02   0.803 0.421990    
-num_near_misses:num_fire_incd       5.319e-01  2.505e-01   2.124 0.033778 *  
-num_near_misses:med_sale_res_y      6.789e-06  5.051e-06   1.344 0.178974    
-num_near_misses:med_sale_res_n      6.735e-07  6.048e-06   0.111 0.911341    
-num_near_misses:med_sale_com_y      2.787e-06  2.109e-06   1.321 0.186521    
-num_near_misses:med_sale_com_n      4.040e-07  5.489e-07   0.736 0.461741    
-num_near_misses:med_sale_ind_y     -5.557e-07  9.523e-07  -0.584 0.559578    
-num_near_misses:med_sale_ind_n     -5.577e+08  4.908e+08  -1.136 0.255925    
+num_near_misses:mean_walk_score    -3.881e-01  2.857e-01  -1.358 0.174521    
+num_near_misses:min_walk_score      1.645e-01  1.413e-01   1.164 0.244418    
+num_near_misses:max_walk_score      2.304e-01  1.470e-01   1.567 0.117156    
+num_near_misses:num_walk_scores    -4.296e-02  3.459e-02  -1.242 0.214361    
+num_near_misses:sum_lane_cnt        2.067e-01  5.755e-01   0.359 0.719539    
+num_near_misses:sum_width          -6.774e-02  6.408e-01  -0.106 0.915809    
+num_near_misses:sum_area           -5.902e-02  2.239e-01  -0.264 0.792076    
+num_near_misses:num_streets         7.010e-02  5.652e-02   1.240 0.214995    
+num_near_misses:num_fire_incd      -1.163e-02  3.992e-02  -0.291 0.770818    
+num_near_misses:med_sale_res_y     -5.029e-01  3.405e-01  -1.477 0.139783    
+num_near_misses:med_sale_res_n      6.954e-01  4.306e-01   1.615 0.106456    
+num_near_misses:med_sale_com_y     -1.084e-02  1.014e-02  -1.069 0.285003    
+num_near_misses:med_sale_com_n     -8.663e-03  1.543e-02  -0.561 0.574524    
+num_near_misses:med_sale_ind_y     -1.329e-02  1.307e-02  -1.016 0.309569    
+num_near_misses:med_sale_ind_n             NA         NA      NA       NA    
 num_near_misses:med_sale_pbo_y             NA         NA      NA       NA    
 num_near_misses:med_sale_pbo_n             NA         NA      NA       NA    
-num_near_misses:dist                1.168e+02  3.070e+02   0.380 0.703740    
-num_near_misses:n_object            7.344e-02  9.861e-02   0.745 0.456455    
-num_near_misses:animals_insects    -4.673e-01  1.157e-01  -4.038 5.53e-05 ***
-num_near_misses:building.related   -1.084e-01  3.442e-02  -3.149 0.001653 ** 
-num_near_misses:construction       -6.862e-01  7.586e-01  -0.905 0.365726    
-num_near_misses:food                1.465e-01  1.371e-01   1.069 0.285374    
-num_near_misses:others              9.086e-03  1.025e-02   0.886 0.375577    
-num_near_misses:police.property     3.691e-02  1.324e-01   0.279 0.780387    
-num_near_misses:service.complaint   7.365e-01  4.698e-01   1.567 0.117108    
-num_near_misses:street_sidewalk    -5.390e-02  2.838e-02  -1.899 0.057603 .  
-num_near_misses:traffic_sig0l       7.292e-02  3.400e-01   0.214 0.830188    
-num_near_misses:trash              -2.837e-02  1.101e-02  -2.576 0.010033 *  
-num_near_misses:trees_plants        5.715e-01  1.082e-01   5.283 1.36e-07 ***
-num_near_misses:water.leak          2.250e+00  8.229e-01   2.735 0.006281 ** 
-num_near_misses:zoning_parking     -5.343e-01  1.456e-01  -3.671 0.000246 ***
-num_near_misses:n_request                  NA         NA      NA       NA    
-n_rqst:access                      -3.305e+11  1.058e+12  -0.313 0.754667    
-n_rqst:dblprk                       8.137e+11  2.705e+12   0.301 0.763585    
-n_rqst:dnotyld                      3.738e+09  2.946e+10   0.127 0.899055    
-n_rqst:jywalk                      -5.671e+11  5.900e+11  -0.961 0.336551    
-n_rqst:lvisib                      -8.950e+10  1.192e+11  -0.751 0.452866    
-n_rqst:lwfws                       -7.237e+11  5.653e+11  -1.280 0.200586    
-n_rqst:nobikef                      2.252e+11  1.167e+12   0.193 0.846976    
-n_rqst:noswlk                       8.808e+09  8.356e+09   1.054 0.291907    
-n_rqst:other                        8.683e-01  2.989e+00   0.290 0.771462    
-n_rqst:prkint                      -4.486e+11  1.197e+12  -0.375 0.707879    
-n_rqst:prkswlk                      1.755e+11  1.682e+11   1.044 0.296712    
-n_rqst:speed                       -1.475e-01  1.128e-01  -1.307 0.191192    
-n_rqst:vrrlss                      -1.378e+10  2.517e+10  -0.547 0.584095    
-n_rqst:wlksig                      -6.984e+10  9.136e+11  -0.076 0.939073    
-n_rqst:xwalk                        2.590e+11  4.196e+11   0.617 0.537047    
-n_rqst:assist                      -1.344e+11  5.608e+11  -0.240 0.810570    
-n_rqst:bikes                       -2.047e+11  4.189e+11  -0.489 0.625027    
-n_rqst:drives                       8.729e+10  1.272e+11   0.686 0.492590    
-n_rqst:other.1                     -2.469e+11  3.861e+11  -0.639 0.522621    
-n_rqst:walks                               NA         NA      NA       NA    
-n_rqst:mean_walk_score              8.063e+08  2.679e+10   0.030 0.975988    
-n_rqst:min_walk_score              -3.328e+09  1.218e+10  -0.273 0.784721    
-n_rqst:max_walk_score              -4.535e+09  4.834e+10  -0.094 0.925253    
-n_rqst:num_walk_scores             -2.836e+10  2.886e+10  -0.983 0.325908    
-n_rqst:sum_lane_cnt                 1.266e+09  3.242e+09   0.390 0.696211    
-n_rqst:sum_width                   -1.451e+08  3.021e+08  -0.480 0.631043    
-n_rqst:sum_area                     3.044e+04  5.159e+04   0.590 0.555256    
-n_rqst:num_streets                 -3.444e+09  2.732e+09  -1.261 0.207459    
-n_rqst:num_fire_incd                2.074e+09  5.555e+09   0.373 0.708895    
-n_rqst:med_sale_res_y               7.918e+04  2.147e+05   0.369 0.712325    
-n_rqst:med_sale_res_n               1.371e+05  2.014e+05   0.681 0.496119    
-n_rqst:med_sale_com_y              -3.405e+05  6.229e+05  -0.547 0.584650    
-n_rqst:med_sale_com_n               1.735e+05  1.525e+05   1.138 0.255255    
-n_rqst:med_sale_ind_y               2.623e+04  2.544e+04   1.031 0.302590    
-n_rqst:med_sale_ind_n               7.579e+05  2.246e+06   0.337 0.735795    
-n_rqst:med_sale_pbo_y               1.915e+05  2.196e+05   0.872 0.383233    
+num_near_misses:sum_cost.y         -1.410e+00  2.573e+00  -0.548 0.583632    
+num_near_misses:num_events.y        1.431e+00  2.691e+00   0.532 0.594935    
+num_near_misses:dist                1.342e-01  2.297e-01   0.584 0.559120    
+num_near_misses:n_object           -7.245e-02  2.807e-01  -0.258 0.796341    
+num_near_misses:animals_insects     5.426e-02  3.064e-02   1.771 0.076671 .  
+num_near_misses:building.related   -8.779e-02  9.889e-02  -0.888 0.374715    
+num_near_misses:construction       -1.897e-02  2.295e-02  -0.826 0.408613    
+num_near_misses:food               -2.432e-02  2.828e-02  -0.860 0.389870    
+num_near_misses:others             -8.373e-02  3.877e-01  -0.216 0.829009    
+num_near_misses:police.property    -4.029e-02  2.210e-02  -1.823 0.068371 .  
+num_near_misses:service.complaint   1.310e-02  2.791e-02   0.470 0.638709    
+num_near_misses:street_sidewalk     1.281e-01  1.530e-01   0.837 0.402567    
+num_near_misses:traffic_sig0l      -3.048e-02  2.713e-02  -1.124 0.261286    
+num_near_misses:trash               5.359e-02  1.067e-01   0.502 0.615467    
+num_near_misses:trees_plants       -2.925e-02  3.636e-02  -0.805 0.421095    
+num_near_misses:water.leak          1.319e-02  2.161e-02   0.610 0.541612    
+num_near_misses:zoning_parking     -2.984e-02  1.306e-02  -2.284 0.022436 *  
+num_near_misses:n_request           4.125e-01  5.105e-01   0.808 0.419120    
+n_rqst:access                      -6.758e+12  3.951e+12  -1.710 0.087306 .  
+n_rqst:dblprk                      -6.602e+12  1.113e+13  -0.593 0.553243    
+n_rqst:dnotyld                     -6.841e+11  1.707e+12  -0.401 0.688561    
+n_rqst:jywalk                      -6.867e+11  3.969e+12  -0.173 0.862640    
+n_rqst:lvisib                      -2.519e+12  2.637e+12  -0.955 0.339614    
+n_rqst:lwfws                       -6.251e+12  1.209e+13  -0.517 0.605249    
+n_rqst:nobikef                      2.439e+12  4.758e+12   0.513 0.608285    
+n_rqst:noswlk                       2.715e+12  2.696e+12   1.007 0.314042    
+n_rqst:other                        2.265e+12  1.236e+12   1.833 0.066847 .  
+n_rqst:prkint                       6.738e+12  3.771e+12   1.787 0.074065 .  
+n_rqst:prkswlk                      4.307e+12  3.354e+12   1.284 0.199116    
+n_rqst:speed                        3.722e+11  3.284e+11   1.133 0.257165    
+n_rqst:vrrlss                      -1.043e+12  1.273e+12  -0.819 0.412598    
+n_rqst:wlksig                       1.090e+13  1.070e+13   1.019 0.308200    
+n_rqst:xwalk                        2.534e+11  1.818e+11   1.394 0.163428    
+n_rqst:assist                      -1.348e+13  6.562e+12  -2.055 0.039963 *  
+n_rqst:bikes                        3.709e+12  2.932e+12   1.265 0.205944    
+n_rqst:drives                      -5.127e+11  3.254e+11  -1.576 0.115229    
+n_rqst:other.1                     -2.843e+12  4.579e+12  -0.621 0.534695    
+n_rqst:walks                       -4.597e+11  3.227e+11  -1.424 0.154433    
+n_rqst:mean_walk_score             -1.070e+11  2.099e+11  -0.510 0.610247    
+n_rqst:min_walk_score               4.757e+10  1.084e+11   0.439 0.660858    
+n_rqst:max_walk_score               4.785e+10  1.151e+11   0.416 0.677752    
+n_rqst:num_walk_scores              2.426e+10  3.283e+10   0.739 0.459930    
+n_rqst:sum_lane_cnt                 1.303e+12  1.783e+12   0.730 0.465177    
+n_rqst:sum_width                   -4.412e+11  1.739e+12  -0.254 0.799782    
+n_rqst:sum_area                    -6.698e+10  3.139e+11  -0.213 0.831051    
+n_rqst:num_streets                 -1.966e+11  1.270e+11  -1.548 0.121738    
+n_rqst:num_fire_incd               -4.724e+10  1.186e+11  -0.398 0.690477    
+n_rqst:med_sale_res_y               9.223e+11  3.597e+11   2.564 0.010399 *  
+n_rqst:med_sale_res_n              -9.577e+11  4.596e+11  -2.084 0.037248 *  
+n_rqst:med_sale_com_y               3.328e+10  2.141e+10   1.555 0.120106    
+n_rqst:med_sale_com_n               6.351e+10  3.247e+10   1.956 0.050559 .  
+n_rqst:med_sale_ind_y              -4.882e+10  8.364e+10  -0.584 0.559429    
+n_rqst:med_sale_ind_n               2.902e+11  5.080e+11   0.571 0.567822    
+n_rqst:med_sale_pbo_y              -6.966e+11  5.978e+11  -1.165 0.244013    
 n_rqst:med_sale_pbo_n                      NA         NA      NA       NA    
-n_rqst:dist                         1.054e+12  1.858e+12   0.567 0.570761    
-n_rqst:n_object                     3.433e+09  2.601e+09   1.320 0.186879    
-n_rqst:animals_insects              3.040e+08  5.571e+09   0.055 0.956486    
-n_rqst:building.related            -3.379e+08  3.133e+08  -1.079 0.280880    
-n_rqst:construction                -2.718e+10  4.881e+10  -0.557 0.577645    
-n_rqst:food                        -1.548e+10  1.292e+10  -1.198 0.231128    
-n_rqst:others                       1.953e+08  1.207e+09   0.162 0.871469    
-n_rqst:police.property             -1.181e+08  6.735e+09  -0.018 0.986017    
-n_rqst:service.complaint           -7.026e+09  1.083e+10  -0.649 0.516632    
-n_rqst:street_sidewalk              2.360e+09  2.845e+09   0.830 0.406774    
-n_rqst:traffic_sig0l               -4.417e+10  5.272e+10  -0.838 0.402235    
-n_rqst:trash                        4.890e+08  6.115e+08   0.800 0.424032    
-n_rqst:trees_plants                -1.669e+08  1.621e+09  -0.103 0.917979    
-n_rqst:water.leak                   1.240e+10  1.180e+10   1.051 0.293520    
-n_rqst:zoning_parking               2.782e+09  1.127e+10   0.247 0.805080    
-n_rqst:n_request                           NA         NA      NA       NA    
-access:dblprk                       5.074e+13  6.164e+13   0.823 0.410494    
-access:dnotyld                     -7.641e+11  2.604e+12  -0.293 0.769190    
-access:jywalk                       7.282e+13  8.327e+13   0.875 0.381903    
-access:lvisib                      -2.811e+11  2.662e+12  -0.106 0.915917    
-access:lwfws                       -3.632e+13  6.144e+13  -0.591 0.554413    
-access:nobikef                      1.398e+13  1.911e+13   0.731 0.464605    
-access:noswlk                      -9.310e+11  4.931e+12  -0.189 0.850237    
-access:other                        2.504e+10  6.220e+12   0.004 0.996789    
-access:prkint                              NA         NA      NA       NA    
-access:prkswlk                     -2.174e+12  1.924e+13  -0.113 0.910008    
-access:speed                       -1.553e+12  2.140e+12  -0.726 0.468126    
-access:vrrlss                      -2.581e+11  1.275e+12  -0.202 0.839579    
+n_rqst:sum_cost.y                   5.764e+11  2.487e+11   2.318 0.020505 *  
+n_rqst:num_events.y                -5.598e+11  2.739e+11  -2.044 0.041068 *  
+n_rqst:dist                         1.261e+11  2.156e+11   0.585 0.558679    
+n_rqst:n_object                    -1.834e+09  2.934e+11  -0.006 0.995012    
+n_rqst:animals_insects              1.287e+11  5.721e+10   2.250 0.024492 *  
+n_rqst:building.related             1.948e+11  1.038e+11   1.877 0.060618 .  
+n_rqst:construction                -6.130e+09  5.493e+10  -0.112 0.911153    
+n_rqst:food                         5.887e+08  6.080e+10   0.010 0.992275    
+n_rqst:others                      -8.736e+11  5.852e+11  -1.493 0.135594    
+n_rqst:police.property             -1.013e+11  4.681e+10  -2.163 0.030627 *  
+n_rqst:service.complaint           -8.636e+09  1.894e+10  -0.456 0.648447    
+n_rqst:street_sidewalk              1.580e+11  2.277e+11   0.694 0.487868    
+n_rqst:traffic_sig0l               -4.860e+10  3.099e+10  -1.568 0.116949    
+n_rqst:trash                        9.017e+10  2.113e+11   0.427 0.669622    
+n_rqst:trees_plants                 9.687e+10  8.821e+10   1.098 0.272225    
+n_rqst:water.leak                   9.221e+10  4.706e+10   1.959 0.050154 .  
+n_rqst:zoning_parking               4.438e+09  3.160e+10   0.140 0.888310    
+n_rqst:n_request                   -1.253e+12  6.081e+11  -2.060 0.039441 *  
+access:dblprk                       5.251e+12  5.201e+12   1.010 0.312793    
+access:dnotyld                     -1.167e+12  1.077e+12  -1.084 0.278527    
+access:jywalk                      -1.138e+13  5.107e+12  -2.229 0.025921 *  
+access:lvisib                       1.088e+11  9.897e+11   0.110 0.912479    
+access:lwfws                        7.204e+12  5.993e+12   1.202 0.229443    
+access:nobikef                     -3.893e+12  2.438e+12  -1.596 0.110491    
+access:noswlk                      -3.379e+12  2.357e+12  -1.434 0.151808    
+access:other                       -1.141e+12  1.646e+12  -0.693 0.488216    
+access:prkint                      -1.010e+12  3.544e+12  -0.285 0.775685    
+access:prkswlk                      5.338e+12  2.621e+12   2.037 0.041757 *  
+access:speed                        6.253e+11  9.914e+11   0.631 0.528243    
+access:vrrlss                      -1.790e+12  1.796e+12  -0.996 0.319117    
 access:wlksig                              NA         NA      NA       NA    
-access:xwalk                       -1.041e+12  1.995e+12  -0.522 0.601725    
-access:assist                       1.558e+12  2.016e+12   0.773 0.439762    
+access:xwalk                        1.408e+12  1.086e+12   1.297 0.194835    
+access:assist                       1.829e+12  1.548e+12   1.182 0.237490    
 access:bikes                               NA         NA      NA       NA    
-access:drives                       5.871e+11  2.046e+12   0.287 0.774170    
-access:other.1                      2.491e+12  7.657e+12   0.325 0.744938    
-access:walks                        1.414e+12  1.827e+12   0.774 0.439024    
-access:mean_walk_score              4.022e+09  9.000e+10   0.045 0.964360    
+access:drives                       7.679e+11  9.817e+11   0.782 0.434198    
+access:other.1                      2.856e+12  1.828e+12   1.563 0.118231    
+access:walks                        2.685e+12  1.759e+12   1.526 0.127056    
+access:mean_walk_score                     NA         NA      NA       NA    
 access:min_walk_score                      NA         NA      NA       NA    
 access:max_walk_score                      NA         NA      NA       NA    
 access:num_walk_scores                     NA         NA      NA       NA    
@@ -200,19 +206,13 @@ access:sum_area                            NA         NA      NA       NA
 access:num_streets                         NA         NA      NA       NA    
 access:num_fire_incd                       NA         NA      NA       NA    
 access:med_sale_res_y                      NA         NA      NA       NA    
-access:med_sale_res_n                      NA         NA      NA       NA    
+access:med_sale_res_n               9.920e+12  7.968e+12   1.245 0.213252    
 access:med_sale_com_y                      NA         NA      NA       NA    
-access:med_sale_com_n                      NA         NA      NA       NA    
-access:med_sale_ind_y                      NA         NA      NA       NA    
-access:med_sale_ind_n                      NA         NA      NA       NA    
-access:med_sale_pbo_y                      NA         NA      NA       NA    
-access:med_sale_pbo_n                      NA         NA      NA       NA    
-access:dist                                NA         NA      NA       NA    
- [ reached getOption("max.print") -- omitted 1341 rows ]
+ [ reached getOption("max.print") -- omitted 1454 rows ]
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-Residual standard error: 1.537 on 3119 degrees of freedom
-Multiple R-squared:  0.6614,	Adjusted R-squared:  0.5446 
-F-statistic: 5.661 on 1076 and 3119 DF,  p-value: < 2.2e-16
+Residual standard error: 3.638 on 2984 degrees of freedom
+Multiple R-squared:  0.6024,	Adjusted R-squared:  0.441 
+F-statistic: 3.733 on 1211 and 2984 DF,  p-value: < 2.2e-16
 

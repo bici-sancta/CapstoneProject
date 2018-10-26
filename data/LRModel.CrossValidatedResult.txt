@@ -1,0 +1,56 @@
+
+Call:
+lm(formula = sum_cost_pedestrian_events ~ num_near_misses + num_near_misses + 
+    n_rqst + access + dblprk + dnotyld + jywalk + lvisib + lwfws + 
+    nobikef + noswlk + other + prkint + prkswlk + speed + vrrlss + 
+    wlksig + xwalk + assist + bikes + drives + other.1 + walks + 
+    mean_walk_score + min_walk_score + max_walk_score + num_walk_scores + 
+    sum_lane_cnt + sum_width + sum_area + num_streets + num_fire_incd + 
+    med_sale_res_y, data = RegData)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-12.7102  -2.8644  -1.0720   0.2832  13.7173 
+
+Coefficients:
+                 Estimate Std. Error t value Pr(>|t|)    
+(Intercept)      9.188539   2.482915   3.701 0.000218 ***
+num_near_misses  0.241568   0.050042   4.827 1.43e-06 ***
+n_rqst          -0.018348   0.045298  -0.405 0.685460    
+access          -0.084787   0.094149  -0.901 0.367878    
+dblprk           0.072757   0.076286   0.954 0.340271    
+dnotyld          0.054286   0.041399   1.311 0.189830    
+jywalk           0.162377   0.055175   2.943 0.003269 ** 
+lvisib           0.038701   0.045280   0.855 0.392774    
+lwfws            0.022041   0.082198   0.268 0.788600    
+nobikef         -0.077619   0.079729  -0.974 0.330346    
+noswlk           0.006924   0.051296   0.135 0.892638    
+other           -0.010637   0.039922  -0.266 0.789906    
+prkint          -0.042221   0.053360  -0.791 0.428847    
+prkswlk          0.039047   0.057502   0.679 0.497142    
+speed           -0.078958   0.035825  -2.204 0.027580 *  
+vrrlss           0.055465   0.041602   1.333 0.182522    
+wlksig          -0.002719   0.079705  -0.034 0.972786    
+xwalk           -0.014162   0.043008  -0.329 0.741949    
+assist          -0.087523   0.100554  -0.870 0.384124    
+bikes            0.091605   0.059725   1.534 0.125157    
+drives           0.052413   0.045164   1.160 0.245914    
+other.1          0.114354   0.057247   1.998 0.045829 *  
+walks            0.017743   0.050958   0.348 0.727714    
+mean_walk_score  0.117618   0.071010   1.656 0.097722 .  
+min_walk_score  -0.036652   0.032282  -1.135 0.256282    
+max_walk_score  -0.024651   0.041876  -0.589 0.556118    
+num_walk_scores  0.005710   0.014006   0.408 0.683525    
+sum_lane_cnt     0.306058   0.178251   1.717 0.086053 .  
+sum_width        1.214138   0.207169   5.861 4.97e-09 ***
+sum_area        -1.294467   0.117203 -11.045  < 2e-16 ***
+num_streets      0.177227   0.012861  13.780  < 2e-16 ***
+num_fire_incd    0.179952   0.022920   7.851 5.20e-15 ***
+med_sale_res_y  -0.420835   0.063601  -6.617 4.14e-11 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 4.398 on 4163 degrees of freedom
+Multiple R-squared:  0.1895,	Adjusted R-squared:  0.1833 
+F-statistic: 30.42 on 32 and 4163 DF,  p-value: < 2.2e-16
+
