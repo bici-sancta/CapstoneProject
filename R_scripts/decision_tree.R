@@ -75,7 +75,7 @@ setwd(home_dir)
 setwd(plot_dir)
 #Plot Training Decision Tree 
 rpart.plot(ClassTree, box.palette = "-RdYlGn", extra = "auto")
-pdf("TreeTest.pdf", width = 7, height = 7)
+pdf("DecisionTree.pdf", width = 7, height = 7)
 rpart.plot(ClassTree, box.palette = "-RdYlGn", extra = "auto")
 dev.off()
 
