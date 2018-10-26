@@ -130,18 +130,19 @@ qqline(LRModel.CrossValidatedResult$residuals)
 
 
 # Generate predictions
-RegData$predict <- predict(LRModel.CrossValidatedResult, RegData)
+RegDataPred <- RegData
+RegDataPred$predict <- predict(LRModel.CrossValidatedResult, RegData)
 
 
 # Create prediction plot
-RegData <- RegData %>% mutate(cost_gt_pred = ifelse(sum_cost_pedestrian_events > (1.10 * predict), sum_cost_pedestrian_events, NA))
+RegDataPlot <- RegDataPred %>% mutate(cost_gt_pred = ifelse(sum_cost_pedestrian_events > (1.10 * predict), sum_cost_pedestrian_events, NA))
 
 par(bg = "lightgrey")
-plot(sum_cost_pedestrian_events ~ predict, data = RegData,
+plot(sum_cost_pedestrian_events ~ predict, data = RegDataPlot,
      col = "springgreen4", 
      xlim = c(0, 30),
      ylim = c(0, 30))
-points(cost_gt_pred ~ predict, data = RegData, col = "red4")
+points(cost_gt_pred ~ predict, data = RegDataPlot, col = "red4")
 abline(a = 0, b = 1, col = "dodgerblue3")
 
 
