@@ -106,5 +106,8 @@ plot(Actual ~ Tweedie_Prediction, data = TwdPlot,
      ylim = c(0, 30))
 points(cost_gt_pred ~ Tweedie_Prediction, data = TwdPlot, col = "red4")
 abline(a = 0, b = 1, col = "dodgerblue3")
+#looks decent
 
 
+TwdComp$Residuals <- TwdY-TwdPred
+qplot(seq_along(TwdComp$Residuals), TwdComp$Residuals) #yikes?
