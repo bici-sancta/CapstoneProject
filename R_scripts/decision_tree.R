@@ -22,10 +22,12 @@ df_model_w_cell_id <- read.csv(infile,
                         stringsAsFactors = FALSE, header = TRUE)
 
 
+set.seed(0737)
+
+
 # Determine columns to drop which are not used in classification
 # Cell ID removed due to being uninformative
-# Sum cost removed due to being extremely correlated to response variable
-drop <- c("cell_id", "sum_cost.y")
+drop <- c("cell_id")
 df_tree <- df_model_w_cell_id[, !names(df_model_w_cell_id) %in% drop]
 
 # # Summary
@@ -68,52 +70,93 @@ df_tree$sum_cost_pedestrian_events <- cut(df_tree$sum_cost_pedestrian_events,
 
 
 
-ClassTree = rpart(sum_cost_pedestrian_events ~ ., data = df_tree, control=rpart.control(cp=.005))
+ClassTree = rpart(sum_cost_pedestrian_events ~ ., data = df_tree, control=rpart.control(cp=0.0102249 ))
 printcp(ClassTree)
 
 setwd(home_dir)
 setwd(plot_dir)
 #Plot Training Decision Tree 
 rpart.plot(ClassTree, box.palette = "-RdYlGn", extra = "auto")
-pdf("DecisionTree.pdf", width = 7, height = 7)
+pdf("DecisionTree.pdf", width = 11, height = 8.5)
 rpart.plot(ClassTree, box.palette = "-RdYlGn", extra = "auto")
 dev.off()
 
-# The best decision tree has a root node error of .23308 and a cross validation error of .89264 resulting in a 22.8% misclassification rate in cross validation.
-# It cannot classify the 3-9 million dollar in sum cost category (the data is very sparse there).
+# The best decision tree has a root node error of .23308 and a cross validation error of .96012 resulting in a 22.4% misclassification rate in cross validation.
+# It cannot classify the 3-9 million dollar in sum cost category (the data is very sparse there) or the more than 9 cost castegory.
+
+# Log Transform
+
+
+setwd(home_dir)
+setwd(data_dir)
 
 
 
-#
-## Trying to subset dataset based on removing 0 cost cells to see if it will reduce overfitting.
-#
+infile <- "df_model_w_cell_id.csv"
+df_model_w_cell_id <- read.csv(infile,
+                               stringsAsFactors = FALSE, header = TRUE)
 
+# Add column names to list drop to be dropped from dataset.
+drop <- c("cell_id")
 df_tree2 <- df_model_w_cell_id[, !names(df_model_w_cell_id) %in% drop]
 
-df_tree2 <- df_tree2[!df_tree2$sum_cost_pedestrian_events == 0,]
 
+set.seed(0737)
+
+
+Col2Transform <- c("sum_cost_pedestrian_events",
+  "num_near_misses",            "n_rqst",                    "access",                    
+  "dblprk",                     "dnotyld",                    "jywalk",                     "lvisib",                    
+  "lwfws",                      "nobikef",                    "noswlk",                     "other",                     
+  "prkint",                     "prkswlk",                    "speed",                      "vrrlss",                    
+  "wlksig",                    "xwalk",                      "assist",                     "bikes",                     
+  "drives",                     "other.1",                    "walks",                      "num_walk_scores",
+  "sum_lane_cnt",           "sum_width",                  "sum_area",                   "num_streets",                "num_fire_incd",             
+  "med_sale_res_y",             "med_sale_res_n",             "med_sale_com_y",             "med_sale_com_n",            
+  "med_sale_ind_y",             "med_sale_ind_n",             "med_sale_pbo_y",                         
+  "sum_cost.y",                 "num_events.y",               "dist",                       "n_object",                  
+  "animals_insects",            "building.related",           "construction",               "food",                      
+  "others",                     "police.property",            "service.complaint",          "street_sidewalk",           
+  "traffic_sig0l",              "trash",                      "trees_plants",               "water.leak",                
+  "zoning_parking",             "n_request")
+
+df_tree2[df_tree2 == 0] <- .01
+
+df_tree2[Col2Transform] <- log(df_tree2[Col2Transform])
+
+
+ # Summary
+ library(skimr)
+ skim(df_tree2)
+ 
   # Plot Column of Choice
   library(ggplot2)
   
   Column <- "sum_cost_pedestrian_events"
   qplot(seq_along(df_tree2[[Column]]), df_tree2[[Column]])
   
-  qplot(seq_along(df_tree2[[Column]]), df_tree2[[Column]]) + scale_y_continuous(breaks = seq(0,90,1))
+  qplot(seq_along(df_tree2[[Column]]), df_tree2[[Column]]) + scale_y_continuous(breaks = seq(-90,90,.5))
   
-  qplot(df_tree2[[Column]]) + geom_histogram(binwidth = 1) + scale_x_continuous(breaks = seq(0,90,.5))
+qplot(df_tree2[[Column]]) + geom_histogram(binwidth = 1)
+  
 
 
-  # Data Categorization
-  
-  df_tree2$sum_cost_pedestrian_events <- cut(df_tree2$sum_cost_pedestrian_events,
-                                            breaks = c(-Inf,1,2,3,9,20,Inf),
-                                            labels = c("0<Cost<=1","1<Cost<=2","2<Cost<=3","3<Cost<=9","9<Cost<=20","More than 20"))
+df_tree2$sum_cost_pedestrian_events <- cut(df_tree2$sum_cost_pedestrian_events,
+                                          breaks = c(-Inf,-4,-1.5,-.5,.5,2,Inf),
+                                          labels = c("LogCost<-4","-4<LogCost<=-1.5","-1.5<LogCost<=-.5","-.5<LogCost<=.5",".5<LogCost<=2","2<LogCost"))
 
 
-  
-  ClassTree2 = rpart(sum_cost_pedestrian_events ~ ., data = df_tree2, control=rpart.control(cp=.0001))
-  printcp(ClassTree2)
-  rpart.plot(ClassTree2, box.palette = "-RdYlGn", extra = "auto")
-  
-# Overfitting is now worse. 0/10. Do not recommend.
-  
+
+ClassTree2 = rpart(sum_cost_pedestrian_events ~ ., data = df_tree2, control=rpart.control(cp=0.0061350))
+printcp(ClassTree2)
+
+setwd(home_dir)
+setwd(plot_dir)
+#Plot Training Decision Tree 
+rpart.plot(ClassTree2, box.palette = "-RdYlGn", extra = "auto")
+pdf("DecisionTreeLog.pdf", width = 11, height = 8.5)
+rpart.plot(ClassTree2, box.palette = "-RdYlGn", extra = "auto")
+dev.off()
+
+# The best decision tree has a root node error of .23308 and a cross validation error of .96524 resulting in a 22.5% misclassification rate in cross validation.
+# It cannot classify the -4 to -1.5 log sum cost category or the -1.5 to -.5 log sum cost category.
