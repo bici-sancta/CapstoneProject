@@ -143,6 +143,35 @@ survey_agg <- as.data.frame(survey_agg)
 dummy_variable <- dummyVars(" ~ .", data = survey_agg)
 survey_encoded <- data.frame(predict(dummy_variable, newdata = survey_agg))
 
+# ...   aggregage to cell_id .. have to sum each factor ...
+
+survey_encoded_agg <- survey_encoded %>% 
+                group_by(cell_id, lat_cell, long_cell) %>%
+                summarize(
+                    ACCESS = sum(rqst_factorACCESS),
+                    DBLPRK= sum(rqst_factorDBLPRK),
+                    DNOTYLD = sum(rqst_factorDNOTYLD),
+                    JYWALK = sum(rqst_factorJYWALK),
+                    LVISIB = sum(rqst_factorLVISIB),
+                    LWFWS= sum(rqst_factorLWFWS),
+                    NOBIKEF = sum(rqst_factorNOBIKEF),
+                    NOSWLK = sum(rqst_factorNOSWLK),
+                    OTHER = sum(rqst_factorOTHER),
+                    PRKINT = sum(rqst_factorPRKINT),
+                    PRKSWLK = sum(rqst_factorPRKSWLK),
+                    SPEED = sum(rqst_factorSPEED),
+                    VRRLSS = sum(rqst_factorVRRLSS),
+                    WLKSIG = sum(rqst_factorWLKSIG),
+                    XWALK = sum(rqst_factorXWALK),
+                    assist = sum(usertypeassist),
+                    bikes = sum(usertypebikes),
+                    drives = sum(usertypedrives),
+                    other = sum(usertypeother),
+                    walks = sum(usertypewalks),
+                    n_qst = sum(n_rqst))
+
+names(survey_encoded_agg) <- tolower(names(survey_encoded_agg))
+
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # ...   make a plot to visualize result
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -195,7 +224,7 @@ write.table(df_mapped, file = file_name, sep = ",",
             col.names = TRUE)
 
 file_name <- "ped_survey_aggregate_n_onehot_encoded.csv"
-write.table(survey_encoded, file = file_name, sep = ",",
+write.table(survey_encoded_agg, file = file_name, sep = ",",
             row.names = FALSE,
             col.names = TRUE)
 

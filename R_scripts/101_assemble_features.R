@@ -297,11 +297,6 @@ df <- merge(df, crash_non_ped, by = "cell_id", all.x = TRUE)
 df <- merge(df, bus_stop, by = "cell_id", all.x = TRUE)
 df <- merge(df, non_urgence, by = "cell_id", all.x = TRUE)
 
-cols_2_drop <- c("ix", "iy", "lat.x", "long.x", "State", "County", "City", "RegionID",
-                 "lat.y", "long.y", "neighborhood.y", "stop_id", "lat_stop", "long_stop",
-                 "lat_cell.y", "long_cell.y")
-
-df[, cols_2_drop] <- NULL
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # ...   impute (baseline ... add some better methods here)
@@ -328,6 +323,8 @@ df$sum_lane_cnt <- ifelse(is.na(df$sum_lane_cnt), median(df$sum_lane_cnt, na.rm 
 df$sum_width <- ifelse(is.na(df$sum_width), median(df$sum_width, na.rm = TRUE), df$sum_width)
 df$sum_area <- ifelse(is.na(df$sum_area), median(df$sum_area, na.rm = TRUE), df$sum_area)
 
+df_plot <- df
+
 # ...
 
 # [1] "cell_id"            "neighborhood.x"     "num_near_misses"    "lat_cell.x"         "long_cell.x"        "requestid"         
@@ -342,10 +339,16 @@ df$sum_area <- ifelse(is.na(df$sum_area), median(df$sum_area, na.rm = TRUE), df$
 #[55] "construction"       "food"               "others"             "police.property"    "service.complaint"  "street_sidewalk"   
 #[61] "traffic_signal"     "trash"              "trees_plants"       "water.leak"         "zoning_parking"     "n_request"         
 
-cols_2_drop <- c("neighborhood.x", "lat_cell.x", "long_cell.x", "requestid", "lat_cell", "long_cell")
+cols_2_drop <- c("ix", "iy", "lat.x", "long.x", "State", "County", "City", "RegionID",
+                 "lat.y", "long.y", "neighborhood.y", "stop_id", "lat_stop", "long_stop",
+                 "lat_cell.y", "long_cell.y")
 df[, cols_2_drop] <- NULL
 
 df_model <- df
+
+cols_2_drop <- c("neighborhood.x", "lat_cell.x", "long_cell.x", "requestid", "lat_cell", "long_cell")
+df_model[, cols_2_drop] <- NULL
+
 df_model$sum_cost.x <- NULL
 df_model$num_events.x <- NULL
 
@@ -361,3 +364,139 @@ setwd(home_dir)
 setwd(data_dir)
 
 write.csv(df_model, "df_model_w_cell_id.csv", row.names = FALSE)
+
+
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# ...   make some plots to visualize result
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+setwd(home_dir)
+setwd(plot_dir)
+
+x_plot_limits <- c(-84.35, -84.72)
+y_plot_limits <- c(39.05, 39.225)
+
+hoods <- ggplot() +  geom_point(data = cvg_shapefile, aes(x = long, y = lat, group = group), size = 0.1, alpha = 0.9)
+
+# ...   Walk Scores ...
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+png(filename = paste0("_ppt", "_max_walk_scores", "_map.png"), 
+    units = "in", 
+    width = 18,
+    height = 9,
+    pointsize = 12, 
+    res = 72)
+
+title <- "Walk Scores (Max)"
+
+hoods +
+    geom_point(data = df_plot, aes(x = long.x, y = lat.x, color = max_walk_score), shape = 19, size = 2.5, alpha = 0.9) + 
+    geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2, alpha = 0.2) +
+
+    ggtitle(title) +
+    xlab("Longitude") + ylab("Latitude") +
+    theme(text = element_text(size = 25)) +
+    theme(legend.position = c(0.1, 0.8)) +
+    theme(legend.title = element_text(colour = "#666666FF", size = 15, face = "bold")) + 
+    theme(legend.text = element_text(colour = "#666666FF", size = 15, face = "bold")) + 
+
+    scale_color_gradientn(colors = (rainbow(8)[c(1,2,3,5,6,7)])) +
+    coord_cartesian(xlim = x_plot_limits, ylim = y_plot_limits)
+
+dev.off()
+
+
+# ...   Traffic Accidents - Non-Pedestrian ...
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+png(filename = paste0("_ppt", "_traffic_accident_num_events", "_map.png"), 
+    units = "in", 
+    width = 18,
+    height = 9,
+    pointsize = 12, 
+    res = 72)
+
+title <- "Traffic Accidents (Non-Pedestrian involved)"
+
+hoods +
+    geom_point(data = df_plot, aes(x = long.x, y = lat.x, color = log10(num_events.y+1)), shape = 19, size = 2.5, alpha = 0.9) + 
+    geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2, alpha = 0.2) +
+
+    ggtitle(title) +
+    xlab("Longitude") + ylab("Latitude") +
+    theme(text = element_text(size = 25)) +
+    theme(legend.position = c(0.05, 0.9)) +
+    theme(legend.title = element_text(colour = "#666666FF", size = 15, face = "bold")) + 
+    theme(legend.text = element_text(colour = "#666666FF", size = 15, face = "bold")) + 
+    theme(legend.justification = c(0, 1)) +
+
+#    scale_color_gradientn(colors = rev(rainbow(9)[2:9])) +
+#    scale_color_gradient2(midpoint = 1.5) +
+    scale_color_distiller(palette = "Spectral") +
+    coord_cartesian(xlim = x_plot_limits, ylim = y_plot_limits)
+
+dev.off()
+
+# ...   plot 2 - traffic accidents
+ 
+png(filename = paste0("_ppt", "_traffic_accidents_cost", "_map.png"), 
+    units = "in", 
+    width = 18,
+    height = 9,
+    pointsize = 12, 
+    res = 72)
+
+title <- "Traffic Accidents - Cost (Non-Pedestrian involved)"
+
+hoods +
+    geom_point(data = df_plot, aes(x = long.x, y = lat.x, color = log10(sum_cost.y+1)), shape = 19, size = 2.5, alpha = 0.9) + 
+    geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2, alpha = 0.2) +
+
+    ggtitle(title) +
+    xlab("Longitude") + ylab("Latitude") +
+    theme(text = element_text(size = 25)) +
+    theme(legend.position = c(0.05, 0.9)) +
+    theme(legend.title = element_text(colour = "#666666FF", size = 15, face = "bold")) + 
+    theme(legend.text = element_text(colour = "#666666FF", size = 15, face = "bold")) + 
+    theme(legend.justification = c(0, 1)) +
+
+#    scale_color_gradientn(colors = rev(rainbow(9)[2:9])) +
+#    scale_color_gradient2(midpoint = 1.5) +
+    scale_color_distiller(palette = "Spectral") +
+    coord_cartesian(xlim = x_plot_limits, ylim = y_plot_limits)
+
+dev.off()
+
+# ...   Pedestrian Accidents ...
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+png(filename = paste0("_ppt", "_traffic_accidents_cost", "_map.png"), 
+    units = "in", 
+    width = 18,
+    height = 9,
+    pointsize = 12, 
+    res = 72)
+
+title <- "Pedestrain Accidents - Number Events"
+
+hoods +
+    geom_point(data = df_plot, aes(x = long.x, y = lat.x, color = num_events.x), shape = 19, size = 2.5, alpha = 0.9) + 
+    geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2, alpha = 0.2) +
+
+    ggtitle(title) +
+    xlab("Longitude") + ylab("Latitude") +
+    theme(text = element_text(size = 25)) +
+    theme(legend.position = c(0.05, 0.9)) +
+    theme(legend.title = element_text(colour = "#666666FF", size = 15, face = "bold")) + 
+    theme(legend.text = element_text(colour = "#666666FF", size = 15, face = "bold")) + 
+    theme(legend.justification = c(0, 1)) +
+
+#    scale_color_gradientn(colors = rev(rainbow(9)[2:9])) +
+#    scale_color_gradient2(midpoint = 1.5) +
+    scale_color_distiller(palette = "Spectral") +
+    coord_cartesian(xlim = x_plot_limits, ylim = y_plot_limits)
+
+dev.off()
