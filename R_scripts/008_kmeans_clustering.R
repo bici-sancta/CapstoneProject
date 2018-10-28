@@ -71,7 +71,7 @@ grid_centroid <- read.csv(paste0('./', grid_file, '.csv'), stringsAsFactors = FA
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-infile <- "df_model_with_kmeans"
+infile <- "unsupervised_df_model_with_labels"
 kmeans <- read.csv(paste0('./', infile, '.csv'),
                      stringsAsFactors = FALSE, header = TRUE)
 
@@ -114,7 +114,7 @@ df_mapped
 
 kmeans_agg <- df_mapped %>% 
   group_by(cell_id, lat_cell, long_cell) %>%
-  summarize(kmeans_5 = mean(kmeans_5))
+  summarize(kmeans_labels = mean(kmeans_labels))
 
 # ...   make a plot to visualize result
 
@@ -129,14 +129,11 @@ hoods <- ggplot() +  geom_point(data=cvg_shapefile, aes(x=long, y=lat, group=gro
 # ...   change : data = xxx ; color = yyy for each new data set / variable to map
 # ...   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-kmeans_agg <- df_mapped %>% 
-  group_by(cell_id, lat_cell, long_cell) %>%
-  summarize(kmeans_5 = mean(kmeans_5))
 
 
 # ...   plot 1
 
-png(filename = paste0(infile, "kmeans_5", "_mapped_2_grid.png"), 
+png(filename = paste0(infile, "kmeans_labels", "_mapped_2_grid.png"), 
     units = "in", 
     width = 18,
     height = 9,
@@ -145,7 +142,7 @@ png(filename = paste0(infile, "kmeans_5", "_mapped_2_grid.png"),
 
 
 hoods +
-  geom_point(data = kmeans_agg, aes(x = long_cell, y = lat_cell, color = kmeans_5), shape = 15, size = 2.5, alpha = 0.8) + 
+  geom_point(data = kmeans_agg, aes(x = long_cell, y = lat_cell, color = kmeans_labels), shape = 15, size = 2.5, alpha = 0.8) + 
   geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2, alpha = 0.2) +
   #    geom_point(data = df_mapped, aes(x = long, y = lat), color = "lightgrey", shape = 5, size = 0.2, alpha = 0.2) +
   ggtitle(infile) +
