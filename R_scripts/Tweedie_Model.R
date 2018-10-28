@@ -15,8 +15,8 @@ setwd(data_dir)
 
 set.seed(0737)
 
-# infile <- "df_model_w_cell_id.csv"
-# df_model_w_cell_id <- read.csv(infile,
+# infile <- "df_model_w_cell_id_ZERO.csv"
+# df_model_w_cell_id_ZERO <- read.csv(infile,
 #                                stringsAsFactors = FALSE, header = TRUE)
 # 
 # 
@@ -26,7 +26,7 @@ set.seed(0737)
 # 
 # 
 # # Merge predictor to new dataset
-# RegData <- merge(BinaryPred, df_model_w_cell_id, by = "cell_id")
+# RegData <- merge(BinaryPred, df_model_w_cell_id_ZERO, by = "cell_id")
 # 
 # # Drop predicted 0-Cost incidents.
 # RegData <- RegData[RegData$binary_predictor == 1,]
@@ -36,15 +36,15 @@ set.seed(0737)
 # drop <- c("cell_id", "binary_predictor")
 # RegData <- RegData[, !names(RegData) %in% drop]
 
-infile <- "df_model_w_cell_id.csv"
-df_model_w_cell_id <- read.csv(infile,
+infile <- "df_model_w_cell_id_ZERO.csv"
+df_model_w_cell_id_ZERO <- read.csv(infile,
                                stringsAsFactors = FALSE, header = TRUE)
 
 
 
 # Drop unused data
 drop <- c("cell_id")
-RegData <- df_model_w_cell_id[, !names(df_model_w_cell_id) %in% drop]
+RegData <- df_model_w_cell_id_ZERO[, !names(df_model_w_cell_id_ZERO) %in% drop]
 
 # Drop >10-Cost incidents.
 RegData <- RegData[RegData$sum_cost_pedestrian_events < 10,]

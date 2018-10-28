@@ -17,8 +17,8 @@ plot_dir <- ("./plots/")
 setwd(home_dir)
 setwd(data_dir)
 
-infile <- "df_model_w_cell_id.csv"
-df_model_w_cell_id <- read.csv(infile,
+infile <- "df_model_w_cell_id_ZERO.csv"
+df_model_w_cell_id_ZERO <- read.csv(infile,
                         stringsAsFactors = FALSE, header = TRUE)
 
 
@@ -28,7 +28,7 @@ set.seed(0737)
 # Determine columns to drop which are not used in classification
 # Cell ID removed due to being uninformative
 drop <- c("cell_id")
-df_tree <- df_model_w_cell_id[, !names(df_model_w_cell_id) %in% drop]
+df_tree <- df_model_w_cell_id_ZERO[, !names(df_model_w_cell_id_ZERO) %in% drop]
 
 # # Summary
 # library(skimr)
@@ -92,13 +92,13 @@ setwd(data_dir)
 
 
 
-infile <- "df_model_w_cell_id.csv"
-df_model_w_cell_id <- read.csv(infile,
+infile <- "df_model_w_cell_id_ZERO.csv"
+df_model_w_cell_id_ZERO <- read.csv(infile,
                                stringsAsFactors = FALSE, header = TRUE)
 
 # Add column names to list drop to be dropped from dataset.
 drop <- c("cell_id")
-df_tree2 <- df_model_w_cell_id[, !names(df_model_w_cell_id) %in% drop]
+df_tree2 <- df_model_w_cell_id_ZERO[, !names(df_model_w_cell_id_ZERO) %in% drop]
 
 
 set.seed(0737)

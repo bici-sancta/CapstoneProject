@@ -14,13 +14,13 @@ plot_dir <- ("./plots/")
 setwd(home_dir)
 setwd(data_dir)
 
-infile <- "df_model_w_cell_id.csv"
-df_model_w_cell_id <- read.csv(infile,
+infile <- "df_model_w_cell_id_ZERO.csv"
+df_model_w_cell_id_ZERO <- read.csv(infile,
                                stringsAsFactors = FALSE, header = TRUE)
 
 # Add column names to list drop to be dropped from dataset.
 drop <- c("cell_id", "med_sale_pbo_n")
-RegData <- df_model_w_cell_id[, !names(df_model_w_cell_id) %in% drop]
+RegData <- df_model_w_cell_id_ZERO[, !names(df_model_w_cell_id_ZERO) %in% drop]
 
 LogisticData <- RegData
 LogisticData$sum_cost_pedestrian_events <- cut(LogisticData$sum_cost_pedestrian_events,
