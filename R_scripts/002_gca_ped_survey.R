@@ -41,6 +41,7 @@ grid_mapped_dir <- ("./data/grid_mapped")
 plot_dir <- ("./plots/")
 src_dir <- ("./R_scripts")
 zillow_dir <- ("./data/ZillowNeighborhoods-OH")
+ppt_plot_dir <- ("./ppt/plots/")
 
 setwd(home_dir)
 setwd(src_dir)
@@ -168,7 +169,7 @@ survey_encoded_agg <- survey_encoded %>%
                     drives = sum(usertypedrives),
                     other = sum(usertypeother),
                     walks = sum(usertypewalks),
-                    n_qst = sum(n_rqst))
+                    n_rqst = sum(n_rqst))
 
 names(survey_encoded_agg) <- tolower(names(survey_encoded_agg))
 

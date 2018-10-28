@@ -1,4 +1,4 @@
-"cell_id","lat_cell","long_cell","access","dblprk","dnotyld","jywalk","lvisib","lwfws","nobikef","noswlk","other","prkint","prkswlk","speed","vrrlss","wlksig","xwalk","assist","bikes","drives","other","walks","n_qst"
+"cell_id","lat_cell","long_cell","access","dblprk","dnotyld","jywalk","lvisib","lwfws","nobikef","noswlk","other","prkint","prkswlk","speed","vrrlss","wlksig","xwalk","assist","bikes","drives","other","walks","n_rqst"
 20020,39.0938799211257,-84.3720887899379,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1
 30012,39.0758831462979,-84.3743479955261,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,1
 30013,39.0781331464321,-84.3743479955234,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,2,2

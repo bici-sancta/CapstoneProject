@@ -45,6 +45,7 @@ grid_mapped_dir <- ("./data/grid_mapped")
 plot_dir <- ("./plots/")
 src_dir <- ("./R_scripts")
 zillow_dir <- ("./data/ZillowNeighborhoods-OH")
+ppt_plot_dir <- ("./ppt/plots/")
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # ...   define some utility functions
@@ -325,102 +326,54 @@ df_plot <- df
 
 df[is.na(df)] <- 0
 
-# ...
-
-# [1] "cell_id"            "neighborhood.x"     "num_near_misses"    "lat_cell.x"         "long_cell.x"        "requestid"         
-# [7] "rqst_factorACCESS"  "rqst_factorDBLPRK"  "rqst_factorDNOTYLD" "rqst_factorJYWALK"  "rqst_factorLVISIB"  "rqst_factorLWFWS"  
-#[13] "rqst_factorNOBIKEF" "rqst_factorNOSWLK"  "rqst_factorOTHER"   "rqst_factorPRKINT"  "rqst_factorPRKSWLK" "rqst_factorSPEED"  
-#[19] "rqst_factorVRRLSS"  "rqst_factorWLKSIG"  "rqst_factorXWALK"   "usertypeassist"     "usertypebikes"      "usertypedrives"    
-#[25] "usertypeother"      "usertypewalks"      "n_rqst"             "mean_walk_score"    "min_walk_score"     "max_walk_score"    
-#[31] "num_walk_scores"    "sum_lane_cnt"       "sum_width"          "sum_area"           "num_streets"        "sum_cost.x"        
-#[37] "num_events.x"       "num_fire_incd"      "med_sale_res_y"     "med_sale_res_n"     "med_sale_com_y"     "med_sale_com_n"    
-#[43] "med_sale_ind_y"     "med_sale_ind_n"     "med_sale_pbo_y"     "med_sale_pbo_n"     "sum_cost.y"         "num_events.y"      
-#[49] "dist"               "n_object"           "lat_cell"           "long_cell"          "animals_insects"    "building.related"  
-#[55] "construction"       "food"               "others"             "police.property"    "service.complaint"  "street_sidewalk"   
-#[61] "traffic_signal"     "trash"              "trees_plants"       "water.leak"         "zoning_parking"     "n_request"         
-
-cols_2_drop <- c("ix", "iy", "lat.x", "long.x", "State", "County", "City", "RegionID",
-                 "lat.y", "long.y", "neighborhood.y", "stop_id", "lat_stop", "long_stop",
-                 "lat_cell.y", "long_cell.y")
-df[, cols_2_drop] <- NULL
-
-df_model <- df
-
-cols_2_drop <- c("neighborhood.x", "lat_cell.x", "long_cell.x", "requestid", "lat_cell", "long_cell")
-df_model[, cols_2_drop] <- NULL
-
-df_model$sum_cost.x <- NULL
-df_model$num_events.x <- NULL
-
-df_model <- cbind(df$sum_cost.x, df_model)
-names(df_model)[names(df_model) == "df$sum_cost.x"] <- "sum_cost_pedestrian_events"
-
-# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-# ... write some .csv files 
-# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-setwd(home_dir)
-setwd(data_dir)
-
-write.csv(df_model, "df_model_w_cell_id.csv", row.names = FALSE)
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # ...   make some plots to visualize result
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 setwd(home_dir)
-setwd(plot_dir)
+setwd(ppt_plot_dir)
 
 x_plot_limits <- c(-84.35, -84.72)
 y_plot_limits <- c(39.05, 39.225)
 
-hoods <- ggplot() +  geom_point(data = cvg_shapefile, aes(x = long, y = lat, group = group), size = 0.1, alpha = 0.9)
+plot_width = 15
+plot_height = 9
+plot_res = 320
+plot_pointsize = 12
 
-# ...   Walk Scores ...
+hoods <- ggplot() +  geom_point(data = cvg_shapefile, aes(x = long, y = lat, group = group),
+                                size = 0.1,
+                                alpha = 0.9,
+                                color = "#666666FF")
+
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# ...   Random Forest results file ...
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+infile = "random_forest_binary_predictor.csv"
+df_rf_results <- read.csv(infile,
+                       stringsAsFactors = FALSE, header = TRUE)
 
-png(filename = paste0("_ppt", "_max_walk_scores", "_map.png"), 
+df_rf_model <- merge(df_plot, df_rf_results, by = "cell_id")
+df_rf_model$binary_observed <- ifelse(df_rf_model$sum_cost.x > 0, 1, 0)
+
+df_rf_model$result <- ifelse((df_rf_model$binary_observed == 1 & df_rf_model$binary_predictor == 0), "FN", 0)
+df_rf_model$result <- ifelse((df_rf_model$binary_observed == 0 & df_rf_model$binary_predictor == 1), "FP", df_rf_model$result)
+df_rf_model$result <- ifelse((df_rf_model$binary_observed == 0 & df_rf_model$binary_predictor == 0), "TN", df_rf_model$result)
+df_rf_model$result <- ifelse((df_rf_model$binary_observed == 1 & df_rf_model$binary_predictor == 1), "TP", df_rf_model$result)
+
+png(filename = paste0("_ppt", "_rf_binary_results", "_map.png"), 
     units = "in", 
-    width = 18,
-    height = 9,
-    pointsize = 12, 
-    res = 72)
+    width = plot_width,
+    height = plot_height,
+    pointsize = plot_pointsize, 
+    res = plot_res)
 
-title <- "Walk Scores (Max)"
+title <- "Random Forest - PSI Regions"
 
 hoods +
-    geom_point(data = df_plot, aes(x = long.x, y = lat.x, color = max_walk_score), shape = 19, size = 2.5, alpha = 0.9) + 
-    geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2, alpha = 0.2) +
-
-    ggtitle(title) +
-    xlab("Longitude") + ylab("Latitude") +
-    theme(text = element_text(size = 25)) +
-    theme(legend.position = c(0.1, 0.8)) +
-    theme(legend.title = element_text(colour = "#666666FF", size = 15, face = "bold")) + 
-    theme(legend.text = element_text(colour = "#666666FF", size = 15, face = "bold")) + 
-
-    scale_color_gradientn(colors = (rainbow(8)[c(1,2,3,5,6,7)])) +
-    coord_cartesian(xlim = x_plot_limits, ylim = y_plot_limits)
-
-dev.off()
-
-
-# ...   Traffic Accidents - Non-Pedestrian ...
-# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-
-png(filename = paste0("_ppt", "_traffic_accident_num_events", "_map.png"), 
-    units = "in", 
-    width = 18,
-    height = 9,
-    pointsize = 12, 
-    res = 72)
-
-title <- "Traffic Accidents (Non-Pedestrian involved)"
-
-hoods +
-    geom_point(data = df_plot, aes(x = long.x, y = lat.x, color = log10(num_events.y+1)), shape = 19, size = 2.5, alpha = 0.9) + 
+    geom_point(data = df_rf_model, aes(x = long.x, y = lat.x, color = result), shape = 19, size = 3, alpha = 0.7) + 
     geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2, alpha = 0.2) +
 
     ggtitle(title) +
@@ -433,68 +386,9 @@ hoods +
 
 #    scale_color_gradientn(colors = rev(rainbow(9)[2:9])) +
 #    scale_color_gradient2(midpoint = 1.5) +
-    scale_color_distiller(palette = "Spectral") +
+#    scale_color_distiller(palette = "Spectral") +
+    scale_color_manual(values = c("#CC2222FF", "#AAAAAA33", "#CCCCCC66", "#44CC44FF")) +
     coord_cartesian(xlim = x_plot_limits, ylim = y_plot_limits)
 
 dev.off()
 
-# ...   plot 2 - traffic accidents
- 
-png(filename = paste0("_ppt", "_traffic_accidents_cost", "_map.png"), 
-    units = "in", 
-    width = 18,
-    height = 9,
-    pointsize = 12, 
-    res = 72)
-
-title <- "Traffic Accidents - Cost (Non-Pedestrian involved)"
-
-hoods +
-    geom_point(data = df_plot, aes(x = long.x, y = lat.x, color = log10(sum_cost.y+1)), shape = 19, size = 2.5, alpha = 0.9) + 
-    geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2, alpha = 0.2) +
-
-    ggtitle(title) +
-    xlab("Longitude") + ylab("Latitude") +
-    theme(text = element_text(size = 25)) +
-    theme(legend.position = c(0.05, 0.9)) +
-    theme(legend.title = element_text(colour = "#666666FF", size = 15, face = "bold")) + 
-    theme(legend.text = element_text(colour = "#666666FF", size = 15, face = "bold")) + 
-    theme(legend.justification = c(0, 1)) +
-
-#    scale_color_gradientn(colors = rev(rainbow(9)[2:9])) +
-#    scale_color_gradient2(midpoint = 1.5) +
-    scale_color_distiller(palette = "Spectral") +
-    coord_cartesian(xlim = x_plot_limits, ylim = y_plot_limits)
-
-dev.off()
-
-# ...   Pedestrian Accidents ...
-# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-png(filename = paste0("_ppt", "_traffic_accidents_cost", "_map.png"), 
-    units = "in", 
-    width = 18,
-    height = 9,
-    pointsize = 12, 
-    res = 72)
-
-title <- "Pedestrain Accidents - Number Events"
-
-hoods +
-    geom_point(data = df_plot, aes(x = long.x, y = lat.x, color = num_events.x), shape = 19, size = 2.5, alpha = 0.9) + 
-    geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2, alpha = 0.2) +
-
-    ggtitle(title) +
-    xlab("Longitude") + ylab("Latitude") +
-    theme(text = element_text(size = 25)) +
-    theme(legend.position = c(0.05, 0.9)) +
-    theme(legend.title = element_text(colour = "#666666FF", size = 15, face = "bold")) + 
-    theme(legend.text = element_text(colour = "#666666FF", size = 15, face = "bold")) + 
-    theme(legend.justification = c(0, 1)) +
-
-#    scale_color_gradientn(colors = rev(rainbow(9)[2:9])) +
-#    scale_color_gradient2(midpoint = 1.5) +
-    scale_color_distiller(palette = "Spectral") +
-    coord_cartesian(xlim = x_plot_limits, ylim = y_plot_limits)
-
-dev.off()
