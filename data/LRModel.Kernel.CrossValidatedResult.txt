@@ -1,0 +1,82 @@
+
+Call:
+lm(formula = kernelized_cost ~ num_near_misses + n_rqst + access + 
+    dblprk + dnotyld + jywalk + lvisib + lwfws + nobikef + noswlk + 
+    other + prkint + speed + vrrlss + wlksig + xwalk + assist + 
+    drives + other.1 + walks + mean_walk_score + min_walk_score + 
+    max_walk_score + num_walk_scores + sum_lane_cnt + sum_width + 
+    sum_area + num_streets + num_fire_incd + med_sale_res_y + 
+    med_sale_res_n + med_sale_com_y + med_sale_com_n + med_sale_ind_y + 
+    med_sale_ind_n + med_sale_pbo_y + num_events.y + dist + n_object + 
+    animals_insects + building.related + construction + food + 
+    others + police.property + service.complaint + street_sidewalk + 
+    trash + trees_plants + water.leak + zoning_parking + n_request + 
+    med_sale_pbo_n, data = RegData)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-6.1985 -1.5947  0.3223  1.2226  8.2410 
+
+Coefficients: (1 not defined because of singularities)
+                   Estimate Std. Error t value Pr(>|t|)    
+(Intercept)       -3.695059   1.206190  -3.063 0.002202 ** 
+num_near_misses    0.067844   0.055771   1.216 0.223874    
+n_rqst             0.069310   0.050061   1.385 0.166275    
+access            -0.085960   0.101018  -0.851 0.394852    
+dblprk             0.122712   0.084742   1.448 0.147674    
+dnotyld            0.048447   0.043744   1.108 0.268135    
+jywalk             0.162225   0.059682   2.718 0.006591 ** 
+lvisib             0.049217   0.049295   0.998 0.318143    
+lwfws              0.039430   0.089700   0.440 0.660269    
+nobikef           -0.024392   0.072166  -0.338 0.735385    
+noswlk            -0.124405   0.054457  -2.284 0.022395 *  
+other              0.002602   0.042220   0.062 0.950865    
+prkint             0.016243   0.058679   0.277 0.781943    
+speed             -0.117962   0.038699  -3.048 0.002317 ** 
+vrrlss             0.079312   0.045007   1.762 0.078108 .  
+wlksig             0.016498   0.085838   0.192 0.847597    
+xwalk             -0.073637   0.046015  -1.600 0.109609    
+assist            -0.031333   0.105111  -0.298 0.765646    
+drives            -0.013024   0.049704  -0.262 0.793306    
+other.1            0.082541   0.060861   1.356 0.175103    
+walks             -0.040411   0.054951  -0.735 0.462140    
+mean_walk_score    0.103567   0.032144   3.222 0.001283 ** 
+min_walk_score    -0.033001   0.014643  -2.254 0.024271 *  
+max_walk_score    -0.031724   0.018942  -1.675 0.094049 .  
+num_walk_scores   -0.012963   0.016333  -0.794 0.427439    
+sum_lane_cnt       0.097206   0.119120   0.816 0.414527    
+sum_width          0.182058   0.124750   1.459 0.144534    
+sum_area          -0.236073   0.056534  -4.176 3.03e-05 ***
+num_streets        0.013902   0.015980   0.870 0.384394    
+num_fire_incd      0.041514   0.022795   1.821 0.068649 .  
+med_sale_res_y     0.033857   0.042765   0.792 0.428587    
+med_sale_res_n     0.062157   0.049738   1.250 0.211482    
+med_sale_com_y     0.019468   0.005471   3.559 0.000377 ***
+med_sale_com_n     0.017962   0.006414   2.800 0.005127 ** 
+med_sale_ind_y     0.003023   0.007989   0.378 0.705188    
+med_sale_ind_n    -0.005300   0.018251  -0.290 0.771542    
+med_sale_pbo_y    -0.016916   0.043433  -0.389 0.696948    
+num_events.y       0.026842   0.015947   1.683 0.092421 .  
+dist               0.041352   0.036725   1.126 0.260237    
+n_object          -0.047695   0.040753  -1.170 0.241934    
+animals_insects    0.088722   0.015445   5.745 9.88e-09 ***
+building.related   0.044487   0.017528   2.538 0.011185 *  
+construction       0.052000   0.020087   2.589 0.009667 ** 
+food               0.159573   0.019244   8.292  < 2e-16 ***
+others             0.073546   0.032431   2.268 0.023394 *  
+police.property    0.067087   0.015974   4.200 2.73e-05 ***
+service.complaint -0.002382   0.016324  -0.146 0.883971    
+street_sidewalk    0.006655   0.021578   0.308 0.757787    
+trash             -0.050914   0.017330  -2.938 0.003323 ** 
+trees_plants      -0.005740   0.016425  -0.349 0.726741    
+water.leak        -0.008631   0.017864  -0.483 0.629026    
+zoning_parking     0.023357   0.015807   1.478 0.139590    
+n_request         -0.108480   0.034808  -3.116 0.001843 ** 
+med_sale_pbo_n           NA         NA      NA       NA    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 1.987 on 4142 degrees of freedom
+Multiple R-squared:  0.2574,	Adjusted R-squared:  0.248 
+F-statistic:  27.6 on 52 and 4142 DF,  p-value: < 2.2e-16
+

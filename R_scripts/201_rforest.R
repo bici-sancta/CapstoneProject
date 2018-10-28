@@ -30,8 +30,9 @@ library(dplyr)
 printf <- function(...) invisible(cat(sprintf(...)))
 
 
-#home_dir <- ("G:/JoshuaData/Classes/MSDS61X0 Capstone/CapstoneProject")
-home_dir <- ("/home/mcdevitt/_ds/_smu/_src/CapstoneProject/")
+home_dir <- ("G:/JoshuaData/Classes/MSDS61X0 Capstone/CapstoneProject")
+#home_dir <- ("/home/mcdevitt/_ds/_smu/_src/CapstoneProject/")
+
 data_dir <- ("./data/")
 plot_dir <- ("./plots/")
 
@@ -61,6 +62,8 @@ df_model <- df_model_w_cell_id[, !names(df_model_w_cell_id) %in% drop]
 all_but_first <- seq(2, length(df_model))
 first_to_last <- c(all_but_first, 1)
 df_model <- df_model[, first_to_last]
+
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 df_binary <- df_model
 
@@ -102,10 +105,12 @@ y.dep <- length(train.h2o)
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 tic("model 1.h2o")
+
 model_binary.h2o <- h2o.randomForest(y = y.dep,
                                   x = x.indep,
                                   training_frame = train.h2o)
 toc()
+
 
 
 VI_rf_binary <- h2o.varimp(model_cost.h2o)
@@ -188,7 +193,6 @@ df_model$binary_pred <- 0
 df_model$binary_pred[train_indx] <- qtwLx_hrf_train$pred
 df_model$binary_pred[-train_indx] <- qtwLx_hrf_test$pred
 
-
 df_model_binary_results <- data.frame(df_model_w_cell_id$cell_id)
 df_model_binary_results <- cbind(df_model_binary_results, data.frame(df_model$binary_pred))
 
@@ -198,7 +202,6 @@ file_name <- "random_forest_binary_predictor.csv"
 write.table(df_model_binary_results, file = file_name, sep = ",",
             row.names = FALSE,
             col.names = TRUE)
-
 
 df_cost <- df_model[df_model$binary_pred == 1,]
 
@@ -282,6 +285,3 @@ abline(0,1)
 VI_rf_cost <- h2o.varimp(model_cost.h2o)
 
 h2o.varimp_plot(model_cost.h2o)
-
-
-

@@ -1,0 +1,52 @@
+
+Call:
+lm(formula = kernelized_cost ~ n_rqst + dblprk + jywalk + noswlk + 
+    speed + vrrlss + xwalk + other.1 + mean_walk_score + min_walk_score + 
+    max_walk_score + sum_width + sum_area + med_sale_res_n + 
+    med_sale_com_y + med_sale_com_n + sum_cost.y + num_events.y + 
+    dist + animals_insects + building.related + construction + 
+    food + others + police.property + traffic_sig0l + trash + 
+    n_request, data = RegData)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-5.7599 -1.5787  0.2724  1.3249  7.8811 
+
+Coefficients:
+                  Estimate Std. Error t value Pr(>|t|)    
+(Intercept)      -3.004904   0.777963  -3.863 0.000114 ***
+n_rqst            0.050619   0.029095   1.740 0.081972 .  
+dblprk            0.136878   0.081575   1.678 0.093435 .  
+jywalk            0.184601   0.056250   3.282 0.001040 ** 
+noswlk           -0.115230   0.050986  -2.260 0.023870 *  
+speed            -0.127817   0.034506  -3.704 0.000215 ***
+vrrlss            0.083210   0.040347   2.062 0.039235 *  
+xwalk            -0.085520   0.042667  -2.004 0.045098 *  
+other.1           0.092166   0.052999   1.739 0.082106 .  
+mean_walk_score   0.099699   0.031398   3.175 0.001508 ** 
+min_walk_score   -0.032085   0.014286  -2.246 0.024765 *  
+max_walk_score   -0.031156   0.018507  -1.683 0.092359 .  
+sum_width         0.205420   0.058267   3.526 0.000427 ***
+sum_area         -0.179909   0.050538  -3.560 0.000375 ***
+med_sale_res_n    0.081165   0.036089   2.249 0.024564 *  
+med_sale_com_y    0.014813   0.005387   2.750 0.005990 ** 
+med_sale_com_n    0.016342   0.006284   2.601 0.009337 ** 
+sum_cost.y       -0.627370   0.073970  -8.481  < 2e-16 ***
+num_events.y      0.820394   0.094515   8.680  < 2e-16 ***
+dist              0.076947   0.036246   2.123 0.033818 *  
+animals_insects   0.082547   0.014948   5.522 3.55e-08 ***
+building.related  0.047529   0.016946   2.805 0.005060 ** 
+construction      0.039793   0.019681   2.022 0.043249 *  
+food              0.143274   0.018946   7.562 4.84e-14 ***
+others            0.057891   0.031710   1.826 0.067972 .  
+police.property   0.060329   0.015121   3.990 6.73e-05 ***
+traffic_sig0l     0.067617   0.018171   3.721 0.000201 ***
+trash            -0.039366   0.015394  -2.557 0.010588 *  
+n_request        -0.093404   0.031839  -2.934 0.003369 ** 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 1.964 on 4166 degrees of freedom
+Multiple R-squared:  0.2701,	Adjusted R-squared:  0.2652 
+F-statistic: 55.07 on 28 and 4166 DF,  p-value: < 2.2e-16
+
