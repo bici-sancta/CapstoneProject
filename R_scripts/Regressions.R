@@ -11,38 +11,67 @@ plot_dir <- ("./plots/")
 
 setwd(home_dir)
 setwd(data_dir)
+# 
+# infile <- "df_model_w_cell_id.csv"
+# df_model_w_cell_id <- read.csv(infile,
+#                                stringsAsFactors = FALSE, header = TRUE)
+# 
+# 
+# infile <- "random_forest_binary_predictor.csv"
+# BinaryPred <- read.csv(infile,
+#                             stringsAsFactors = FALSE, header = TRUE)
+# 
+# 
+# # Merge predictor to new dataset
+# RegData <- merge(BinaryPred, df_model_w_cell_id, by = "cell_id")
+# 
+# # Drop predicted 0-Cost incidents.
+# RegData <- RegData[RegData$binary_predictor == 1,]
+# 
+# 
+# # Add column names to list drop to be dropped from dataset.
+# drop <- c("cell_id", "binary_predictor")
+# RegData <- RegData[, !names(RegData) %in% drop]
+
+
 
 infile <- "df_model_w_cell_id.csv"
 df_model_w_cell_id <- read.csv(infile,
                                stringsAsFactors = FALSE, header = TRUE)
 
-# Add column names to list drop to be dropped from dataset.
-drop <- c("cell_id")
+
+
+# Drop unused data
+drop <- c("cell_id", "med_sale_pbo_n", "med_sale_pbo_y")
 RegData <- df_model_w_cell_id[, !names(df_model_w_cell_id) %in% drop]
+
+# Drop >5-Cost incidents and 0-cost incidents
+RegData <- RegData[!RegData$sum_cost_pedestrian_events == 0,]
+RegData <- RegData[!RegData$sum_cost_pedestrian_events > 5,]
 
 
 set.seed(0737)
 
 
-Col2Transform <- c("sum_cost_pedestrian_events",
-                   "num_near_misses",            "n_rqst",                    "access",                    
-                   "dblprk",                     "dnotyld",                    "jywalk",                     "lvisib",                    
-                   "lwfws",                      "nobikef",                    "noswlk",                     "other",                     
-                   "prkint",                     "prkswlk",                    "speed",                      "vrrlss",                    
-                   "wlksig",                    "xwalk",                      "assist",                     "bikes",                     
-                   "drives",                     "other.1",                    "walks",                      "num_walk_scores",
-                   "sum_lane_cnt",           "sum_width",                  "sum_area",                   "num_streets",                "num_fire_incd",             
-                   "med_sale_res_y",             "med_sale_res_n",             "med_sale_com_y",             "med_sale_com_n",            
-                   "med_sale_ind_y",             "med_sale_ind_n",             "med_sale_pbo_y",                         
-                   "sum_cost.y",                 "num_events.y",               "dist",                       "n_object",                  
-                   "animals_insects",            "building.related",           "construction",               "food",                      
-                   "others",                     "police.property",            "service.complaint",          "street_sidewalk",           
-                   "traffic_sig0l",              "trash",                      "trees_plants",               "water.leak",                
-                   "zoning_parking",             "n_request")
-
-RegData[RegData == 0] <- .01
-
-RegData[Col2Transform] <- log(RegData[Col2Transform])
+# Col2Transform <- c("sum_cost_pedestrian_events",
+#                    "num_near_misses",            "n_rqst",                    "access",                    
+#                    "dblprk",                     "dnotyld",                    "jywalk",                     "lvisib",                    
+#                    "lwfws",                      "nobikef",                    "noswlk",                     "other",                     
+#                    "prkint",                     "prkswlk",                    "speed",                      "vrrlss",                    
+#                    "wlksig",                    "xwalk",                      "assist",                     "bikes",                     
+#                    "drives",                     "other.1",                    "walks",                      "num_walk_scores",
+#                    "sum_lane_cnt",           "sum_width",                  "sum_area",                   "num_streets",                "num_fire_incd",             
+#                    "med_sale_res_y",             "med_sale_res_n",             "med_sale_com_y",             "med_sale_com_n",            
+#                    "med_sale_ind_y",             #"med_sale_ind_n",             "med_sale_pbo_y", Not applicable with 0s removed? ###################                        
+#                    "sum_cost.y",                 "num_events.y",               "dist",                       "n_object",                  
+#                    "animals_insects",            "building.related",           "construction",               "food",                      
+#                    "others",                     "police.property",            "service.complaint",          "street_sidewalk",           
+#                    "traffic_sig0l",              "trash",                      "trees_plants",               "water.leak",                
+#                    "zoning_parking",             "n_request")
+# 
+# RegData[RegData == 0] <- .001
+# 
+# RegData[Col2Transform] <- log(RegData[Col2Transform])
 
 
 # # Output large results to txt file
@@ -89,31 +118,32 @@ RegData.control <- trainControl(method = "cv", number=10)
 
 LRModel.Step.Train <- train(sum_cost_pedestrian_events ~ ., data=RegData,
                             method = "leapSeq",
-                            tuneGrid = data.frame(nvmax = 1:57),
+                            tuneGrid = data.frame(nvmax = 10:35),
                             trControl = RegData.control)
 
 LRModel.Step.Train$results
 LRModel.Step.Train$bestTune
 #summary(LRModel.Step.Train$finalModel)
-coef(LRModel.Step.Train$finalModel, 55)
+coef(LRModel.Step.Train$finalModel, 30)
 
 
 
 # Run linear model of chosen predictors - CV Output
 sink("LRModel.CrossValidatedResult.txt")
 print(summary(lm(sum_cost_pedestrian_events ~ 
-                   access+jywalk+noswlk+speed+other.1+mean_walk_score+num_walk_scores+sum_width+sum_area+num_fire_incd+med_sale_res_n+
-                   med_sale_com_y+med_sale_com_n+med_sale_ind_y+med_sale_pbo_y+num_events.y+dist+n_object+building.related+
-                   construction+others+police.property+service.complaint+street_sidewalk+trash+trees_plants+water.leak+n_request, data = RegData)))
+                   access+dblprk+jywalk+lvisib+nobikef+prkint+prkswlk+speed+
+                   vrrlss+wlksig+assist+drives+max_walk_score+sum_area+num_streets+num_fire_incd+med_sale_res_n+
+                   med_sale_com_y+med_sale_com_n+sum_cost.y+dist+n_object+food+police.property+street_sidewalk+trees_plants+
+                   water.leak+zoning_parking+xwalk+n_request 
+                 , data = RegData)))
 sink()
 
-LRModel.CrossValidatedResult <- lm(formula = sum_cost_pedestrian_events ~ access + jywalk + noswlk + 
-                                     speed + other.1 + mean_walk_score + num_walk_scores + sum_width + 
-                                     sum_area + num_fire_incd + med_sale_res_n + med_sale_com_y + 
-                                     med_sale_com_n + med_sale_ind_y + med_sale_pbo_y + num_events.y + 
-                                     dist + n_object + building.related + construction + others + 
-                                     police.property + service.complaint + street_sidewalk + trash + 
-                                     trees_plants + water.leak + n_request, data = RegData)
+LRModel.CrossValidatedResult <- lm(sum_cost_pedestrian_events ~ 
+                                     access+dblprk+jywalk+lvisib+nobikef+prkint+prkswlk+speed+
+                                     vrrlss+wlksig+assist+drives+max_walk_score+sum_area+num_streets+num_fire_incd+med_sale_res_n+
+                                     med_sale_com_y+med_sale_com_n+sum_cost.y+dist+n_object+food+police.property+street_sidewalk+trees_plants+
+                                     water.leak+zoning_parking+xwalk+n_request 
+                                   , data = RegData)
 
 plot(LRModel.CrossValidatedResult$residuals)
 qqnorm(LRModel.CrossValidatedResult$residuals)
@@ -141,9 +171,9 @@ RegDataPlot <- RegDataPred %>% mutate(cost_gt_pred = ifelse(sum_cost_pedestrian_
 par(bg = "lightgrey")
 plot(sum_cost_pedestrian_events ~ predict, data = RegDataPlot,
      col = "springgreen4", 
-     xlim = c(-7, 5),
-     ylim = c(-7, 5),
-     xlab="Log Predicted Cost ($ in Millions)",
-     ylab="Log Actual Sum Cost ($ in Millions)")
+     xlim = c(0, 5),
+     ylim = c(0, 5),
+     xlab="Predicted Cost ($ in Millions)",
+     ylab="Actual Sum Cost ($ in Millions)")
 points(cost_gt_pred ~ predict, data = RegDataPlot, col = "red4")
 abline(a = 0, b = 1, col = "dodgerblue3")
