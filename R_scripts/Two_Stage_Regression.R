@@ -19,7 +19,7 @@ df_model_w_cell_id <- read.csv(infile,
                                stringsAsFactors = FALSE, header = TRUE)
 
 # Add column names to list drop to be dropped from dataset.
-drop <- c("cell_id")
+drop <- c("cell_id", "med_sale_pbo_n")
 RegData <- df_model_w_cell_id[, !names(df_model_w_cell_id) %in% drop]
 
 LogisticData <- RegData
@@ -27,6 +27,10 @@ LogisticData$sum_cost_pedestrian_events <- cut(LogisticData$sum_cost_pedestrian_
                                            breaks = c(-Inf,0,Inf),
                                            labels = c("Zero Value", "Non-Zero Value"))
 
+
+
+
+set.seed(0737)
 
 
 # Log-transform skewed data columns.
@@ -54,14 +58,49 @@ LogisticData[Col2Transform] <- log(LogisticData[Col2Transform])
 LogMatrix<-data.matrix(LogisticData)
 findLinearCombos(LogMatrix)
 
+# Add column names to list drop to be dropped from dataset.
+drop <- c("wlksig", "other.1", "water.leak")
+LogisticData <- LogisticData[, !names(LogisticData) %in% drop]
 
-
+# Find linear combinations
+LogMatrix<-data.matrix(LogisticData)
+findLinearCombos(LogMatrix)
 
 
 
 
 
 #https://mathewanalytics.com/2015/09/02/logistic-regression-in-r/
+
+# split the data into training and testing datasets 
+Train <- createDataPartition(LogisticData$sum_cost_pedestrian_events, p=0.8, list=FALSE)
+training <- LogisticData[ Train, ]
+testing <- LogisticData[ -Train, ]
+
+# use glm to train the model on the training dataset. make sure to set family to "binomial"
+mod_fit_one <- glm(sum_cost_pedestrian_events ~ ., data=training, family="binomial")
+
+summary(mod_fit_one) # estimates 
+exp(coef(mod_fit_one)) # odds ratios
+predict(mod_fit_one, newdata=testing, type="response") # predicted probabilities
+
+
+library(pscl)
+pR2(mod_fit_one)
+
+varImp(mod_fit_one)
+
+
+library(ROCR)
+# Compute AUC for predicting Class with the model
+prob <- predict(mod_fit_one, newdata=testing, type="response")
+pred <- prediction(prob, testing$sum_cost_pedestrian_events)
+perf <- performance(pred, measure = "tpr", x.measure = "fpr")
+plot(perf)
+
+auc <- performance(pred, measure = "auc")
+auc <- auc@y.values[[1]]
+auc
 
 
 # Set up cross validation

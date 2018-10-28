@@ -15,13 +15,43 @@ setwd(data_dir)
 
 set.seed(0737)
 
+# infile <- "df_model_w_cell_id.csv"
+# df_model_w_cell_id <- read.csv(infile,
+#                                stringsAsFactors = FALSE, header = TRUE)
+# 
+# 
+# infile <- "random_forest_binary_predictor.csv"
+# BinaryPred <- read.csv(infile,
+#                        stringsAsFactors = FALSE, header = TRUE)
+# 
+# 
+# # Merge predictor to new dataset
+# RegData <- merge(BinaryPred, df_model_w_cell_id, by = "cell_id")
+# 
+# # Drop predicted 0-Cost incidents.
+# RegData <- RegData[RegData$binary_predictor == 1,]
+# 
+# 
+# # Add column names to list drop to be dropped from dataset.
+# drop <- c("cell_id", "binary_predictor")
+# RegData <- RegData[, !names(RegData) %in% drop]
+
 infile <- "df_model_w_cell_id.csv"
 df_model_w_cell_id <- read.csv(infile,
                                stringsAsFactors = FALSE, header = TRUE)
 
-# Add column names to list drop to be dropped from dataset.
+
+
+# Drop unused data
 drop <- c("cell_id")
 RegData <- df_model_w_cell_id[, !names(df_model_w_cell_id) %in% drop]
+
+# Drop >10-Cost incidents.
+RegData <- RegData[RegData$sum_cost_pedestrian_events < 10,]
+
+
+
+
 
 
 # Tweedie input must be matrix
@@ -103,11 +133,13 @@ par(bg = "lightgrey")
 plot(Actual ~ Tweedie_Prediction, data = TwdPlot,
      col = "springgreen4", 
      xlim = c(0, 30),
-     ylim = c(0, 30))
+     ylim = c(0, 30)
+     )
+title("Tweedie distribution CV, p=1.5")
 points(cost_gt_pred ~ Tweedie_Prediction, data = TwdPlot, col = "red4")
 abline(a = 0, b = 1, col = "dodgerblue3")
 #looks decent
 
 
 TwdComp$Residuals <- TwdY-TwdPred
-qplot(seq_along(TwdComp$Residuals), TwdComp$Residuals) #yikes?
+qplot(seq_along(TwdComp$Residuals), TwdComp$Residuals)

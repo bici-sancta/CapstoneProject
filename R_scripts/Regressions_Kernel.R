@@ -34,15 +34,15 @@ df_model_w_cell_id <- read.csv(infile,
 drop <- c("sum_cost_pedestrian_events")
 df_model <- df_model_w_cell_id[, !names(df_model_w_cell_id) %in% drop]
 
-RegData <- merge(crash_cost_krnl, df_model, by = "cell_id")
+RegDataKern <- merge(crash_cost_krnl, df_model, by = "cell_id")
 
 # Add column names to list drop to be dropped from dataset.
 drop <- c("cell_id")
-RegData <- RegData[, !names(RegData) %in% drop]
+RegDataKern <- RegDataKern[, !names(RegDataKern) %in% drop]
 
 
-RegData <- RegData[RegData$kernelized_cost<40000,]
-plot(RegData$kernelized_cost)
+RegDataKern <- RegDataKern[RegDataKern$kernelized_cost<40000,]
+plot(RegDataKern$kernelized_cost)
 
 set.seed(0737)
 
@@ -63,22 +63,22 @@ Col2Transform <- c("kernelized_cost",
                    "traffic_sig0l",              "trash",                      "trees_plants",               "water.leak",                
                    "zoning_parking",             "n_request")
 
-RegData[RegData == 0] <- .01
+RegDataKern[RegDataKern == 0] <- .01
 
-RegData[Col2Transform] <- log(RegData[Col2Transform])
+RegDataKern[Col2Transform] <- log(RegDataKern[Col2Transform])
 
 
 # # Output large results to txt file
 # sink("LRModel.Kernel.fullint.txt")
-# print(summary(lm(kernelized_cost ~ (.)^2, RegData)))
+# print(summary(lm(kernelized_cost ~ (.)^2, RegDataKern)))
 # sink()
 # 
-# LRModel.Kernel.fullint <- lm(kernelized_cost ~ (.)^2, RegData)
+# LRModel.Kernel.fullint <- lm(kernelized_cost ~ (.)^2, RegDataKern)
 # 
  sink("LRModel.Kernel.full.txt")
- print(summary(lm(kernelized_cost ~ ., RegData)))
+ print(summary(lm(kernelized_cost ~ ., RegDataKern)))
  sink()
- LRModel.Kernel.full <- lm(kernelized_cost ~ ., RegData)
+ LRModel.Kernel.full <- lm(kernelized_cost ~ ., RegDataKern)
 
 # Stepwise regressions.
 
@@ -108,12 +108,12 @@ LRModel.Kernel.step <- stepAIC(LRModel.Kernel.full, direction = "both", trace = 
 ## Stepwise is currently best preforming model.
 # 10-fold CV with stepwise.
 
-RegData.control <- trainControl(method = "cv", number=10)
+RegDataKern.control <- trainControl(method = "cv", number=10)
 
-LRModel.Kernel.Step.Train <- train(kernelized_cost ~ ., data=RegData,
+LRModel.Kernel.Step.Train <- train(kernelized_cost ~ ., data=RegDataKern,
                             method = "leapSeq",
                             tuneGrid = data.frame(nvmax = 1:57),
-                            trControl = RegData.control)
+                            trControl = RegDataKern.control)
 
 LRModel.Kernel.Step.Train$results
 LRModel.Kernel.Step.Train$bestTune
@@ -133,7 +133,7 @@ print(summary(lm(kernelized_cost ~ num_near_misses+n_rqst+access+dblprk+dnotyld+
                    construction+food+others+police.property+service.complaint+street_sidewalk+trash+
                    trees_plants+water.leak+zoning_parking+n_request+med_sale_pbo_n
                    
-                   , data = RegData)))
+                   , data = RegDataKern)))
 sink()
 
 LRModel.Kernel.CrossValidatedResult <- lm(formula = kernelized_cost ~ num_near_misses + n_rqst + access + 
@@ -147,7 +147,7 @@ LRModel.Kernel.CrossValidatedResult <- lm(formula = kernelized_cost ~ num_near_m
                                      animals_insects + building.related + construction + food + 
                                      others + police.property + service.complaint + street_sidewalk + 
                                      trash + trees_plants + water.leak + zoning_parking + n_request + 
-                                     med_sale_pbo_n, data = RegData)
+                                     med_sale_pbo_n, data = RegDataKern)
 
 plot(LRModel.Kernel.CrossValidatedResult$residuals)
 qqnorm(LRModel.Kernel.CrossValidatedResult$residuals)
@@ -156,10 +156,10 @@ qqline(LRModel.Kernel.CrossValidatedResult$residuals)
 
 
 # Predictions dataset
-RegDataPred <- RegData
+RegDataPred <- RegDataKern
 
 # Create prediction based on model results 
-RegDataPred$predict <- predict(LRModel.Kernel.CrossValidatedResult, RegData)
+RegDataPred$predict <- predict(LRModel.Kernel.CrossValidatedResult, RegDataKern)
 
 # Un-loggify (exponentiate) prediction which was generated in log scale
 RegDataPred$predict <- exp(RegDataPred$predict)
