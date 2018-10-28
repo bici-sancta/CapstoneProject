@@ -5,6 +5,7 @@ library(MASS)
 library(car)
 library(schoolmath)
 library(ggplot2)
+library(ggfortify)
 
 home_dir <- ("G:/JoshuaData/Classes/MSDS61X0 Capstone/CapstoneProject")
 data_dir <- ("./data/")
@@ -216,6 +217,11 @@ write.csv(ResidualCSV, "Residuals_by_Gridcell_Reduced_Model.csv", row.names = FA
 
 
 #######################################################################################################################
+setwd(home_dir)
+setwd(plot_dir)
+
+
+
 
 # Final Full Model from CV
 LRModel.CrossValidatedResultFull <- lm(formula = sum_cost_pedestrian_events ~ access + dblprk + jywalk + 
@@ -244,7 +250,7 @@ RegDataPredFull$Residuals<-RegDataPredFull$sum_cost_pedestrian_events - RegDataP
 RegDataPredFull <- RegDataPredFull %>% mutate(cost_gt_pred = if_else(is.negative(RegDataPredFull$Residuals) == FALSE, sum_cost_pedestrian_events, NULL))
 
 
-ggplot(data = RegDataPredFull) + 
+FullPlot<-ggplot(data = RegDataPredFull) + 
   geom_point(aes(x = predict, y = sum_cost_pedestrian_events, colour = 'Negative Residuals')) +
   geom_point(aes(x = predict, y = cost_gt_pred, colour = "Positive Residuals")) +
   stat_smooth(color = 'dodgerblue3', aes(x = predict, y = sum_cost_pedestrian_events), se=F, method = lm, fullrange = TRUE) +
@@ -257,6 +263,12 @@ ggplot(data = RegDataPredFull) +
   ggtitle("Predicted vs Actual Cost of Injury", subtitle = "Full Linear Model") +
   theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5), legend.position = c(0.8,0.3)) + #Centers title and subtitle
   scale_color_manual(values = c('Negative Residuals' = 'springgreen4', 'Positive Residuals' = 'red4'), name = "Points") 
+
+FullPlot
+
+ggsave(filename = "Linear_Model_Full_HD.png", width = 24, height = 13.4, units = "in", dpi = 100.13)
+ggsave(filename = "Linear_Model_Full.png", width = 16, height = 9, units = "in")
+
 
 
 #####################################################################################################################################
@@ -291,7 +303,7 @@ RegDataPredReduced$Residuals<-RegDataPredReduced$sum_cost_pedestrian_events - Re
 RegDataPredReduced <- RegDataPredReduced %>% mutate(cost_gt_pred = if_else(is.negative(RegDataPredReduced$Residuals) == FALSE, sum_cost_pedestrian_events, NULL))
 
 
-ggplot(data = RegDataPredReduced) + 
+ReducedPlot <- ggplot(data = RegDataPredReduced) + 
   geom_point(aes(x = predict, y = sum_cost_pedestrian_events, colour = 'Negative Residuals')) +
   geom_point(aes(x = predict, y = cost_gt_pred, colour = "Positive Residuals")) +
   stat_smooth(color = 'dodgerblue3', aes(x = predict, y = sum_cost_pedestrian_events), se=F, method = lm, fullrange = TRUE) +
@@ -304,8 +316,17 @@ ggplot(data = RegDataPredReduced) +
   ggtitle("Predicted vs Actual Cost of Injury", subtitle = "Reduced Linear Model") +
   theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5), legend.position = c(0.8,0.3)) + #Centers title and subtitle
   scale_color_manual(values = c('Negative Residuals' = 'springgreen4', 'Positive Residuals' = 'red4'), name = "Points") 
-  
-  
+
+ReducedPlot  
+
+ggsave(filename = "Linear_Model_Reduced_HD.png", width = 24, height = 13.4, units = "in", dpi = 100.13)
+ggsave(filename = "Linear_Model_Reduced.png", width = 16, height = 9, units = "in")
+
+ReducedDiags <- autoplot(LRModel.CrossValidatedResultReduced, which = 1:6)
+ReducedDiags
+
+ggsave(plot = ReducedDiags, filename = "Linear_Model_Reduced_Diagnostics.png", width = 16, height = 9, units ="in")
+
 
 
 
