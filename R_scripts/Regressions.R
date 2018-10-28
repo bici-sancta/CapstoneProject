@@ -3,6 +3,8 @@ library(dplyr)
 library(leaps)
 library(MASS)
 library(car)
+library(schoolmath)
+library(ggplot2)
 
 home_dir <- ("G:/JoshuaData/Classes/MSDS61X0 Capstone/CapstoneProject")
 data_dir <- ("./data/")
@@ -13,8 +15,8 @@ setwd(home_dir)
 setwd(data_dir)
 
 # Binary predictor code - unused
-# infile <- "df_model_w_cell_id.csv"
-# df_model_w_cell_id <- read.csv(infile,
+# infile <- "df_model_w_cell_id_ZERO.csv"
+# df_model_w_cell_id_ZERO <- read.csv(infile,
 #                                stringsAsFactors = FALSE, header = TRUE)
 # 
 # 
@@ -24,7 +26,7 @@ setwd(data_dir)
 # 
 # 
 # # Merge predictor to new dataset
-# RegData <- merge(BinaryPred, df_model_w_cell_id, by = "cell_id")
+# RegData <- merge(BinaryPred, df_model_w_cell_id_ZERO, by = "cell_id")
 # 
 # # Drop predicted 0-Cost incidents.
 # RegData <- RegData[RegData$binary_predictor == 1,]
@@ -36,13 +38,13 @@ setwd(data_dir)
 
 
 
-infile <- "df_model_w_cell_id.csv"
-df_model_w_cell_id <- read.csv(infile,
+infile <- "df_model_w_cell_id_ZERO.csv"
+df_model_w_cell_id_ZERO <- read.csv(infile,
                                stringsAsFactors = FALSE, header = TRUE)
 
 # Drop unused data
 drop <- c("med_sale_pbo_n", "med_sale_pbo_y")
-RegData <- df_model_w_cell_id[, !names(df_model_w_cell_id) %in% drop]
+RegData <- df_model_w_cell_id_ZERO[, !names(df_model_w_cell_id_ZERO) %in% drop]
 
 # Drop >5-Cost incidents and 0-cost incidents
 RegData <- RegData[!RegData$sum_cost_pedestrian_events == 0,]
@@ -179,18 +181,27 @@ RegDataPred$predict <- predict(LRModel.CrossValidatedResult, RegData)
 
 
 
-# Hocus pocus magic line to split the colors
-RegDataPlot <- RegDataPred %>% mutate(cost_gt_pred = ifelse(sum_cost_pedestrian_events > (1.10 * predict), sum_cost_pedestrian_events, NA))
+# Residuals used to split color on chart
+RegDataPred$Residuals<-RegDataPred$sum_cost_pedestrian_events - RegDataPred$predict
 
-par(bg = "lightgrey")
-plot(sum_cost_pedestrian_events ~ predict, data = RegDataPlot,
-     col = "springgreen4", #Type 1 error color
-     xlim = c(0, 5), #adjust to fit plot if in log scale or diff data
-     ylim = c(0, 5), #adjust to fit plot if in log scale or diff data
-     xlab="Predicted Cost ($ in Millions)", #labels
-     ylab="Actual Sum Cost ($ in Millions)") #labels
-points(cost_gt_pred ~ predict, data = RegDataPlot, col = "red4") #Type 2 error color
-abline(a = 0, b = 1, col = "dodgerblue3") #line color
+# Hocus pocus magic line to split the colors
+RegDataPred <- RegDataPred %>% mutate(cost_gt_pred = if_else(is.negative(RegDataPred$Residuals) == FALSE, sum_cost_pedestrian_events, NULL))
+
+
+ggplot(data = RegDataPred) + 
+  geom_point(aes(x = predict, y = sum_cost_pedestrian_events, colour = 'Negative Residuals')) +
+  geom_point(aes(x = predict, y = cost_gt_pred, colour = "Positive Residuals")) +
+  stat_smooth(color = 'dodgerblue3', aes(x = predict, y = sum_cost_pedestrian_events), se=F, method = lm, fullrange = TRUE) +
+  scale_y_continuous(breaks = seq(0,5,.5)) +
+  ylim(0,5) +
+  scale_x_continuous(breaks = seq(0,5,.5)) +
+  xlim(0,5) +
+  ylab("Actual Sum Cost ($ in Millions)") +
+  xlab("Predicted Sum Cost ($ in Millions)") +
+  ggtitle("Predicted vs Actual Cost of Injury", subtitle = "Linear Model") +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5), legend.position = c(0.8,0.3)) + #Centers title and subtitle
+  scale_color_manual(values = c('Negative Residuals' = 'springgreen4', 'Positive Residuals' = 'red4'), name = "Points") 
+
 
 
 #Output residual and cells for visualization later
@@ -200,14 +211,14 @@ PSIFullFinalcell_id <- RegDataPred$cell_id
 setwd(home_dir)
 setwd(data_dir)
 
-PSIFinal <- data.frame(Cell_ID = PSIFullFinalcell_id, Residuals = PSIFullFinalResiduals)
-write.csv(PSIFinal, "Residuals_by_Gridcell_Reduced_Model.csv", row.names = FALSE)
+ResidualCSV <- data.frame(Cell_ID = PSIFullFinalcell_id, Residuals = PSIFullFinalResiduals)
+write.csv(ResidualCSV, "Residuals_by_Gridcell_Reduced_Model.csv", row.names = FALSE)
 
 
-
+#######################################################################################################################
 
 # Final Full Model from CV
-LRModel.CrossValidatedResult <- lm(formula = sum_cost_pedestrian_events ~ access + dblprk + jywalk + 
+LRModel.CrossValidatedResultFull <- lm(formula = sum_cost_pedestrian_events ~ access + dblprk + jywalk + 
                                      lvisib + nobikef + prkint + prkswlk + speed + vrrlss + wlksig + 
                                      assist + drives + max_walk_score + sum_area + num_streets + 
                                      num_fire_incd + med_sale_res_n + med_sale_com_y + med_sale_com_n + 
@@ -216,9 +227,39 @@ LRModel.CrossValidatedResult <- lm(formula = sum_cost_pedestrian_events ~ access
                                    data = RegData)
 
 sink("LRModel.CrossValidatedResult.Full.txt")
-summary(LRModel.CrossValidatedResult)
+summary(LRModel.CrossValidatedResultFull)
 sink()
-vif(LRModel.CrossValidatedResult)
+vif(LRModel.CrossValidatedResultFull)
+
+
+# Create prediction dataset
+RegDataPredFull <- RegData
+# Create prediction based on model results 
+RegDataPredFull$predict <- predict(LRModel.CrossValidatedResultFull, RegData)
+RegDataPredFull$Residuals<-RegDataPredFull$sum_cost_pedestrian_events - RegDataPredFull$predict
+
+
+
+# Hocus pocus magic line to split the colors
+RegDataPredFull <- RegDataPredFull %>% mutate(cost_gt_pred = if_else(is.negative(RegDataPredFull$Residuals) == FALSE, sum_cost_pedestrian_events, NULL))
+
+
+ggplot(data = RegDataPredFull) + 
+  geom_point(aes(x = predict, y = sum_cost_pedestrian_events, colour = 'Negative Residuals')) +
+  geom_point(aes(x = predict, y = cost_gt_pred, colour = "Positive Residuals")) +
+  stat_smooth(color = 'dodgerblue3', aes(x = predict, y = sum_cost_pedestrian_events), se=F, method = lm, fullrange = TRUE) +
+  scale_y_continuous(breaks = seq(0,5,.5)) +
+  ylim(0,5) +
+  scale_x_continuous(breaks = seq(0,5,.5)) +
+  xlim(0,5) +
+  ylab("Actual Sum Cost ($ in Millions)") +
+  xlab("Predicted Sum Cost ($ in Millions)") +
+  ggtitle("Predicted vs Actual Cost of Injury", subtitle = "Full Linear Model") +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5), legend.position = c(0.8,0.3)) + #Centers title and subtitle
+  scale_color_manual(values = c('Negative Residuals' = 'springgreen4', 'Positive Residuals' = 'red4'), name = "Points") 
+
+
+#####################################################################################################################################
 
 
 
@@ -234,5 +275,39 @@ sink("LRModel.CrossValidatedResult.Reduced.txt")
 summary(LRModel.CrossValidatedResultReduced)
 sink()
 vif(LRModel.CrossValidatedResultReduced)
+
+
+
+
+# Create prediction dataset
+RegDataPredReduced <- RegData
+# Create prediction based on model results 
+RegDataPredReduced$predict <- predict(LRModel.CrossValidatedResultReduced, RegData)
+RegDataPredReduced$Residuals<-RegDataPredReduced$sum_cost_pedestrian_events - RegDataPredReduced$predict
+
+
+
+# Hocus pocus magic line to split the colors
+RegDataPredReduced <- RegDataPredReduced %>% mutate(cost_gt_pred = if_else(is.negative(RegDataPredReduced$Residuals) == FALSE, sum_cost_pedestrian_events, NULL))
+
+
+ggplot(data = RegDataPredReduced) + 
+  geom_point(aes(x = predict, y = sum_cost_pedestrian_events, colour = 'Negative Residuals')) +
+  geom_point(aes(x = predict, y = cost_gt_pred, colour = "Positive Residuals")) +
+  stat_smooth(color = 'dodgerblue3', aes(x = predict, y = sum_cost_pedestrian_events), se=F, method = lm, fullrange = TRUE) +
+  scale_y_continuous(breaks = seq(0,5,.5)) +
+  ylim(0,5) +
+  scale_x_continuous(breaks = seq(0,5,.5)) +
+  xlim(0,5) +
+  ylab("Actual Sum Cost ($ in Millions)") +
+  xlab("Predicted Sum Cost ($ in Millions)") +
+  ggtitle("Predicted vs Actual Cost of Injury", subtitle = "Reduced Linear Model") +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5), legend.position = c(0.8,0.3)) + #Centers title and subtitle
+  scale_color_manual(values = c('Negative Residuals' = 'springgreen4', 'Positive Residuals' = 'red4'), name = "Points") 
+  
+  
+
+
+
 
 

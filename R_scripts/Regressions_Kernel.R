@@ -24,15 +24,15 @@ crash_cost_krnl <- crash_cost_krnl[, !names(crash_cost_krnl) %in% drop]
 
 
 
-infile <- "df_model_w_cell_id.csv"
-df_model_w_cell_id <- read.csv(infile,
+infile <- "df_model_w_cell_id_ZERO.csv"
+df_model_w_cell_id_ZERO <- read.csv(infile,
                                stringsAsFactors = FALSE, header = TRUE)
 
 
 
 # ...   merge costs into df_model
 drop <- c("sum_cost_pedestrian_events")
-df_model <- df_model_w_cell_id[, !names(df_model_w_cell_id) %in% drop]
+df_model <- df_model_w_cell_id_ZERO[, !names(df_model_w_cell_id_ZERO) %in% drop]
 
 RegDataKern <- merge(crash_cost_krnl, df_model, by = "cell_id")
 
