@@ -31,6 +31,7 @@ home_dir <- ("/home/mcdevitt/_ds/_smu/_src/CapstoneProject/")
 
 data_dir <- ("./data/")
 plot_dir <- ("./plots/")
+ppt_plot_dir <- ("./ppt.plots")
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -158,6 +159,9 @@ for (it in seq(1:99))
 
 # ... set up some categories for plotting
 
+setwd(home_dir)
+setwd(ppt_plot_dir)
+
 qtwLx_hrf_test$result <- ifelse(qtwLx_hrf_test$binary == 1
                                 &
                             qtwLx_hrf_test$hrf_prob > 0.2,
@@ -207,6 +211,7 @@ roc_plot <- ggplot(df_roc, aes(x = fpr_hrf, y = tpr_hrf)) +
     theme(text = element_text(size = 15))
 
 roc_plot
+
 ggsave("_ppt_random_forest_roc.png")
 
 # ...   -----------------------------------------------------------------------------

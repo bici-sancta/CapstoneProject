@@ -392,3 +392,55 @@ hoods +
 
 dev.off()
 
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# ...   Regression Forest results file ...
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+setwd(home_dir)
+setwd("./regression/")
+
+
+infile = "Residuals_by_Gridcell_Reduced_Model.csv"
+df_rgr_results <- read.csv(infile,
+                       stringsAsFactors = FALSE, header = TRUE)
+names(df_rgr_results) <- tolower(names(df_rgr_results))
+                                 
+df_rgr_model <- merge(df_plot, df_rgr_results, by = "cell_id")
+
+#df_rgr_model$binary_observed <- ifelse(df_rgr_model$sum_cost.x > 0, 1, 0)
+#df_rgr_model$result <- ifelse((df_rgr_model$binary_observed == 1 & df_rgr_model$binary_predictor == 0), "FN", 0)
+#df_rgr_model$result <- ifelse((df_rgr_model$binary_observed == 0 & df_rgr_model$binary_predictor == 1), "FP", df_rgr_model$result)
+#df_rgr_model$result <- ifelse((df_rgr_model$binary_observed == 0 & df_rgr_model$binary_predictor == 0), "TN", df_rgr_model$result)
+#df_rgr_model$result <- ifelse((df_rgr_model$binary_observed == 1 & df_rgr_model$binary_predictor == 1), "TP", df_rgr_model$result)
+
+png(filename = paste0("_ppt", "_regression_residuals_results", "_map.png"), 
+    units = "in", 
+    width = plot_width,
+    height = plot_height,
+    pointsize = plot_pointsize, 
+    res = plot_res)
+
+title <- "Regression Residuals - PSI Regions"
+
+hoods +
+    geom_point(data = df_rgr_model, aes(x = long.x, y = lat.x, color = residuals), shape = 19, size = 3, alpha = 0.7) + 
+    geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2, alpha = 0.2) +
+
+    ggtitle(title) +
+    xlab("Longitude") + ylab("Latitude") +
+    theme(text = element_text(size = 25)) +
+    theme(legend.position = c(0.05, 0.9)) +
+    theme(legend.title = element_text(colour = "#666666FF", size = 15, face = "bold")) + 
+    theme(legend.text = element_text(colour = "#666666FF", size = 15, face = "bold")) + 
+    theme(legend.justification = c(0, 1)) +
+
+#    scale_color_gradientn(colors = (rainbow(9)[4:9])) +
+#    scale_color_gradient2(low = "green", mid = "white", high = "red", midpoint = 0) +
+    scale_color_distiller(palette = "Spectral") +
+#    scale_color_manual(values = c("#CC2222FF", "#AAAAAA33", "#CCCCCC66", "#44CC44FF")) +
+    coord_cartesian(xlim = x_plot_limits, ylim = y_plot_limits)
+
+dev.off()
+
+
+
