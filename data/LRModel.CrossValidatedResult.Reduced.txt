@@ -1,36 +1,31 @@
 
 Call:
-lm(formula = sum_cost_pedestrian_events ~ lvisib + prkint + prkswlk + 
-    speed + vrrlss + wlksig + max_walk_score + sum_area + num_streets + 
-    sum_cost.y + food + police.property + trees_plants + water.leak + 
-    xwalk, data = RegData)
+lm(formula = sum_cost_pedestrian_events ~ prkint + prkswlk + 
+    speed + vrrlss + max_walk_score + sum_cost.y + food + police.property + 
+    trees_plants + water.leak + xwalk, data = RegData)
 
 Residuals:
     Min      1Q  Median      3Q     Max 
--1.6802 -0.5309 -0.2262  0.4084  3.5686 
+-1.6894 -0.5290 -0.2362  0.4228  3.5710 
 
 Coefficients:
-                  Estimate Std. Error t value Pr(>|t|)    
-(Intercept)      3.432e-01  9.299e-02   3.690 0.000238 ***
-lvisib           1.321e-01  7.799e-02   1.694 0.090702 .  
-prkint          -1.756e-01  9.023e-02  -1.946 0.051963 .  
-prkswlk          2.528e-01  1.480e-01   1.709 0.087901 .  
-speed           -7.693e-02  3.533e-02  -2.177 0.029728 *  
-vrrlss           5.885e-02  2.469e-02   2.384 0.017355 *  
-wlksig          -1.841e-01  1.137e-01  -1.620 0.105607    
-max_walk_score   5.160e-03  1.773e-03   2.909 0.003717 ** 
-sum_area        -6.667e-08  3.518e-08  -1.895 0.058394 .  
-num_streets      1.344e-03  1.042e-03   1.291 0.197139    
-sum_cost.y       2.708e-04  3.189e-05   8.494  < 2e-16 ***
-food             3.900e-02  8.178e-03   4.769 2.18e-06 ***
-police.property  1.276e-02  5.872e-03   2.173 0.030075 *  
-trees_plants     3.735e-03  2.160e-03   1.729 0.084128 .  
-water.leak      -7.344e-02  2.485e-02  -2.955 0.003212 ** 
-xwalk            9.061e-02  4.810e-02   1.884 0.059925 .  
+                   Estimate  Std. Error t value  Pr(>|t|)    
+(Intercept)      0.31039732  0.09051900   3.429  0.000635 ***
+prkint          -0.14634084  0.08287935  -1.766  0.077807 .  
+prkswlk          0.25724649  0.14733412   1.746  0.081174 .  
+speed           -0.06269658  0.03413171  -1.837  0.066576 .  
+vrrlss           0.05033246  0.02429056   2.072  0.038560 *  
+max_walk_score   0.00563774  0.00175800   3.207  0.001392 ** 
+sum_cost.y       0.00026651  0.00003176   8.391   < 2e-16 ***
+food             0.03979555  0.00818899   4.860 0.0000014 ***
+police.property  0.01444177  0.00585038   2.469  0.013765 *  
+trees_plants     0.00399802  0.00215803   1.853  0.064285 .  
+water.leak      -0.07213699  0.02477608  -2.912  0.003691 ** 
+xwalk            0.11761838  0.04584840   2.565  0.010478 *  
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-Residual standard error: 0.7813 on 839 degrees of freedom
-Multiple R-squared:   0.21,	Adjusted R-squared:  0.1959 
-F-statistic: 14.87 on 15 and 839 DF,  p-value: < 2.2e-16
+Residual standard error: 0.7834 on 843 degrees of freedom
+Multiple R-squared:  0.2021,	Adjusted R-squared:  0.1917 
+F-statistic: 19.41 on 11 and 843 DF,  p-value: < 2.2e-16
 

@@ -188,6 +188,8 @@ RegDataPred$Residuals<-RegDataPred$sum_cost_pedestrian_events - RegDataPred$pred
 # Hocus pocus magic line to split the colors
 RegDataPred <- RegDataPred %>% mutate(cost_gt_pred = if_else(is.negative(RegDataPred$Residuals) == FALSE, sum_cost_pedestrian_events, NULL))
 
+setwd(home_dir)
+setwd(plot_dir)
 
 ggplot(data = RegDataPred) + 
   geom_point(aes(x = predict, y = sum_cost_pedestrian_events, colour = 'Negative Residuals')) +
@@ -205,22 +207,10 @@ ggplot(data = RegDataPred) +
 
 
 
-#Output residual and cells for visualization later
-PSIFullFinalResiduals <- RegDataPred$sum_cost_pedestrian_events - RegDataPred$predict
-PSIFullFinalcell_id <- RegDataPred$cell_id
 
-setwd(home_dir)
-setwd(data_dir)
-
-ResidualCSV <- data.frame(Cell_ID = PSIFullFinalcell_id, Residuals = PSIFullFinalResiduals)
-write.csv(ResidualCSV, "Residuals_by_Gridcell_Reduced_Model.csv", row.names = FALSE)
 
 
 #######################################################################################################################
-setwd(home_dir)
-setwd(plot_dir)
-
-
 
 
 # Final Full Model from CV
@@ -231,6 +221,9 @@ LRModel.CrossValidatedResultFull <- lm(formula = sum_cost_pedestrian_events ~ ac
                                      sum_cost.y + dist + n_object + food + police.property + street_sidewalk + 
                                      trees_plants + water.leak + zoning_parking + xwalk + n_request, 
                                    data = RegData)
+
+setwd(home_dir)
+setwd(data_dir)
 
 sink("LRModel.CrossValidatedResult.Full.txt")
 summary(LRModel.CrossValidatedResultFull)
@@ -262,9 +255,13 @@ FullPlot<-ggplot(data = RegDataPredFull) +
   xlab("Predicted Sum Cost ($ in Millions)") +
   ggtitle("Predicted vs Actual Cost of Injury", subtitle = "Full Linear Model") +
   theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5), legend.position = c(0.8,0.3)) + #Centers title and subtitle
-  scale_color_manual(values = c('Negative Residuals' = 'springgreen4', 'Positive Residuals' = 'red4'), name = "Points") 
+  scale_color_manual(values = c('Negative Residuals' = 'springgreen4', 'Positive Residuals' = 'red4'), name = "Points") +
+  theme(text = element_text(size = 25))
 
 FullPlot
+
+setwd(home_dir)
+setwd(plot_dir)
 
 ggsave(filename = "Linear_Model_Full_HD.png", width = 24, height = 13.4, units = "in", dpi = 100.13)
 ggsave(filename = "Linear_Model_Full.png", width = 16, height = 9, units = "in")
@@ -277,11 +274,14 @@ ggsave(filename = "Linear_Model_Full.png", width = 16, height = 9, units = "in")
 
 # Final Reduced Model 
 LRModel.CrossValidatedResultReduced <- lm(sum_cost_pedestrian_events ~ 
-                                            lvisib+prkint+prkswlk+speed+
-                                            vrrlss+wlksig+max_walk_score+sum_area+num_streets
-                                          +sum_cost.y+food+police.property+trees_plants+
+                                            prkint+prkswlk+speed+
+                                            vrrlss+max_walk_score+
+                                            sum_cost.y+food+police.property+trees_plants+
                                             water.leak+xwalk
                                           , data = RegData)
+
+setwd(home_dir)
+setwd(data_dir)
 
 sink("LRModel.CrossValidatedResult.Reduced.txt")
 summary(LRModel.CrossValidatedResultReduced)
@@ -315,7 +315,11 @@ ReducedPlot <- ggplot(data = RegDataPredReduced) +
   xlab("Predicted Sum Cost ($ in Millions)") +
   ggtitle("Predicted vs Actual Cost of Injury", subtitle = "Reduced Linear Model") +
   theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5), legend.position = c(0.8,0.3)) + #Centers title and subtitle
-  scale_color_manual(values = c('Negative Residuals' = 'springgreen4', 'Positive Residuals' = 'red4'), name = "Points") 
+  scale_color_manual(values = c('Negative Residuals' = 'springgreen4', 'Positive Residuals' = 'red4'), name = "Points") +
+  theme(text = element_text(size = 25)) 
+
+setwd(home_dir)
+setwd(plot_dir)
 
 ReducedPlot  
 
@@ -329,6 +333,14 @@ ggsave(plot = ReducedDiags, filename = "Linear_Model_Reduced_Diagnostics.png", w
 
 
 
+#Output residual and cells for visualization later
+PSIFullFinalResiduals <- RegDataPredReduced$sum_cost_pedestrian_events - RegDataPredReduced$predict
+PSIFullFinalcell_id <- RegDataPredReduced$cell_id
 
+setwd(home_dir)
+setwd(data_dir)
+
+ResidualCSV <- data.frame(Cell_ID = PSIFullFinalcell_id, Residuals = PSIFullFinalResiduals)
+write.csv(ResidualCSV, "Residuals_by_Gridcell_Reduced_Model.csv", row.names = FALSE)
 
 
