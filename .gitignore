@@ -3,3 +3,4 @@
 .RData
 .Ruserdata
 *.Rproj
+data/cincinnati_311_non_emergency_service_requests.csv
