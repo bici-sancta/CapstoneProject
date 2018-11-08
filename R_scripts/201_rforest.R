@@ -1,16 +1,12 @@
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-# ...   file : qtwLx_rforest.R
+# ...   file : rforest.R
 # ...
-# ...   Random Forest Model -  code for qtwLx
+# ...   Random Forest Model
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-# ...   14-aug-2018
-# ...
-# ...   MSDS 7332  - quantifying the world
-# ...   Summer 2018
-# ...   Final Assignment
+# ...   28-oct-2018
 # ...
 # ...   patrick.mcdevitt@smu.edu
 # ...
@@ -30,11 +26,12 @@ library(dplyr)
 printf <- function(...) invisible(cat(sprintf(...)))
 
 
-home_dir <- ("G:/JoshuaData/Classes/MSDS61X0 Capstone/CapstoneProject")
-#home_dir <- ("/home/mcdevitt/_ds/_smu/_src/CapstoneProject/")
+#home_dir <- ("G:/JoshuaData/Classes/MSDS61X0 Capstone/CapstoneProject")
+home_dir <- ("/home/mcdevitt/_ds/_smu/_src/CapstoneProject/")
 
 data_dir <- ("./data/")
 plot_dir <- ("./plots/")
+ppt_plot_dir <- ("./ppt.plots")
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -113,7 +110,7 @@ toc()
 
 
 
-VI_rf_binary <- h2o.varimp(model_cost.h2o)
+VI_rf_binary <- h2o.varimp(model_binary.h2o)
 h2o.performance(model_binary.h2o)
 
 h2o.varimp_plot(model_binary.h2o)
@@ -131,27 +128,22 @@ df_tmp <- as.data.frame(test.h2o)
 qtwLx_hrf_test$hrf_prob <- df_tmp$pred
 rm(df_tmp)
 
-#plot(sum_cost_pedestrian_events ~ hrf_prob, data = qtwLx_hrf_test, col = "firebrick")
-plot(jitter(binary) ~ hrf_prob, data = qtwLx_hrf_test, col = "firebrick")
-abline(0,1)
-
-#plot(sum_cost_pedestrian_events ~ hrf_prob, data = qtwLx_hrf_train, col = "dodgerblue3")
 plot(jitter(binary) ~ hrf_prob, data = qtwLx_hrf_train, col = "dodgerblue3")
-abline(0,1)
+plot(jitter(binary) ~ hrf_prob, data = qtwLx_hrf_test, col = "firebrick")
 
 fp_lst <- numeric()
 ac_lst <- numeric()
 tpr_hrf <- numeric()
 fpr_hrf <- numeric()
 
+# ...   ROC curve points for binary predictor
+
 for (it in seq(1:99))
 {
     ones <- qtwLx_hrf_test$hrf_prob >= it/100
     qtwLx_hrf_test$pred <- 0
     qtwLx_hrf_test$pred[ones] <- 1
-#    df_test$error <- df_test$target_y - df_test$y_hat
-#    table(df_test$error)
-    
+
     cnf <- confusionMatrix(data = as.factor(qtwLx_hrf_test$pred),
                     reference = as.factor(qtwLx_hrf_test$binary),
                     positive = "1")
@@ -165,17 +157,64 @@ for (it in seq(1:99))
     fpr_hrf[it] <- 1.0 - cnf$byClass[[2]]
 }
 
-plot(tpr_hrf ~ fpr_hrf,
-     xlim = c(0, 1),
-     ylim = c(0, 1),
-     col = "grey",
-     cex = 0.25,
-     xlab = "False Positive Rate",
-     ylab = "True Positive Rate",
-     main = "Random Forest - ROC")
-grid (NULL,NULL, lty = 6, col = "lightgrey") 
-lines(tpr_hrf ~ fpr_hrf, col = "dodgerblue3", lwd = 4)
+# ... set up some categories for plotting
 
+setwd(home_dir)
+setwd(ppt_plot_dir)
+
+qtwLx_hrf_test$result <- ifelse(qtwLx_hrf_test$binary == 1
+                                &
+                            qtwLx_hrf_test$hrf_prob > 0.2,
+                            "TP", "0")
+
+qtwLx_hrf_test$result <- ifelse(qtwLx_hrf_test$binary == 1
+                                &
+                            qtwLx_hrf_test$hrf_prob <= 0.2,
+                            "FN", qtwLx_hrf_test$result)
+qtwLx_hrf_test$result <- ifelse(qtwLx_hrf_test$binary == 0
+                                &
+                            qtwLx_hrf_test$hrf_prob > 0.2,
+                            "FP", qtwLx_hrf_test$result)
+qtwLx_hrf_test$result <- ifelse(qtwLx_hrf_test$binary == 0
+                                &
+                            qtwLx_hrf_test$hrf_prob <= 0.2,
+                            "TN", qtwLx_hrf_test$result)
+
+# ... classification plots .. tp, fp, tn, fn
+
+scatterPlot <- ggplot(qtwLx_hrf_test, aes(jitter(hrf_prob), jitter(binary), color = result)) + 
+    geom_point() + 
+    scale_color_manual(values = c('#FF0000','#ff6600', "#557799", "#339933")) + 
+    ggtitle("Random Forest - Test Set") +
+    xlab("Model Probability") + ylab("Observed") +
+    theme(text = element_text(size = 15)) +
+
+    theme(legend.position = c(0.8, 0.6), legend.justification = c(0, 1))
+
+    theme(legend.title = element_text(colour = "#666666FF", size = 10, face = "bold")) + 
+    theme(legend.text = element_text(colour = "#666666FF", size = 10, face = "bold"))
+
+scatterPlot
+
+ggsave("_ppt_random_forest_binary_plot.png")
+
+# ... ROC curve
+
+df_roc <- data.frame(fpr_hrf, tpr_hrf)
+
+roc_plot <- ggplot(df_roc, aes(x = fpr_hrf, y = tpr_hrf)) +
+    geom_point(color = "#666666") +
+    geom_line(color = "#5577FF", size = 2) +
+#    geom_smooth() +
+    ggtitle("Random Forest - ROC") +
+    xlab("False Positive Rate") + ylab("True Positive Rate") +
+    theme(text = element_text(size = 15))
+
+roc_plot
+
+ggsave("_ppt_random_forest_roc.png")
+
+# ...   -----------------------------------------------------------------------------
 
 plot(jitter(qtwLx_hrf_test$binary) ~ jitter(qtwLx_hrf_test$hrf_prob),
      xlab = "Model Predicted Classification",
@@ -202,6 +241,10 @@ file_name <- "random_forest_binary_predictor.csv"
 write.table(df_model_binary_results, file = file_name, sep = ",",
             row.names = FALSE,
             col.names = TRUE)
+
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# ...   Setup data frame for next round - continuous model on cost
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 df_cost <- df_model[df_model$binary_pred == 1,]
 

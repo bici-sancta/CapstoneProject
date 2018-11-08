@@ -256,6 +256,143 @@ With the reduced model, the cost of non-fatality incidents to pedestrians is pre
 
 
 
+To develop the models in a way that supports an assessment of the generalizability of the models,  the dataset is shuffle split into 80:20, 20\% holdout for cross-validation, using the 10-fold cross-validation stratified shuffle split function from the scikit-learn library for Python. The 80\% is then split into a further 80:20 for training and testing. Machine learning and deep learning algorithms are used as listed in Table ~\ref{table:algorithmsandmethods}. Models are compared with each other on different performance metrics, such as the area under curve and brier score.
+%
+\FloatBarrier
+\begin{table}
+\begin{center}
+\caption{Algorithms and evaluation methods}
+\label{table:algorithmsandmethods}
+\begin{tabular}{p{50mm} p{60mm}}
+\hline
+\rule{0pt}{12pt}
+Algorithm	&	Models	\\[2pt]
+\hline
+Regression 	&	1.        Multiple Regression	
+				2.        Support Vector Machine	\newline
+				3.        Decision Tree	\\
+Unsupervised Learning	&	1.        Clustering	\newline
+				\hspace*{5mm} a.        K-means	\newline
+				\hspace*{5mm} b.        Hierarchical 	\newline
+				2.        Gaussian Mixture Models	\newline
+				3.        Neural Networks	\newline
+				\hspace*{5mm} a.        Self Organizing Maps	\\
+Additional 	&	1.        T-Distributed Stochastic Neighbor Embedding	\newline
+				2.        Principal Component Analysis	\newline
+				3.        Linear Discriminate Analysis	\newline
+				4.        Natural Language Processing	\\[2pt]
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+\FloatBarrier
+%
+\section{Results}
+%
+\subsection{Data aggregation and grid cell assignment}
+
+The results of several of the data sets aggregated and assigned to each respective grid cell are shown in following figures. In summary, the following features were mapped into the grid cells as candidate features to participate in the modeling :
+
+\FloatBarrier
+\begin{table}
+\begin{center}
+\caption{Feature Definition}
+\label{table : featureDefinition}
+\begin{tabular}{p{50mm} p{60mm}}
+\hline
+\rule{0pt}{12pt}
+Data category & Specific feature definition	\\[2pt]
+\hline
+Non-pedestrian accidents 		& Number Events \newline
+															Sum cost (NSC) for events \\
+Pedestrian survey responses & TBD in next update \\
+Reported near misses 				& Number events \newline
+                                                            Categorical feature counts \\
+Street surface areas 				& Surface total length \newline
+                                                            Sum lane counts  \\
+Walk Scores 								& Max, Mean, Min  \\
+Fire incidents 								& TBD in next update  \\
+Non-emergency service requests & Sum number requests \newline
+                                                                      Categorical feature counts\\ 
+Property values \& uses 			& Median prperty values \newline
+                                                            Number of property transfers in 10-year period  \\
+Public transportation accessibility & Distance to nearest bus stop \\[2pt]
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+\FloatBarrier
+%
+
+
+Figure ~\ref{figure : maxWalkScores}. \newline
+\FloatBarrier
+\begin{figure}
+ 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{maxWalkScores.png}
+ 	\caption{Walk Score - Max values}
+	\label{figure : maxWalkScores}
+\end{figure}
+\FloatBarrier
+
+
+Figure ~\ref{figure : busStopDistance}. \newline
+\FloatBarrier
+\begin{figure}
+ 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{busStopDistance.png}
+ 	\caption{Public Transportaton accessibility}
+	\label{figure : busStopDistance}
+\end{figure}
+\FloatBarrier
+
+Figure ~\ref{figure : trafficAccidents}. \newline
+\FloatBarrier
+\begin{figure}
+ 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{trafficAccidents.png}
+ 	\caption{Number of Traffic Accidents (Non-pedestrian involved)}
+	\label{figure : busStopDistance}
+\end{figure}
+\FloatBarrier
+
+\subsection{Random Forest - Binary Model}
+
+The random forest model which we deployed to estimate occurrence of pedestrian related events produces the result of 75\% true positive, 20\% false positive with a detection threshold set at 0.20. This result provides a balanced compromise between true positive and false positive, as depicted in the following Figure ~\ref{figure : rfroccurve}. \newline
+\FloatBarrier
+\begin{figure}
+ 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{RFROC.png}
+ 	\caption{Random forest - binary model - ROC curve}
+	\label{figure : rfroccurve}
+\end{figure}
+\FloatBarrier
+
+As visualized on the map of the city, Figure ~\ref{figure : rfbinarymap}, we observe that (a) the regions of true positve (green) and true negative (light grey) comprise the large majority of the surface area, generally represented by contiguous areas, and confirm the high overall accuracy of the model, (b) that the false positive (darker grey) and false negative (red dots) are consistently along the border regions between otherwise true positive or true negative regions, and (c)  the false negative regions are distinct non-connected grid cells at somewhat widely distributed locations around the city.
+\newline
+
+\FloatBarrier
+\begin{figure}
+ 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{RFBinaryResultsMap.png}
+ 	\caption{Distribution of random forest model results visualized on city map}
+	\label{figure : rfbinarymap}
+\end{figure}
+\FloatBarrier
+
+\subsection{Multi-variate linear regression - Cost Model}
+
+\subsection{Non-supervised learning - Neighborhood characterization}
+
+Initial results from part 1 of our methodology have produced graphs as shown in Figure ~\ref{figure:SumCrashPlot}. \newline
+\FloatBarrier
+\begin{figure}
+ 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{TrafficCrashReports20180918SumCostMapped2Grid.png}
+ 	\caption{Sum cost of traffic crashes reported from 2012 to October 2018 involving pedestrians by grid cells.}
+	\label{figure:SumCrashPlot}
+\end{figure}
+\FloatBarrier
+%
+\section{Analysis}
+%
+\subsection{Random Forest - Binary Model}
+
+The focus of this effort is to identify locations within the city that indicate highest potential for safety improvement. Consistent with the concept as defined and implemented in other works, the model incidents for which the observed experience exceeds the expected (model output) response are the regions with potential for safety improvement. In the context of a binary model, as was completed here with the random forest model, the regions of PSI are the false negative points on the grid map, as presented in Figure ~\ref{figure : rfbinarymap}. For these grid cells, the model result was no expected pedestrian events, yet the observed experience exceeded this expected response. In this case, there are 31 grid cells identified with potential for safety improvement. In the next update to this draft, we will present what are the unique characteristics of these grid cells, where they are located geographically within the city (street and intersection identification) and what was the ac
 %
 \section{Results}
 %
@@ -299,12 +436,12 @@ The ethical considerations associated to this project are adequately assessed in
 %
 \section{Conclusions (and Future Work)}
 %
+
 This study demonstrates a methodology to identify areas within the city of Cincinnati, Ohio with the largest potential for safety improvement, based on many open-source datasets made public by the city. Over twenty 250 meter by 250 meter plots of land within the city have been identified for further investigation to determine why the cost of incident within that area are abnormally high as compared to our models. These locations include several areas in the Westwood neighborhood, Clifton, Avondale, Walnut Hills, Bond Hill, and more. Our unsupervised learning techniques…PLACEHOLDER SENTENCES ABOUT HOW OUR UNSUPERVISED LEARNING TECHNIQUES HAVE OUTLINED AREAS WHICH HAVE POTENTIAL FOR SAFETY IMPROVEMENT. THESE AREAS DEMONSTRATE THESE QUALITIES WHICH ARE RELATED TO PEDESTRIAN SAFETY IN THE CITY OF CINCINNATI OHIO.
 
 Future work to further this project could involve the use of other regression modelling techniques to improve accuracy, such as tobit models. Other improvements which could be made include STUFF GOES HERE FROM PATRICK AND PREETI ABOUT WAYS TO IMPROVE YOUR TECHNIQUES AND MODELS.
 
 Aside from improving the models through the use of different techniques, the study itself can be improved by ingesting more data. This study is carried out using publicly available data, if private data exists which can improve the study, it can easily be adapted for use due to only requiring a street address or latitude longitude coordinates which would allow the data to be integrated into the grid-cell aggregation function. Examples of data which may be useful but are not publicly available would be the race, gender and age of the perpetrator and pedestrian victim, data which the city of Cincinnati may have, though the ethical implications of using this data must be weighed. 
-
 
 % ---- Bibliography ----
 %
