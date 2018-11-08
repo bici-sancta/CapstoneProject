@@ -82,7 +82,7 @@ There are a range of severities associated to the outcomes of pedestrian--vehicl
 \FloatBarrier
 \begin{table}[!h]
 \begin{center}
-\caption{Event Cost Severity, 201X NSC NEEDS CITATION!!!}
+\caption{Event Cost Severity, 201X NSC NEEDS CITATION!!!: https://www.nsc.org/Portals/0/Documents/NSCDocuments_Corporate/estimating-costs.pdf }
 \label{table:eventseverity}
 \begin{tabular}{p{50mm}  p{50mm}}
 \hline
@@ -112,12 +112,8 @@ Table ~\ref{table:terminology} below is presented as a primer on pedestrian safe
 \rule{0pt}{12pt}
 Attribute & Description\\[2pt]
 \hline
-U.S. Census Bureau units of measure & The U.S. Census Bureau reports data within geographic units. The census block is the smallest geographic unit used by the Census Bureau. Census blocks are typically bounded by streets or natural features. There is no standard size, either by surface area or population, that is used by the Census Bureau.  The data reported in a  census block is 100 per cent of households reported data. There is no sampling or estimations used in census block reported data. Census blocks are assembled into block groups, and block groups then constitute census tracts \cite{usgovndgeographic}. \\	
-Potential for Safety Improvement (PSI)	&	Measures the actual crash cost minus the expected cost of “similar” sites that can be obtained from the crash cost models. In typical usage, an explanatory model using available features is established to predict some measure of cost (e.g., fatality or injury). \cite{ohgov2017} \\	
-Vehicle miles of travel	(VMT) &	A method to account for volume of vehicle traffic. The value is the total annual miles of vehicle travel within a specified zone. Values available from the U. S. Dept of Transportation can be aligned with U.S. Census Bureau urbanized areas. VMT is sometimes also characterized on a per capita basis.\cite{usgov2016vmt}	\\	
-Hotspot & In this context, hotspots are areas with higher density or frequency of pedestrian related accidents \cite{xie2017analysis}. 	\\	
-Regression--to--the mean & Regression to the mean; since traffic fatality events are low volume incidents (on the order of magnitude of 10s for most cities). RTM is a consideration in studies of pedestrian safety because an area in which fatalities occur in one year may not be repeated in the next, even in the absence of implemented changes.  	\cite{xie2017analysis}\\	
-Conditional script questionnaire (CSQ) & A survey tool for assessing expected human behavior under alternative situations. In the context of pedestrian safety, a CSQ requests respondents to self--assess their likelihood to ignore the driving code under different scenarios. The CSQ responses are used in establishing sub--populations that pose increased risk for pedestrian safety. The sub--populations can be based on demographic features (e.g., gender, age) or situational features (e.g., late for work) \cite{gaymard2015conditionality}. 	\\	[2pt]
+Potential for Safety Improvement (PSI)	&	Measures the actual crash cost minus the expected cost of “similar” sites that can be obtained from the crash cost models. In typical usage, an explanatory model using available features is established to predict some measure of cost (e.g., fatality or injury). \cite{ohgov2017} \\		
+Hotspot & In this context, hotspots are areas with higher density or frequency of pedestrian related accidents \cite{xie2017analysis}. 	\\	[2pt]
 \hline
 \end{tabular}
 \end{center}	
@@ -147,10 +143,6 @@ Data Set
 	& Source
 	& Evaluation summary\\[2pt]
 \hline
-Census and demographic
-	& https://www.cincinnati-oh.gov/planning/reports-data/census-demographics
-	& Contains census data for each neighborhood, split into census tracts\newline
-	Data is organized at the neighborhood level, not street level as our final dataset is\\
 Cincinnati open data
 	& https://data.cincinnati-oh.gov
 	& Contains economic, neighborhood safety, and health related data for city of Cincinnati\newline
@@ -233,14 +225,35 @@ Zillow
 \FloatBarrier
 %
 \section{Methods and Experiments}
+%
+\subsection{Data Ingestion and Grid Aggregation}
 
-For this project, our approach consists of two parts.
+Initial results from part 1 of our methodology have produced graphs as shown in Figure ~\ref{figure:SumCrashPlot}. \newline
 
-Part 1 involves extensive exploratory data analysis, using unsupervised techniques to identify clusters and trends within the data. Geolocation based visual representations are used to derive location based patterns. Data like near miss, public complaints, and accidents plotted on the map of Cincinnati provide compelling evidence of issues in the city. The data is plotted through the use of latitude and longitude data present in the datasets to a grid of the city. The city grid is then converted into a spreadsheet in which each cell on the grid contains the data points which were closest to them.
+\FloatBarrier
+\begin{figure}
+ 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{trafficcrashreports20180918nonpedestriansumcostmapped2grid.png}
+ 	\caption{Sum cost of traffic crashes reported from 2012 to October 2018 involving pedestrians by grid cells.}
+	\label{figure:SumCrashPlot}
 
-Part 2 consists of adding cost of injury as in Table ~\ref{table:eventseverity} to our dataset to perform regression analyses. Our dataset consists of accidents with injury, accidents with no injury, and near misses and is simplified using correlation metrics. Feature importance  of each regression method is tabulated so that only significant variables is used in the modeling. This approach aids in quantifying the intensity of accidents and predicting how expensive accidents are. Models with high R$^{2}$, a measurement of how well data fits to the modeled regression line, and low root mean square error, a measure of the difference between the modeled regression line and the data, are considered good models.
+\end{figure}
+\FloatBarrier
 
-Additional algorithms are used in conjunction with the above 2 approaches. T-distributed stochastic neighbor embedding (t-SNE) is used as a visualization tool to view clustering in 2-dimensional space, and principal component analysis (PCA) is used to reduce the dimensionality of the data set for regression, resulting in fewer variables within the dataset. Additionally, natural language processing is used to extract sentiment from the survey data comment field.
+\subsection{Random Forest - Binary Model}
+
+\subsection{Multi-Variate Linear Regression - Cost Model}
+In order to create a linear cost model to predict the cost of a PVI, the data must lend itself to the assumptions of a parametric model. These assumptions include normality, linearity, constant variance, and independence. The response variable within the data has a very abnormal distribution, with nearly 80\% of the reported incidents of PVI resulting in a 0 cost event. This positively skewed data does not meet the assumption of normality even after multiple types of transformations, notably including the logarithmic transformation. In order to meet the assumption of normally distributed data, the data is subset to exclude 0 cost events, and the few events resulting in extreme damage of \$5 million or more. This data subset dramatically reduces the skewness present in the dataset, and allows for linear regression modelling to proceed.
+
+The reduced scope dataset is first run through the 10-fold cross validated stepwise selection of the caret package in R, in order to determine the best full model, ranging from 10 to 35 predictor variables. The function iterates through each number of predictor variables from 10 to 35, performing stepwise 10-fold cross validation for each number of maximum predictor variables. The 10-fold cross validation is a model validation technique used to reduce overfitting and promote the generalizability of the model. Model overfitting can occur when a model is trained on a particular dataset to the degree that it performs extraordinarily well in predicting on the dataset, but it fails to achieve that same level of prediction capability on other datasets. The parameters in an overly fit model do not generalize to the population at large because they are fine tuned to only reflect the dataset on which they were trained. The 10-fold cross validation splits the data into 10 pieces. In each of the 10 iterations, one is selected to be the testing dataset, and the other 9 are used to train the model. This methodology is repeated so that each of the 10 pieces has a chance to be the testing dataset. The result of these 10 trials are averaged and compared against the cross validation results at each other maximum variable value from 10 to 35. The full model chosen is the model with the lowest average root mean square error value, and in our study, was determined to be the model with 30 variables.
+
+Once the full model is selected, it is then manually pruned based on the variance inflation factor values and significance. Variance inflation factor values larger than 5 signify collinearity between variables, and a violation of one of the parametric assumptions in linear regression. Variable significance is determined by the p-value, and the typical value used is .05. Variables at or below the .05 p-value threshold are determined to be statistically significant to the model, while those above it are not. In spite of this black and white view on p-values, some variables are left in the model which are not significant at the .05 level, but are suggestive of being significant influences to the model, as shown in PLACEHOLDER. 
+
+With the reduced model, the cost of injury to pedestrians is predicted for each event, and the resulting prediction is compared against the actual cost of incident. The difference between the predicted and actual cost of injury is the residual, and the residuals are then mapped back to the Cincinnati map to visualize areas with potential for safety improvement.
+
+
+\subsection{Non-Supervised Learning - Neighborhood Characterization}
+
+
 
 To develop the models in a way that supports an assessment of the generalizability of the models,  the dataset is shuffle split into 80:20, 20\% holdout for cross-validation, using the 10-fold cross-validation stratified shuffle split function from the scikit-learn library for Python. The 80\% is then split into a further 80:20 for training and testing. Machine learning and deep learning algorithms are used as listed in Table ~\ref{table:algorithmsandmethods}. Models are compared with each other on different performance metrics, such as the area under curve and brier score.
 %
@@ -379,6 +392,27 @@ Initial results from part 1 of our methodology have produced graphs as shown in 
 \subsection{Random Forest - Binary Model}
 
 The focus of this effort is to identify locations within the city that indicate highest potential for safety improvement. Consistent with the concept as defined and implemented in other works, the model incidents for which the observed experience exceeds the expected (model output) response are the regions with potential for safety improvement. In the context of a binary model, as was completed here with the random forest model, the regions of PSI are the false negative points on the grid map, as presented in Figure ~\ref{figure : rfbinarymap}. For these grid cells, the model result was no expected pedestrian events, yet the observed experience exceeded this expected response. In this case, there are 31 grid cells identified with potential for safety improvement. In the next update to this draft, we will present what are the unique characteristics of these grid cells, where they are located geographically within the city (street and intersection identification) and what was the ac
+%
+\section{Results}
+%
+\subsection{Data Ingestion and Grid Aggregation}
+
+\subsection{Random Forest - Binary Model}
+
+\subsection{Multi-Variate Linear Regression - Cost Model}
+
+\subsection{Non-Supervised Learning - Neighborhood Characterization}
+
+%
+\section{Analysis}
+%
+\subsection{Data Ingestion and Grid Aggregation}
+
+\subsection{Random Forest - Binary Model}
+
+\subsection{Multi-Variate Linear Regression - Cost Model}
+
+\subsection{Non-Supervised Learning - Neighborhood Characterization}
 
 %
 \section{Ethics}
