@@ -306,14 +306,14 @@ RegDataPredReduced <- RegDataPredReduced %>% mutate(cost_gt_pred = if_else(is.ne
 ReducedPlot <- ggplot(data = RegDataPredReduced) + 
   geom_point(aes(x = predict, y = sum_cost_pedestrian_events, colour = 'Negative Residuals')) +
   geom_point(aes(x = predict, y = cost_gt_pred, colour = "Positive Residuals")) +
-  stat_smooth(color = 'dodgerblue3', aes(x = predict, y = sum_cost_pedestrian_events), se=F, method = lm, fullrange = TRUE) +
+  #stat_smooth(color = 'dodgerblue3', aes(x = predict, y = sum_cost_pedestrian_events), se=F, method = lm, fullrange = TRUE) +
   scale_y_continuous(breaks = seq(0,5,.5)) +
   ylim(0,5) +
   scale_x_continuous(breaks = seq(0,5,.5)) +
   xlim(0,5) +
-  ylab("Actual Sum Cost ($ in Millions)") +
-  xlab("Predicted Sum Cost ($ in Millions)") +
-  ggtitle("Predicted vs Actual Cost of Injury", subtitle = "Reduced Linear Model") +
+  ylab("Observed Sum Cost ($ in Millions)") +
+  xlab("Expected Sum Cost ($ in Millions)") +
+  ggtitle("Expected vs Observed Cost of Non-Fatality Incident", subtitle = "Reduced Linear Model") +
   theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5), legend.position = c(0.8,0.3)) + #Centers title and subtitle
   scale_color_manual(values = c('Negative Residuals' = 'springgreen4', 'Positive Residuals' = 'red4'), name = "Points") +
   theme(text = element_text(size = 25)) 
