@@ -254,7 +254,7 @@ To develop the models in a way that supports an assessment of the generalizabili
 \rule{0pt}{12pt}
 Algorithm	&	Models	\\[2pt]
 \hline
-Regression 	&	1.        Multiple Regression	\newline
+Regression 	&	1.        Multiple Regression	
 				2.        Support Vector Machine	\newline
 				3.        Decision Tree	\\
 Unsupervised Learning	&	1.        Clustering	\newline
@@ -275,17 +275,111 @@ Additional 	&	1.        T-Distributed Stochastic Neighbor Embedding	\newline
 %
 \section{Results}
 %
-Initial results from part 1 of our methodology have produced graphs as shown in Figure ~\ref{figure:SumCrashPlot}. \newline
-\begin{figure}
+\subsection{Data aggregation and grid cell assignment}
 
- 	\includegraphics[height=8cm]{TrafficCrashReports20180918SumCostMapped2Grid}
+The results of several of the data sets aggregated and assigned to each respective grid cell are shown in following figures. In summary, the following features were mapped into the grid cells as candidate features to participate in the modeling :
+
+\FloatBarrier
+\begin{table}
+\begin{center}
+\caption{Feature Definition}
+\label{table : featureDefinition}
+\begin{tabular}{p{50mm} p{60mm}}
+\hline
+\rule{0pt}{12pt}
+Data category & Specific feature definition	\\[2pt]
+\hline
+Non-pedestrian accidents 		& Number Events \newline
+															Sum cost (NSC) for events \\
+Pedestrian survey responses & TBD in next update \\
+Reported near misses 				& Number events \newline
+                                                            Categorical feature counts \\
+Street surface areas 				& Surface total length \newline
+                                                            Sum lane counts  \\
+Walk Scores 								& Max, Mean, Min  \\
+Fire incidents 								& TBD in next update  \\
+Non-emergency service requests & Sum number requests \newline
+                                                                      Categorical feature counts\\ 
+Property values \& uses 			& Median prperty values \newline
+                                                            Number of property transfers in 10-year period  \\
+Public transportation accessibility & Distance to nearest bus stop \\[2pt]
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+\FloatBarrier
+%
+
+
+Figure ~\ref{figure : maxWalkScores}. \newline
+\FloatBarrier
+\begin{figure}
+ 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{maxWalkScores.png}
+ 	\caption{Walk Score - Max values}
+	\label{figure : maxWalkScores}
+\end{figure}
+\FloatBarrier
+
+
+Figure ~\ref{figure : busStopDistance}. \newline
+\FloatBarrier
+\begin{figure}
+ 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{busStopDistance.png}
+ 	\caption{Public Transportaton accessibility}
+	\label{figure : busStopDistance}
+\end{figure}
+\FloatBarrier
+
+Figure ~\ref{figure : trafficAccidents}. \newline
+\FloatBarrier
+\begin{figure}
+ 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{trafficAccidents.png}
+ 	\caption{Number of Traffic Accidents (Non-pedestrian involved)}
+	\label{figure : busStopDistance}
+\end{figure}
+\FloatBarrier
+
+\subsection{Random Forest - Binary Model}
+
+The random forest model which we deployed to estimate occurrence of pedestrian related events produces the result of 75\% true positive, 20\% false positive with a detection threshold set at 0.20. This result provides a balanced compromise between true positive and false positive, as depicted in the following Figure ~\ref{figure : rfroccurve}. \newline
+\FloatBarrier
+\begin{figure}
+ 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{RFROC.png}
+ 	\caption{Random forest - binary model - ROC curve}
+	\label{figure : rfroccurve}
+\end{figure}
+\FloatBarrier
+
+As visualized on the map of the city, Figure ~\ref{figure : rfbinarymap}, we observe that (a) the regions of true positve (green) and true negative (light grey) comprise the large majority of the surface area, generally represented by contiguous areas, and confirm the high overall accuracy of the model, (b) that the false positive (darker grey) and false negative (red dots) are consistently along the border regions between otherwise true positive or true negative regions, and (c)  the false negative regions are distinct non-connected grid cells at somewhat widely distributed locations around the city.
+\newline
+
+\FloatBarrier
+\begin{figure}
+ 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{RFBinaryResultsMap.png}
+ 	\caption{Distribution of random forest model results visualized on city map}
+	\label{figure : rfbinarymap}
+\end{figure}
+\FloatBarrier
+
+\subsection{Multi-variate linear regression - Cost Model}
+
+\subsection{Non-supervised learning - Neighborhood characterization}
+
+Initial results from part 1 of our methodology have produced graphs as shown in Figure ~\ref{figure:SumCrashPlot}. \newline
+\FloatBarrier
+\begin{figure}
+ 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{TrafficCrashReports20180918SumCostMapped2Grid.png}
  	\caption{Sum cost of traffic crashes reported from 2012 to October 2018 involving pedestrians by grid cells.}
 	\label{figure:SumCrashPlot}
-
 \end{figure}
+\FloatBarrier
 %
 \section{Analysis}
 %
+\subsection{Random Forest - Binary Model}
+
+The focus of this effort is to identify locations within the city that indicate highest potential for safety improvement. Consistent with the concept as defined and implemented in other works, the model incidents for which the observed experience exceeds the expected (model output) response are the regions with potential for safety improvement. In the context of a binary model, as was completed here with the random forest model, the regions of PSI are the false negative points on the grid map, as presented in Figure ~\ref{figure : rfbinarymap}. For these grid cells, the model result was no expected pedestrian events, yet the observed experience exceeded this expected response. In this case, there are 31 grid cells identified with potential for safety improvement. In the next update to this draft, we will present what are the unique characteristics of these grid cells, where they are located geographically within the city (street and intersection identification) and what was the ac
+
 %
 \section{Ethics}
 %
@@ -305,6 +399,8 @@ Thirdly, within the City of Cincinnati, there are currently several on-going ini
 The ethical considerations associated to this project are adequately assessed in the spirit of the ACM Code. The identified risks are appropriately mitigated.
 %
 \section{Conclusions (and Future Work)}
+%
+
 %
 % ---- Bibliography ----
 %
