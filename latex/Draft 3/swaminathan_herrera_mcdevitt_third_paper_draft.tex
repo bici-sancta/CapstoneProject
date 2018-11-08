@@ -254,7 +254,17 @@ With the reduced model, the cost of non-fatality incidents to pedestrians is pre
 
 \subsection{Non-Supervised Learning - Neighborhood Characterization}
 
+For unsupervized learning dataset without the dependent attribute sum_pedestrian_cost is run through t-sne algorithm for perplexities 10 to 500 to obtain optimal cluster group. Each perplexities returns in its own t-sne outputs X1 and X2. We picked perplexity 50 to run unsupervised algorithms. 
+Using 2 outputs of t-sne algorithm and combining it with the original dataset Kmeans and hierarchical clustering approaches were used.  Optimal cluster was chosen based on silhouette score which is kmeans 3 clusters.  The 3 labels are then plotted on the Cincinnati grid map to make sense of the distribution. 
 
+\FloatBarrier
+\begin{figure}
+ 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{perplexity.png}
+ 	\caption{Spread of data visulized using t-sne.}
+	\label{figure:perplexity}
+
+\end{figure}
+\FloatBarrier
 
 To develop the models in a way that supports an assessment of the generalizability of the models,  the dataset is shuffle split into 80:20, 20\% holdout for cross-validation, using the 10-fold cross-validation stratified shuffle split function from the scikit-learn library for Python. The 80\% is then split into a further 80:20 for training and testing. Machine learning and deep learning algorithms are used as listed in Table ~\ref{table:algorithmsandmethods}. Models are compared with each other on different performance metrics, such as the area under curve and brier score.
 %
@@ -379,6 +389,19 @@ As visualized on the map of the city, Figure ~\ref{figure : rfbinarymap}, we obs
 
 \subsection{Non-supervised learning - Neighborhood characterization}
 
+For each attribute distribution and scatter plots are generated to visualize the impact of it in the cluster. Attributes like property type commercial was heavily clustered in 1 or the green areas as in Figure ~\ref{figure : kmeansongrid}, while residential and industrial were lot more distributed. Issues like metal trash were more in industrial areas which was in the cluster 2 or red neighborhoods. Water leak was more an issue in cluster 0 or blue areas.
+
+Combining attribute behavior and clusters on the map, pedestrian saftey issues in each cluster are identified. These issues are then mapped to the actual locality or neighborhood to draw conclusions.
+
+\FloatBarrier
+\begin{figure}
+ 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{kmeansongrid.png}
+ 	\caption{Cluster results on map of Cincinatti}
+	\label{figure : kmeansongrid}
+\end{figure}
+\FloatBarrier
+
+
 Initial results from part 1 of our methodology have produced graphs as shown in Figure ~\ref{figure:SumCrashPlot}. \newline
 \FloatBarrier
 \begin{figure}
@@ -437,7 +460,9 @@ The ethical considerations associated to this project are adequately assessed in
 \section{Conclusions (and Future Work)}
 %
 
-This study demonstrates a methodology to identify areas within the city of Cincinnati, Ohio with the largest potential for safety improvement, based on many open-source datasets made public by the city. Over twenty 250 meter by 250 meter plots of land within the city have been identified for further investigation to determine why the cost of incident within that area are abnormally high as compared to our models. These locations include several areas in the Westwood neighborhood, Clifton, Avondale, Walnut Hills, Bond Hill, and more. Our unsupervised learning techniques…PLACEHOLDER SENTENCES ABOUT HOW OUR UNSUPERVISED LEARNING TECHNIQUES HAVE OUTLINED AREAS WHICH HAVE POTENTIAL FOR SAFETY IMPROVEMENT. THESE AREAS DEMONSTRATE THESE QUALITIES WHICH ARE RELATED TO PEDESTRIAN SAFETY IN THE CITY OF CINCINNATI OHIO.
+This study demonstrates a methodology to identify areas within the city of Cincinnati, Ohio with the largest potential for safety improvement, based on many open-source datasets made public by the city. Over twenty 250 meter by 250 meter plots of land within the city have been identified for further investigation to determine why the cost of incident within that area are abnormally high as compared to our models. These locations include several areas in the Westwood neighborhood, Clifton, Avondale, Walnut Hills, Bond Hill, and more. 
+
+for our unsupervised learning we are looking at top pedestrian safety issue in each cluster. Vehicle running red light or stop light is concern for blue cluster, which are Westwood, Mt. Washington and East End neighborhoods.  Heavy traffic in areas of green which are Over-The-Rhine, Mt. Auburn and Central Business District. There is need for increased sidewalks in Clifton, Madisonville, Walnut Hills and Mt. Washington areas. Over-the-Rhine, Downtown and Clifton needs more bike friendly zones.
 
 Future work to further this project could involve the use of other regression modelling techniques to improve accuracy, such as tobit models. Other improvements which could be made include STUFF GOES HERE FROM PATRICK AND PREETI ABOUT WAYS TO IMPROVE YOUR TECHNIQUES AND MODELS.
 
