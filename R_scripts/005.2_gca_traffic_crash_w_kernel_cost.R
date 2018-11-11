@@ -132,12 +132,13 @@ dev.off()
 
 ped_crash$injury_type_num <- sapply(ped_crash$injuries, substr, 1, 1)
 ped_crash$injury_type_num <- as.integer(ped_crash$injury_type_num)
+
 ped_crash$cost <- sapply(ped_crash$injury_type_num, switch, 
-                  '5' = 10.082, 
-                  '4' = 1.103, 
-                  '3' = 0.304, 
-                  '2' = 0.141,
-                  '1' = 0.046)
+                  "1" = 0.046,
+                  "2" = 0.141,
+                  "3" = 0.304, 
+                  "4" = 1.103, 
+                  "5" = 10.082) 
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # ...   read in shapefile of neighborhoods for plotting
@@ -176,6 +177,18 @@ df_stops_city <- df_stops_city[!is.na(df_stops_city$RegionID),]
 
 ped_crash <- df_stops_city
 
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# ...   temporary reduction to evaluate kernel function
+# ...   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+#ped_crash <- ped_crash[ped_crash$crashseverityid == 1,]
+
+#ped_crash <- ped_crash[ped_crash$instanceid == "A9279468-2855-4412-8274-03B240A2D523"
+#                                            |
+#                       ped_crash$instanceid == "F2692C22-1165-4518-B15F-3241E4F7007E"
+#                                            |
+#                       ped_crash$instanceid == "8524CD34-5625-4EB7-ABCE-FC6E487B29B3", ]
+
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # ...   assign data values to grid cell
@@ -188,55 +201,48 @@ sp.grid_centroid <- grid_centroid
 coordinates(sp.grid_centroid) <- ~long+lat
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-# ...   calculate distance pairs between all point pairs
-# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-dist_pair <- gDistance(sp.df_to_map, sp.grid_centroid, byid = TRUE)
-
-dist_pair_s <- dist_pair
-for(i in 1 : nrow(dist_pair_s))
-{
-    dist_pair_s[i,] <- dist_pair_s[i,][order(dist_pair_s[i,], decreasing = FALSE)]
-}
-
-dist_pair_t <- t(dist_pair)
-for(i in 1 : nrow(dist_pair_t))
-{
-    dist_pair_t[i,] <- dist_pair_t[i,][order(dist_pair_t[i,], decreasing = FALSE)]
-}
-
-# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # ...   kernel radius search distance
 
 r_kernel = 0.005
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# ...   calculate distance pairs between all point pairs
+# ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-qt <- list()
-sf <- list()
+dist_pair <- gDistance(sp.df_to_map, sp.grid_centroid, byid = TRUE)
 
-for (ip in 1 : nrow(dist_pair_t))
+dist_pair[dist_pair > r_kernel] <- NA
+
+dist_pair_sf <- (1 - (dist_pair / r_kernel) ^ 2) ^ 2
+
+sf_sf <- 1 / colSums(dist_pair_sf, na.rm = TRUE)
+
+dp_sf_t <- t(dist_pair_sf)
+
+dp_kcc <- data.frame(cbind(dp_sf_t, sf_sf, ped_crash$cost, 1))
+
+dp_kcc_scaled <- subset(dp_kcc, select = -c(sf_sf, V4198, V4199))
+dp_kcc_event_cnt <- subset(dp_kcc, select = -c(sf_sf, V4198, V4199))
+
+for (icol in 1 : 4196)
 {
-    j <- 1
-    qt[[ip]] <- 0
-    sf[[ip]] <- 0
-    while(dist_pair_t[ip, j] < r_kernel)
-    {
-        qt[[ip]] <- qt[[ip]] + (1 - (dist_pair_t[ip, j] / r_kernel) ^ 2) ^ 2
-        j <- j + 1
-    }
-    if (qt[[ip]] > 0) sf[[ip]] <- 1 / qt[[ip]]
+    dp_kcc_scaled[,icol] <- dp_kcc[,icol] * dp_kcc[,4197] * dp_kcc[,4198]
+    dp_kcc_event_cnt[,icol] <- dp_kcc[,icol] * dp_kcc[,4197] * dp_kcc[,4199]
 }
 
-gc <- list()
-for (ip in 1 : nrow(dist_pair_s))
-{
-    gc[[ip]] <- 0
-    for (j in 1 : length(sf))
-    {
-        if(dist_pair_s[ip, j] < r_kernel) {gc[[ip]] <- gc[[ip]] + (sf[[j]] * ped_crash$cost[j])}
-    }
-}
+dp_kcc_t <- data.frame(t(dp_kcc_scaled))
+df_kcc <- data.frame(rowSums(dp_kcc_t, na.rm = TRUE))
+names(df_kcc) <- c("krnl_cost")
+
+dp_kcc_cnt <- data.frame(t(dp_kcc_event_cnt))
+df_kcc_cnt <- data.frame(rowSums(dp_kcc_cnt, na.rm = TRUE))
+names(df_kcc_cnt) <- c("num_events")
+
+log_floor <- min(df_kcc[df_kcc$krnl_cost > 0,])/exp(1)
+log_floor_events <- min(df_kcc[df_kcc_cnt$num_events > 0,])/exp(1)
+
+hist(log(df_kcc$krnl_cost + log_floor), col = "dodgerblue4")
+hist(log(df_kcc_cnt$num_events + log_floor_events), col = "dodgerblue3")
 
 # ...   define corresponding columns from grid data frame
 
@@ -247,10 +253,7 @@ for (ip in 1 : nrow(dist_pair_s))
 
 # ...   new data frame ... all prior columns + grid centroid identifiers and coords
 
-df_gc <- data.frame(unlist(gc))
-names(df_gc) <- "kernelized_cost"
-
-df_mapped_to_grid <- cbind(grid_centroid, df_gc)
+df_mapped_to_grid <- cbind(grid_centroid, df_kcc, df_kcc_cnt)
 
 cols_2_drop <- c("ix", "iy", "State", "County", "City", "Name", "RegionID")
 
@@ -303,15 +306,15 @@ png(filename = paste0(infile, "_sum_cost", "_mapped_2_grid.png"),
     pointsize = 12, 
     res = 72)
 
-
 hoods +
-    geom_point(data = ped_crash_agg, aes(x = long_cell, y = lat_cell, color = sum_cost), shape = 15, size = 2.5, alpha = 0.8) + 
+    geom_point(data = df_mapped_to_grid, aes(x = long, y = lat, color = log10(krnl_cost)),
+               shape = 19,
+               size = 2.75,
+               alpha = 0.8) + 
     geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2, alpha = 0.2) +
-    geom_point(data = df_mapped_to_grid, aes(x = long, y = lat), color = "black", shape = 5, size = 0.2, alpha = 0.4) +
-    ggtitle(infile) +
+    ggtitle("Pedestrian - Cost (kernel distributed, r = 0.005)") +
     xlab("Longitude") + ylab("Latitude") +
-#    theme_void() +
-  scale_color_gradientn(colors = rev(rainbow(9))[3:9]) +
+    scale_color_gradientn(colors = rev(rainbow(9))[2:9])
     coord_cartesian(xlim = c(-84.25, -84.75), ylim = c(39., 39.25))
 
 dev.off()
@@ -326,21 +329,15 @@ png(filename = paste0(infile, "_num_events", "_mapped_2_grid.png"),
     res = 72)
 
 hoods +
-    geom_point(data = df_mapped_to_grid, aes(x = long, y = lat, color = log10(kernelized_cost)),
+    geom_point(data = df_mapped_to_grid, aes(x = long, y = lat, color = log2(num_events)),
                shape = 19,
                size = 2.75,
-               alpha = 0.5) + 
-    geom_point(data = df_mapped_to_grid, aes(x = long, y = lat),
-               shape = 21,
-               size = 2.75,
-               alpha = 1, color = "darkgrey") + 
-#    geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2, alpha = 0.2) +
-#    geom_point(data = df_mapped, aes(x = long, y = lat), color = "black", shape = 5, size = 0.2, alpha = 0.4) +
-    ggtitle("Pedestrian Crash Cost (kernel distributed, r = 0.005)") +
+               alpha = 0.8) + 
+    geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2, alpha = 0.2) +
+    ggtitle("Pedestrian - Num Events (kernel distributed, r = 0.005)") +
     xlab("Longitude") + ylab("Latitude") +
-#    theme_void() +
-  scale_color_gradientn(colors = rev(rainbow(9))[3:9])
-#    coord_cartesian(xlim = c(-84.25, -84.75), ylim = c(39., 39.25))
+    scale_color_gradientn(colors = rev(rainbow(9))[2:9])
+    coord_cartesian(xlim = c(-84.25, -84.75), ylim = c(39., 39.25))
 
 dev.off()
 
