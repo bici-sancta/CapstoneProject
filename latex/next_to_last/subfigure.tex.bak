@@ -1,0 +1,66 @@
+
+\documentclass{llncs}
+%
+% additional packages added to comply wth format recommendations
+%
+\usepackage{makeidx}  % allows for indexgeneration
+\usepackage[strings]{underscore} % allows underscore
+\usepackage{float} % position tables inline
+\usepackage{placeins}
+\usepackage{caption}
+\captionsetup[table]{singlelinecheck=false,
+					labelfont=bf,
+					justification=raggedright,
+					labelsep=period}
+\usepackage{textcomp}
+\usepackage{colortbl}
+\usepackage{graphicx}
+
+
+% ... -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+% ...	 directory paths for images
+% ... -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+\graphicspath{
+    {.} % document root dir
+    {images/}
+}
+
+
+\usepackage{subcaption}		% enables side-by-side figures
+\captionsetup{compatibility = false}	% needed for subcaption package
+
+
+
+\begin{document}
+
+
+the below double figure ~\ref{figure : dataFeatureDevelopment}.
+
+\begin{figure}
+
+  \begin{subfigure}[b]{0.5\textwidth}
+    \includegraphics[width = \textwidth, height = \textheight, keepaspectratio]{trafficAccidents.png}
+    \caption{Walk Score - Max values}
+    \label{fig:1}
+  \end{subfigure}
+  %
+  \begin{subfigure}[b]{0.5\textwidth}
+    \includegraphics[width = \textwidth, height = \textheight, keepaspectratio]{busStopDistance.png}
+    \caption{Public Transportaton accessibility}
+    \label{fig:2}
+  \end{subfigure}
+\end{figure}
+
+\begin{center}
+  \begin{tabular}{ *{2}{c} }
+    \small A & \small B \\
+    \includegraphics[height=3cm]{trafficAccidents} &
+    \includegraphics[height=3cm]{busStopDistance}
+  \end{tabular}
+
+This is a pseudo-caption.
+\end{center}
+
+
+\end{document}
