@@ -402,3 +402,55 @@ ggsave(filename = "Residuals_Plot_HD.png", width = 24, height = 13.4, units = "i
 ggsave(filename = "Residuals_Plot.png", width = 16, height = 9, units = "in")
 
 
+############################################ TWO PART BELOW ######################
+
+
+setwd(home_dir)
+#setwd("./regression/")
+setwd(data_dir)
+
+infile = "Residuals_by_Gridcell_Two_Part_Model.csv"
+df_rgr_results <- read.csv(infile,
+                           stringsAsFactors = FALSE, header = TRUE)
+names(df_rgr_results) <- tolower(names(df_rgr_results))
+
+df_rgr_model <- merge(df_plot, df_rgr_results, by = "cell_id")
+
+
+
+png(filename = paste0("_ppt", "_regression_residuals_results", "_map.png"), 
+    units = "in", 
+    width = plot_width,
+    height = plot_height,
+    pointsize = plot_pointsize, 
+    res = plot_res)
+
+title <- "Regression Residuals - PSI Regions"
+
+ResidualsPlot <- hoods +
+  geom_point(data = df_rgr_model, aes(x = long.x, y = lat.x, color = residuals), shape = 19, size = 3, alpha = 1) + 
+  geom_point(data = grid_centroid, aes(x = long, y = lat), color = "forestgreen", size = 0.2, alpha = .2) +
+  
+  ggtitle(title) +
+  xlab("Longitude") + ylab("Latitude") +
+  theme(text = element_text(size = 25)) +
+  theme(legend.position = c(0.05, 0.9)) +
+  theme(legend.title = element_text(colour = "#666666FF", size = 15, face = "bold")) + 
+  theme(legend.text = element_text(colour = "#666666FF", size = 15, face = "bold")) + 
+  theme(legend.justification = c(0, 1)) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  #    scale_color_gradientn(colors = (rainbow(9)[4:9])) +
+  #    scale_color_gradient2(low = "green", mid = "white", high = "red", midpoint = 0) +
+  scale_color_distiller(palette = "Spectral", name = "Residual Value") +
+  #    scale_color_manual(values = c("#CC2222FF", "#AAAAAA33", "#CCCCCC66", "#44CC44FF")) +
+  coord_cartesian(xlim = x_plot_limits, ylim = y_plot_limits)
+dev.off()
+
+ResidualsPlot
+
+
+setwd(home_dir)
+setwd(plot_dir)
+
+ggsave(filename = "Residuals_Plot_Two_Part_HD.png", width = 24, height = 13.4, units = "in", dpi = 100.13)
+ggsave(filename = "Residuals_Plot_Two_Part.png", width = 16, height = 9, units = "in")
