@@ -56,14 +56,14 @@ Dallas, TX 75275 USA\\
 \maketitle              % typeset the title of the contribution
 
 \begin{abstract}
-In this paper, we present a method to identify urban areas with a higher likelihood of pedestrian safety related events. Pedestrian safety related events are pedestrian–-vehicle interactions that result in fatalities, injuries, accidents without injury, or a near--miss between pedestrian and vehicle. To develop a solution to this problem of identifying likely locations of events, we assemble data sets, primarily from the City of Cincinnati, that include safety reports from a 5 year period, geographic information for these events, a citizen survey that identifies pedestrian reported concerns, and a database of all requests for service for any cause in the city. We augment that data with sports-tracking geolocation movement data of pedestrians, runners, and cyclists. From this assembled data set we complete unsupervised learning using a self--organizing map, excluding the event data. The event data is subsequently mapped into the self-organizing map clusters to identify the statistical likelihood of events in each cluster. The results indicate a statistically significant association between clusters and events. The results identify locations in urban areas for prioritized remediation enabling a proactive approach to improved pedestrian safety.
+In this paper, we present a method to identify urban areas with a higher likelihood of pedestrian safety related events. Pedestrian safety related events are pedestrian–-vehicle interactions that result in fatalities, injuries, accidents without injury, or a near--miss between pedestrian and vehicle. To develop a solution to this problem of identifying likely locations of events, we assemble data sets, primarily from the City of Cincinnati, that include safety reports from a 5 year period, geographic information for these events, a citizen survey that identifies pedestrian reported concerns, and a database of all requests for service for any cause in the city. From this assembled data set we complete unsupervised learning along with multivariate linear regression. The results indicate areas with a high potential for safety improvement for prioritized remediation enabling a proactive approach to improved pedestrian safety.
 \end{abstract}
 %
 \section{Introduction}
 %
 \emph{An early-morning walk is a blessing for the whole day} -– Henry David Thoreau \cite{thoreau1906writings}. So, begins the choice every day for urban dwellers -– to walk or not to walk –- to have a blessing as proposed by Thoreau, or to assess the daily commute -- as summarized by Jeff Kober \cite{bowen2015zen}: \emph{My intention is to get done with this commute \dots my intention will not be met until I get out of this car} –- as just a rather unpleasant means to get from point A to point B.
 
-A walkable neighborhood is a neighborhood with the following characteristics : a center (either a main street or public space), sufficient population density to support local businesses and public transit, affordable housing, public spaces, streets designed for bicyclists and pedestrians, and schools and workplaces within walking distance for residents \cite{wal2018walkable}. As the modern urban landscape has evolved in the US over the last fifty years, pedestrianism was not often on the list of high priorities for inclusion into the development of urban environments. As a result of this trend, there have been real, and negative, consequences: economically, epidemiologically, and environmentally on the inhabitants of many cities in western developed countries \cite{speck2013walkable}. Economically, we can observe that the percentage of income spent on transportation for working families has doubled, from one-tenth to one-fifth of household earnings from the 1970s to current era \cite{speck2013walkable}. So much so that working families are currently spending more of their budget on transportation than housing. If we consider the health effects of urban living patterns, we observe that people living in less walkable neighborhoods are nearly twice as likely to be obese than people that live in walkable neighborhoods \cite{speck2013walkable}. This statistic, coupled with the fact that Americans now walk the least of any industrialized nation in the world \cite{lee2014suburban} indicate a growing health problem due in part to a lack of physical activity. When constructed on a per-household basis, carbon mapping clearly demonstrates that suburban dwellers generate nearly twice as much carbon-dioxide, the main pollutant contributing to global warming \cite{climatendclimate}, than do urban dwellers due to longer commutes and larger houses \cite{speck2013walkable}.
+A walkable neighborhood is a neighborhood with the following characteristics:a center (either a main street or public space), sufficient population density to support local businesses and public transit, affordable housing, public spaces, streets designed for bicyclists and pedestrians, and schools and workplaces within walking distance for residents \cite{wal2018walkable}. As the modern urban landscape has evolved in the US over the last fifty years, pedestrianism was not often on the list of high priorities for inclusion into the development of urban environments. As a result of this trend, there have been real, and negative, consequences: economically, epidemiologically, and environmentally on the inhabitants of many cities in western developed countries \cite{speck2013walkable}. Economically, we can observe that the percentage of income spent on transportation for working families has doubled, from one-tenth to one-fifth of household earnings from the 1970s to current era \cite{speck2013walkable}. So much so that working families are currently spending more of their budget on transportation than housing. If we consider the health effects of urban living patterns, we observe that people living in less walkable neighborhoods are nearly twice as likely to be obese than people that live in walkable neighborhoods \cite{speck2013walkable}. This statistic, coupled with the fact that Americans now walk the least of any industrialized nation in the world \cite{lee2014suburban} indicate a growing health problem due in part to a lack of physical activity. When constructed on a per-household basis, carbon mapping clearly demonstrates that suburban dwellers generate nearly twice as much carbon-dioxide, the main pollutant contributing to global warming \cite{climatendclimate}, than do urban dwellers due to longer commutes and larger houses \cite{speck2013walkable}.
 
 There is a growing movement in the US and other western nations to promote the concept of walkable cities as healthier places to live - economically, environmentally and physiologically - than the suburban, exurban, drive-till-you-qualify model of modern western development \cite{leyden2003social} \cite{steffen2008worldchanging} \cite{doyle2006active}. As identified in the Toronto Pedestrian Charter \cite{toronto2002toronto} the six principles for building a vital urban pedestrian environment include: accessibility, equity, health and well-being, environmental sustainability, personal and community safety, and community cohesion and vitality. According to the city of Toronto, this is the first such pedestrian bill of rights in the world and promotes the concept that walking is valued for its social, environmental, and economic benefits.
 
@@ -82,7 +82,7 @@ There are a range of severities associated to the outcomes of pedestrian--vehicl
 \FloatBarrier
 \begin{table}[!h]
 \begin{center}
-\caption{Event Cost Severity, 201X NSC NEEDS CITATION!!!: https://www.nsc.org/Portals/0/Documents/NSCDocuments_Corporate/estimating-costs.pdf }
+\caption{Event Cost Severity, 2012 \cite{nsc2012estimating}}
 \label{table:eventseverity}
 \begin{tabular}{p{50mm}  p{50mm}}
 \hline
@@ -226,18 +226,7 @@ Zillow
 %
 \section{Methods and Experiments}
 %
-\subsection{Data Ingestion and Grid Aggregation}
-
-Initial results from part 1 of our methodology have produced graphs as shown in Figure ~\ref{figure:SumCrashPlot}. \newline
-
-\FloatBarrier
-\begin{figure}
- 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{trafficcrashreports20180918nonpedestriansumcostmapped2grid.png}
- 	\caption{Sum cost of traffic crashes reported from 2012 to October 2018 involving pedestrians by grid cells.}
-	\label{figure:SumCrashPlot}
-
-\end{figure}
-\FloatBarrier
+\subsection{Data Ingestion and Grid-Cell Aggregation}
 
 \subsection{Random Forest - Binary Model}
 
@@ -246,50 +235,26 @@ In order to create a linear cost model to predict the cost of a PVI, the data mu
 
 The reduced scope dataset is first run through the 10-fold cross validated stepwise selection of the caret package in R, in order to determine the best full model, ranging from 10 to 35 predictor variables. The function iterates through each number of predictor variables from 10 to 35, performing stepwise 10-fold cross validation for each number of maximum predictor variables. The 10-fold cross validation is a model validation technique used to reduce overfitting and promote the generalizability of the model. Model overfitting can occur when a model is trained on a particular dataset to the degree that it performs extraordinarily well in predicting on the dataset, but it fails to achieve that same level of prediction capability on other datasets. The parameters in an overly fit model do not generalize to the population at large because they are fine tuned to only reflect the dataset on which they were trained. The 10-fold cross validation splits the data into 10 pieces. In each of the 10 iterations, one is selected to be the testing dataset, and the other 9 are used to train the model. This methodology is repeated so that each of the 10 pieces has a chance to be the testing dataset. The result of these 10 trials are averaged and compared against the cross validation results at each other maximum variable value from 10 to 35. The full model chosen is the model with the lowest average root mean square error value, and in our study, was determined to be the model with 30 variables.
 
-Once the full model is selected, it is then manually pruned based on the variance inflation factor values and significance. Variance inflation factor values larger than 5 signify collinearity between variables, and a violation of one of the parametric assumptions in linear regression. Variable significance is determined by the p-value, and the typical value used is .05. Variables at or below the .05 p-value threshold are determined to be statistically significant to the model, while those above it are not. In spite of this black and white view on p-values, some variables are left in the model which are not significant at the .05 level, but are suggestive of being significant influences to the model, as shown in PLACEHOLDER1. 
+Once the full model is selected, it is then manually pruned based on the variance inflation factor values and significance. Variance inflation factor values larger than 5 signify collinearity between variables, and a violation of one of the parametric assumptions in linear regression. Variable significance is determined by the p-value, and the typical value used is .05. Variables at or below the .05 p-value threshold are determined to be statistically significant to the model, while those above it are not. In spite of this black and white view on p-values, some variables are left in the model which are not significant at the .05 level, but are suggestive of being significant influences to the model, as shown in Table ~\ref{table:RegressionAnalysis}. 
 
 With the reduced model, the cost of non-fatality incidents to pedestrians is predicted for each event, and the resulting prediction is compared against the actual cost of incident. The difference between the predicted and actual cost is the residual, and the residuals are then mapped back to the Cincinnati map to visualize areas with potential for safety improvement.
 
-
-
 \subsection{Non-Supervised Learning - Neighborhood Characterization}
 
+For unsupervized learning, a dataset is used which does not contain the response variable and is run through the t-sne algorithm, using perplexities 10 to 500 to obtain optimal cluster groupings. Each perpexity returns in its own t-sne outputs of X1 and X2. We picked perplexity 50 to run unsupervised algorithms, as shown in Figure ~\ref{figure:perplexity} . Using the 2 outputs of the t-sne algorithm and combining it with the original dataset, Kmeans and hierarchical clustering approaches were able to be applied.  Optimal clusters were chosen based on silhouette score, which is determined that 3 clusters are optimal to use in k-mean clustering.  The labels are then plotted on the Cincinnati grid map to create visualization. 
 
-
-To develop the models in a way that supports an assessment of the generalizability of the models,  the dataset is shuffle split into 80:20, 20\% holdout for cross-validation, using the 10-fold cross-validation stratified shuffle split function from the scikit-learn library for Python. The 80\% is then split into a further 80:20 for training and testing. Machine learning and deep learning algorithms are used as listed in Table ~\ref{table:algorithmsandmethods}. Models are compared with each other on different performance metrics, such as the area under curve and brier score.
-%
 \FloatBarrier
-\begin{table}
-\begin{center}
-\caption{Algorithms and evaluation methods}
-\label{table:algorithmsandmethods}
-\begin{tabular}{p{50mm} p{60mm}}
-\hline
-\rule{0pt}{12pt}
-Algorithm	&	Models	\\[2pt]
-\hline
-Regression 	&	1.        Multiple Regression	
-				2.        Support Vector Machine	\newline
-				3.        Decision Tree	\\
-Unsupervised Learning	&	1.        Clustering	\newline
-				\hspace*{5mm} a.        K-means	\newline
-				\hspace*{5mm} b.        Hierarchical 	\newline
-				2.        Gaussian Mixture Models	\newline
-				3.        Neural Networks	\newline
-				\hspace*{5mm} a.        Self Organizing Maps	\\
-Additional 	&	1.        T-Distributed Stochastic Neighbor Embedding	\newline
-				2.        Principal Component Analysis	\newline
-				3.        Linear Discriminate Analysis	\newline
-				4.        Natural Language Processing	\\[2pt]
-\hline
-\end{tabular}
-\end{center}
-\end{table}
+\begin{figure}
+ 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{perplexity.png}
+ 	\caption{Spread of data visulized using t-sne.}
+	\label{figure:perplexity}
+
+\end{figure}
 \FloatBarrier
 %
 \section{Results}
 %
-\subsection{Data aggregation and grid cell assignment}
+\subsection{Data Aggregation and Grid-Cell Assignment}
 
 The results of several of the data sets aggregated and assigned to each respective grid cell are shown in following figures. In summary, the following features were mapped into the grid cells as candidate features to participate in the modeling :
 
@@ -297,7 +262,7 @@ The results of several of the data sets aggregated and assigned to each respecti
 \begin{table}
 \begin{center}
 \caption{Feature Definition}
-\label{table : featureDefinition}
+\label{table:featureDefinition}
 \begin{tabular}{p{50mm} p{60mm}}
 \hline
 \rule{0pt}{12pt}
@@ -325,59 +290,129 @@ Public transportation accessibility & Distance to nearest bus stop \\[2pt]
 %
 
 
-Figure ~\ref{figure : maxWalkScores}. \newline
+Figure ~\ref{figure:maxWalkScores}. \newline
 \FloatBarrier
 \begin{figure}
  	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{maxWalkScores.png}
  	\caption{Walk Score - Max values}
-	\label{figure : maxWalkScores}
+	\label{figure:maxWalkScores}
 \end{figure}
 \FloatBarrier
 
 
-Figure ~\ref{figure : busStopDistance}. \newline
+Figure ~\ref{figure:busStopDistance}. \newline
 \FloatBarrier
 \begin{figure}
  	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{busStopDistance.png}
  	\caption{Public Transportaton accessibility}
-	\label{figure : busStopDistance}
+	\label{figure:busStopDistance}
 \end{figure}
 \FloatBarrier
 
-Figure ~\ref{figure : trafficAccidents}. \newline
+Figure ~\ref{figure:trafficAccidents}. \newline
 \FloatBarrier
 \begin{figure}
  	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{trafficAccidents.png}
  	\caption{Number of Traffic Accidents (Non-pedestrian involved)}
-	\label{figure : busStopDistance}
+	\label{figure:trafficAccidents}
 \end{figure}
 \FloatBarrier
 
 \subsection{Random Forest - Binary Model}
 
-The random forest model which we deployed to estimate occurrence of pedestrian related events produces the result of 75\% true positive, 20\% false positive with a detection threshold set at 0.20. This result provides a balanced compromise between true positive and false positive, as depicted in the following Figure ~\ref{figure : rfroccurve}. \newline
+The random forest model which we deployed to estimate occurrence of pedestrian related events produces the result of 75\% true positive, 20\% false positive with a detection threshold set at 0.20. This result provides a balanced compromise between true positive and false positive, as depicted in the following Figure ~\ref{figure:rfroccurve}. \newline
 \FloatBarrier
 \begin{figure}
  	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{RFROC.png}
  	\caption{Random forest - binary model - ROC curve}
-	\label{figure : rfroccurve}
+	\label{figure:rfroccurve}
 \end{figure}
 \FloatBarrier
 
-As visualized on the map of the city, Figure ~\ref{figure : rfbinarymap}, we observe that (a) the regions of true positve (green) and true negative (light grey) comprise the large majority of the surface area, generally represented by contiguous areas, and confirm the high overall accuracy of the model, (b) that the false positive (darker grey) and false negative (red dots) are consistently along the border regions between otherwise true positive or true negative regions, and (c)  the false negative regions are distinct non-connected grid cells at somewhat widely distributed locations around the city.
+As visualized on the map of the city, Figure ~\ref{figure:rfbinarymap}, we observe that (a) the regions of true positve (green) and true negative (light grey) comprise the large majority of the surface area, generally represented by contiguous areas, and confirm the high overall accuracy of the model, (b) that the false positive (darker grey) and false negative (red dots) are consistently along the border regions between otherwise true positive or true negative regions, and (c)  the false negative regions are distinct non-connected grid cells at somewhat widely distributed locations around the city.
 \newline
 
 \FloatBarrier
 \begin{figure}
  	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{RFBinaryResultsMap.png}
  	\caption{Distribution of random forest model results visualized on city map}
-	\label{figure : rfbinarymap}
+	\label{figure:rfbinarymap}
 \end{figure}
 \FloatBarrier
 
-\subsection{Multi-variate linear regression - Cost Model}
+\subsection{Multi-Variate Linear Regression - Cost Model}
+\FloatBarrier
+\begin{table}[!h]
+\begin{center}
+\caption{Analysis of reduced model regression variables.}
+\label{table:RegressionAnalysis}
+\begin{tabular}{ p{.30\textwidth} p{.20\textwidth} p{.20\textwidth} p{.10\textwidth} p{.15\textwidth}}
+\hline
+\rule{0pt}{12pt}
+Variable
+& Estimate (\$)
+& Std. Error (\$)
+& t-value
+& p-value\\[2pt]
+\hline
+Intercept&310,397&90,519&3.429&0.00064\\
+Sum Cost of Damage to People in Non-Pedestrian Accidents&267&31.8&8.391&$<$ 2e-16\\
+Unsanitary Food Operations&39,796&8,189&4.86&1.40E-06\\
+Intercept&310,397&90,519&3.429&0.00064\\
+Maximum Walk Score&5,638&1758&3.207&0.00139\\
+Water Leaks and Breaks&-72,140&24,776&-2.912&0.00369\\
+Crosswalk Needed&117,618&45,848&2.565&0.01048\\
+Number of Police Properties&14,442&5,850&2.469&0.01377\\
+Vehicles Running Red Lights / Stop Signs&50,332&24,291&2.072&0.03856\\
+Unkempt Flora&3,998&2,158&1.853&0.06429\\
+Speeding&-62,700&34,132&-1.837&0.06658\\
+Parking Close to Intersection&-146,340&82,879&-1.766&0.07781\\
+Parking on Sidewalk&257,246&147,334&1.746&0.08117\\[2pt]
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+\FloatBarrier
 
-\subsection{Non-supervised learning - Neighborhood characterization}
+Table ~\ref{table:RegressionAnalysis} shows the explanatory variables for the reduced multiple linear regression model. This model had an R2 value of .2021 and an adjusted R2 value of .1917. 
+
+\FloatBarrier
+\begin{figure}
+\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{000LinearModelReduced.png}
+\caption{Comparison of expected and observed non-fatality pedestrian incident costs.}
+\label{figure:LinearModelReduced}
+
+\end{figure}
+\FloatBarrier
+
+Figure ~\ref{figure:LinearModelReduced} is a comparison between the observed and actual cost of a non-fatality incident in Cincinnati.
+
+\FloatBarrier
+\begin{figure}
+\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{000ResidualsPlot.png}
+\caption{A map of Cincinnati identifying areas with PSI in the darkest red.}
+\label{figure:ResidualsPlot}
+
+\end{figure}
+\FloatBarrier
+
+Figure ~\ref{figure:ResidualsPlot} shows the residuals mapped back to the map of Cincinnati.
+
+
+\subsection{Non-Supervised Learning - Neighborhood Characterization}
+
+For each attribute, distribution and scatter plots are generated to visualize the impact of it in the cluster. Attributes like property type commercial was heavily clustered in 1 or the green areas as in Figure ~\ref{figure:kmeansongrid}, while residential and industrial were lot more distributed. Issues like metal trash were more in industrial areas which was in the cluster 2 or red neighborhoods. Water leak was more an issue in cluster 0 or blue areas.
+
+Combining attribute behavior and clusters on the map, pedestrian saftey issues in each cluster are identified. These issues are then mapped to the actual locality or neighborhood to draw conclusions.
+
+\FloatBarrier
+\begin{figure}
+ 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{kmeansongrid.png}
+ 	\caption{Cluster results on map of Cincinatti}
+	\label{figure:kmeansongrid}
+\end{figure}
+\FloatBarrier
+
 
 Initial results from part 1 of our methodology have produced graphs as shown in Figure ~\ref{figure:SumCrashPlot}. \newline
 \FloatBarrier
@@ -392,37 +427,34 @@ Initial results from part 1 of our methodology have produced graphs as shown in 
 %
 \subsection{Random Forest - Binary Model}
 
-The focus of this effort is to identify locations within the city that indicate highest potential for safety improvement. Consistent with the concept as defined and implemented in other works, the model incidents for which the observed experience exceeds the expected (model output) response are the regions with potential for safety improvement. In the context of a binary model, as was completed here with the random forest model, the regions of PSI are the false negative points on the grid map, as presented in Figure ~\ref{figure : rfbinarymap}. For these grid cells, the model result was no expected pedestrian events, yet the observed experience exceeded this expected response. In this case, there are 31 grid cells identified with potential for safety improvement. In the next update to this draft, we will present what are the unique characteristics of these grid cells, where they are located geographically within the city (street and intersection identification) and what was the ac
-%
-\section{Results}
-%
+The focus of this effort is to identify locations within the city that indicate highest potential for safety improvement. Consistent with the concept as defined and implemented in other works, the model incidents for which the observed experience exceeds the expected (model output) response are the regions with potential for safety improvement. In the context of a binary model, as was completed here with the random forest model, the regions of PSI are the false negative points on the grid map, as presented in Figure ~\ref{figure:rfbinarymap}. For these grid cells, the model result was no expected pedestrian events, yet the observed experience exceeded this expected response. In this case, there are 31 grid cells identified with potential for safety improvement. In the next update to this draft, we will present what are the unique characteristics of these grid cells, where they are located geographically within the city (street and intersection identification) and what was the ac
 
-\subsection{Random Forest - Binary Model}
-
-\subsection{Multi-Variate Linear Regression - Cost Model}
-
-\subsection{Non-Supervised Learning - Neighborhood Characterization}
-
-%
-\section{Analysis}
-%
-
-\subsection{Random Forest - Binary Model}
-
-\subsection{Multi-Variate Linear Regression - Cost Model}
+\subsection{Multi-Variate Regression - Cost Model}
 The results from the prior section provide a numerical and visual way to interpret the model. Because the regression model was subset based on the total cost of damage to the pedestrian excluding events resulting in \$5 million or more in damages, this results in the scope of the model being limited to non-fatality incidents. The regression model is able to explain 20\% of the variance in the cost of a non-fatality incident. This model consists of many significant variables, such as reports of crosswalks needed and reports of vehicles not obeying traffic signs, and some suggestively significant variables which make sense practically, but do not meet the p-value threshold of .05 such as speeding (p-value = .066), parking close to an intersection (p-value = .077), and parking on the sidewalk (p-value = .081). Most variables present within the model are reports to the non-emergency police telephone number, or the city’s online safety survey. For each incident of report within the grid-cell, the predicted total cost of non-fatality incident changes by the estimated amount. Other non-report variables include the number of police properties present within the grid-cell, the maximum Walk Score value of properties within the grid-cell, and the total cost of damage to people involved in non-pedestrian related (motor vehicle) accidents. 
 
-Figure PLACEHOLDER2 illustrates the model’s predictive capability as compared to the cost of incident in reality. Points which are colored in red have positive residuals, meaning the model has underestimated the cost. Green points have negative residuals, which mean the model has overestimated the cost. The further away a point is, the larger its absolute residual value is. These distances are displayed on Fig PLACEHOLDER3, where the red colored areas correspond to the distant red points. These areas within the city in which the model has underestimated the cost the most have the most potential for safety improvement, because all other factors being equal, there is something about that area which is causing a higher amount of damage to pedestrians.
+Figure ~\ref{figure:LinearModelReduced} illustrates the model’s predictive capability as compared to the cost of incident in reality. Points which are colored in red have positive residuals, meaning the model has underestimated the cost. Green points have negative residuals, which mean the model has overestimated the cost. The further away a point is, the larger its absolute residual value is. These distances are displayed on Figure ~\ref{figure:ResidualsPlot}, where the red colored areas correspond to the distant red points. These areas within the city in which the model has underestimated the cost the most have the most potential for safety improvement, because all other factors being equal, there is something about that area which is causing a higher amount of damage to pedestrians.
 
 \subsection{Non-Supervised Learning - Neighborhood Characterization}
+For each attribute, distribution and scatter plots are generated to visualize the impact of it within the cluster. Attributes like property type: commercial were heavily clustered in 1, or the green areas as in Figure ~\ref{figure:kmeansongrid}, while residential and industrial were lot more distributed. Issues like metal trash were more in industrial areas which was in the cluster 2 or red neighborhoods. Water leak was more an issue in cluster 0 or blue areas.
+
+Combining attribute behavior and clusters on the map, pedestrian saftey issues in each cluster are identified. These issues are then mapped to the actual locality or neighborhood to draw conclusions.
+
+\FloatBarrier
+\begin{figure}
+ 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{kmeansongrid.png}
+ 	\caption{Cluster results on map of Cincinatti}
+	\label{figure:kmeansongrid}
+\end{figure}
+\FloatBarrier
+
 
 %
 \section{Ethics}
 %
 As a means to evaluate compliance with ethical considerations, we use the model of the ACM Code of Ethics  (the Code). Within the Code, there are four primary sections, e.g., General Ethical Principles, Professional Leadership Principles, etc., with each primary section providing additional subsections for self-assessment compliance to the Code. For each sub-section, we self-scored categorically as either Y, n/a, or D, where Y indicates that the work completed for this project rather obviously complies with the Code, n/a indicates that that section of the Code is less obviously significant for this project, and D indicates that that section of the Code identifies a potential ethical dilemma that is worthy of additional discussion to demonstrate compliance or at least point out the potential ethical challenge identified from this self-assessment.
-The most significant elements that we self-assess as D are : \S 1.2 - Avoid harm; \S 1.4 - Be fair and take action not to discriminate; and \S 3.7 - Recognize and take special care of systems that become integrated into the infrastructure of society.
+The most significant elements that we self-assess as D are:\S 1.2 - Avoid harm; \S 1.4 - Be fair and take action not to discriminate; and \S 3.7 - Recognize and take special care of systems that become integrated into the infrastructure of society.
 
-From these three elements, we consider that the significant question to evaluate is: how may these research findings be interpreted and used ?
+From these three elements, we consider that the significant question to evaluate is: how may these research findings be interpreted and used?
 
 The result of this project provides a recommended prioritization for the allocation of municipal resources for the purpose of improving a pedestrian safety problem. Allocation of  public resources is often as much a political challenge as it is a scientific challenge. There is no global objective function that assigns absolute social value to any decision of resource allocation. That is, in fact, the work and challenge of public officials. Within the general framework of public decision making it is recognized that facts, reports, and recommendations which are or were essentially the result of objective research are frequently interpreted in a way that suits the interpreter for their own agenda – in some cases for personal gain – financially or politically. We have to admit for this case, then, that this evaluation is potentially subject to a personally motivated interpretation. The debate about using scientific research to guide public policy is long and continuing. With that recognition, the task falls to us to identify what steps are taken to reduce the risk of unintended uses of this report.
 
@@ -436,12 +468,14 @@ The ethical considerations associated to this project are adequately assessed in
 %
 \section{Conclusions (and Future Work)}
 %
+This study demonstrates a methodology to identify areas within the city of Cincinnati, Ohio with the largest potential for safety improvement, based on many open-source datasets made public by the city. Over twenty 250 meter by 250 meter plots of land within the city have been identified for further investigation to determine why the cost of incident within that area are abnormally high as compared to our models. These locations include several areas in the Westwood neighborhood, Clifton, Avondale, Walnut Hills, Bond Hill, and more. Our unsupervised learning techniques… Placeholder sentences about how our unsupervised learning techniques have outlined areas which have potential for safety improvement. These areas demonstrate these qualities which are related to pedestrian safety in the city of Cincinnati, Ohio.
 
-This study demonstrates a methodology to identify areas within the city of Cincinnati, Ohio with the largest potential for safety improvement, based on many open-source datasets made public by the city. Over twenty 250 meter by 250 meter plots of land within the city have been identified for further investigation to determine why the cost of incident within that area are abnormally high as compared to our models. These locations include several areas in the Westwood neighborhood, Clifton, Avondale, Walnut Hills, Bond Hill, and more. Our unsupervised learning techniques…PLACEHOLDER SENTENCES ABOUT HOW OUR UNSUPERVISED LEARNING TECHNIQUES HAVE OUTLINED AREAS WHICH HAVE POTENTIAL FOR SAFETY IMPROVEMENT. THESE AREAS DEMONSTRATE THESE QUALITIES WHICH ARE RELATED TO PEDESTRIAN SAFETY IN THE CITY OF CINCINNATI OHIO.
+For our unsupervised learning we look at the top pedestrian safety issues in each cluster. Vehicles running red lights or stop signs is a concern for the blue cluster neighborhoods, including: Westwood, Mt. Washington and East End. Heavy traffic is a prominent issue in the green cluster and affects Over-The-Rhine, Mt. Auburn and Central Business District neighborhoods. There is a need for increased number of sidewalks in Clifton, Madisonville, Walnut Hills and Mt. Washington. Over-the-Rhine, Downtown and Clifton need more bike friendly zones.
 
-Future work to further this project could involve the use of other regression modelling techniques to improve accuracy, such as tobit models. Other improvements which could be made include STUFF GOES HERE FROM PATRICK AND PREETI ABOUT WAYS TO IMPROVE YOUR TECHNIQUES AND MODELS.
+Future work to further this project could involve the use of other regression modelling techniques to improve accuracy, such as tobit models. Other improvements which could be made include Stuff goes here from Patrick and Preeti about ways to improve your techniques and models.
 
-Aside from improving the models through the use of different techniques, the study itself can be improved by ingesting more data. This study is carried out using publicly available data, if private data exists which can improve the study, it can easily be adapted for use due to only requiring a street address or latitude longitude coordinates which would allow the data to be integrated into the grid-cell aggregation function. Examples of data which may be useful but are not publicly available would be the race, gender and age of the perpetrator and pedestrian victim, data which the city of Cincinnati may have, though the ethical implications of using this data must be weighed. 
+Aside from improving the models through the use of different techniques, the study itself can be improved by ingesting more data. This study is carried out using publicly available data, if private data exists which can improve the study, it can easily be adapted for use due to only requiring a street address or latitude longitude coordinates which would allow the data to be integrated into the grid-cell aggregation function. Examples of data which may be useful but are not publicly available would be the race, gender and age of the perpetrator and pedestrian victim, data which the city of Cincinnati may have, though the ethical implications of using this data must be weighed.
+
 
 % ---- Bibliography ----
 %

@@ -39,44 +39,38 @@ setwd(data_dir)
 
 
 
-infile <- "df_model_w_cell_id_ZERO.csv"
-df_model_w_cell_id_ZERO <- read.csv(infile,
+infile <- "df_model_w_cell_id.csv"
+df_model_w_cell_id <- read.csv(infile,
                                stringsAsFactors = FALSE, header = TRUE)
 
-# Drop unused data
-drop <- c("med_sale_pbo_n", "med_sale_pbo_y")
-RegData <- df_model_w_cell_id_ZERO[, !names(df_model_w_cell_id_ZERO) %in% drop]
+# Drop unused columns
+drop <- c("num_pedestrian_events")
+RegData <- df_model_w_cell_id[, !names(df_model_w_cell_id) %in% drop]
 
-# Drop >5-Cost incidents and 0-cost incidents
-RegData <- RegData[!RegData$sum_cost_pedestrian_events == 0,]
-RegData <- RegData[!RegData$sum_cost_pedestrian_events > 5,]
+# # Drop >5-Cost incidents and 0-cost incidents
+# RegData <- RegData[!RegData$krnl_cost_pedestrian_events == 0,]
+# RegData <- RegData[!RegData$krnl_cost_pedestrian_events > 5,]
 
 
 set.seed(0737)
 
 
 # Identify columns to log transform - unused
-
-# Col2Transform <- c("sum_cost_pedestrian_events",
-#                    "num_near_misses",            "n_rqst",                    "access",                    
-#                    "dblprk",                     "dnotyld",                    "jywalk",                     "lvisib",                    
-#                    "lwfws",                      "nobikef",                    "noswlk",                     "other",                     
-#                    "prkint",                     "prkswlk",                    "speed",                      "vrrlss",                    
-#                    "wlksig",                    "xwalk",                      "assist",                     "bikes",                     
-#                    "drives",                     "other.1",                    "walks",                      "num_walk_scores",
-#                    "sum_lane_cnt",           "sum_width",                  "sum_area",                   "num_streets",                "num_fire_incd",             
-#                    "med_sale_res_y",             "med_sale_res_n",             "med_sale_com_y",             "med_sale_com_n",            
-#                    "med_sale_ind_y",             #"med_sale_ind_n",             "med_sale_pbo_y", Not applicable with 0s removed? ###################                        
-#                    "sum_cost.y",                 "num_events.y",               "dist",                       "n_object",                  
-#                    "animals_insects",            "building.related",           "construction",               "food",                      
-#                    "others",                     "police.property",            "service.complaint",          "street_sidewalk",           
-#                    "traffic_sig0l",              "trash",                      "trees_plants",               "water.leak",                
-#                    "zoning_parking",             "n_request")
 # 
-# RegData[RegData == 0] <- .001
-# 
-# RegData[Col2Transform] <- log(RegData[Col2Transform])
-
+#  Col2Transform <- c("krnl_cost_pedestrian_events", 
+#                     "num_near_misses", "access", "dblprk", "dnotyld",
+#                     "jywalk", "lvisib", "lwfws", "nobikef", "noswlk", "other", "prkint", "prkswlk", "speed", "vrrlss", "wlksig", "xwalk",
+#                     "assist", "bikes", "drives", "other.1", "walks", "n_rqst", "mean_walk_score", "min_walk_score", "max_walk_score", 
+#                     "num_walk_scores", "sum_lane_cnt", "sum_width", "sum_area", "num_streets", "num_fire_incd", "med_sale_res_y", 
+#                     "med_sale_res_n", "med_sale_com_y", "med_sale_com_n", "med_sale_ind_y", "med_sale_ind_n", "med_sale_pbo_y", 
+#                     "med_sale_pbo_n", "sum_cost_non_pedestrian_events", "num_non_pedestrian_events", "dist", "n_object",
+#                     "animals_insects", "building.related", "construction", "food", "others", "police.property", "service.complaint", 
+#                     "street_sidewalk", "traffic_signal", "trash", "trees_plants", "water.leak", "zoning_parking", "n_request")
+#  
+#  RegData[RegData == 0] <- .001
+#  
+#  RegData[Col2Transform] <- log(RegData[Col2Transform])
+#  
 
 #####
 ##### Begin Regressions
@@ -84,13 +78,13 @@ set.seed(0737)
 
 # Basic regressions commented out to not waste procesing time. Already examined.
 # Simplest linear regression.
-# LRModel.full <- lm(sum_cost_pedestrian_events ~ . -cell_id, RegData)
+# LRModel.full <- lm(krnl_cost_pedestrian_events ~ . -cell_id, RegData)
 # sink("LRModel.full.txt")
 # print(summary(LRModel.full))
 # sink()
 
 # Linear regression with every combination of interaction
-# LRModel.fullint <- lm(sum_cost_pedestrian_events ~ (.)^2, RegData)
+# LRModel.fullint <- lm(krnl_cost_pedestrian_events ~ (.)^2, RegData)
 # sink("LRModel.fullint.txt")
 # print(summary(LRModel.fullint))
 # sink()
@@ -126,9 +120,9 @@ set.seed(0737)
 
 RegData.control <- trainControl(method = "cv", number=10)
 
-LRModel.Step.Train <- train(sum_cost_pedestrian_events ~ . -cell_id, data=RegData,
+LRModel.Step.Train <- train(krnl_cost_pedestrian_events ~ . -cell_id, data=RegData,
                             method = "leapSeq",
-                            tuneGrid = data.frame(nvmax = 10:35),
+                            tuneGrid = data.frame(nvmax = 1:40),
                             trControl = RegData.control)
 
 LRModel.Step.Train$results
@@ -139,18 +133,19 @@ LRModel.Step.Train$bestTune
 #########################################################################################################################################
 
 # Set the number equal to the number output from the last line of code: LRModel.Step.Train$bestTune
-coef(LRModel.Step.Train$finalModel, 30)
+coef(LRModel.Step.Train$finalModel, 36)
 # Manually write all coeficients into the model below
 
 
 # Run linear model of chosen predictors - CV Output
-LRModel.CrossValidatedResult <- lm(formula = sum_cost_pedestrian_events ~ access + dblprk + jywalk + 
-                                            lvisib + nobikef + prkint + prkswlk + speed + vrrlss + wlksig + 
-                                            assist + drives + max_walk_score + sum_area + num_streets + 
-                                            num_fire_incd + med_sale_res_n + med_sale_com_y + med_sale_com_n + 
-                                            sum_cost.y + dist + n_object + food + police.property + street_sidewalk + 
-                                            trees_plants + water.leak + zoning_parking + xwalk + n_request, 
-                                          data = RegData)
+LRModel.CrossValidatedResult <- lm(formula = krnl_cost_pedestrian_events ~ num_near_misses + 
+                                     access + dblprk + dnotyld + jywalk + lwfws + noswlk + prkint + 
+                                     prkswlk + vrrlss + xwalk + bikes + other.1 + n_rqst + mean_walk_score + 
+                                     min_walk_score + sum_lane_cnt + sum_area + num_streets + 
+                                     med_sale_res_y + med_sale_res_n + med_sale_com_y + med_sale_com_n + 
+                                     med_sale_ind_y + med_sale_ind_n + med_sale_pbo_y + dist + 
+                                     n_object + animals_insects + food + others + police.property + 
+                                     trash + trees_plants + water.leak + n_request, data = RegData)
 
 sink("LRModel.CrossValidatedResult.txt")
 summary(LRModel.CrossValidatedResult)
@@ -183,18 +178,18 @@ RegDataPred$predict <- predict(LRModel.CrossValidatedResult, RegData)
 
 
 # Residuals used to split color on chart
-RegDataPred$Residuals<-RegDataPred$sum_cost_pedestrian_events - RegDataPred$predict
+RegDataPred$Residuals<-RegDataPred$krnl_cost_pedestrian_events - RegDataPred$predict
 
 # Hocus pocus magic line to split the colors
-RegDataPred <- RegDataPred %>% mutate(cost_gt_pred = if_else(is.negative(RegDataPred$Residuals) == FALSE, sum_cost_pedestrian_events, NULL))
+RegDataPred <- RegDataPred %>% mutate(cost_gt_pred = if_else(is.negative(RegDataPred$Residuals) == FALSE, krnl_cost_pedestrian_events, NULL))
 
 setwd(home_dir)
 setwd(plot_dir)
 
 ggplot(data = RegDataPred) + 
-  geom_point(aes(x = predict, y = sum_cost_pedestrian_events, colour = 'Negative Residuals')) +
+  geom_point(aes(x = predict, y = krnl_cost_pedestrian_events, colour = 'Negative Residuals')) +
   geom_point(aes(x = predict, y = cost_gt_pred, colour = "Positive Residuals")) +
-  stat_smooth(color = 'dodgerblue3', aes(x = predict, y = sum_cost_pedestrian_events), se=F, method = lm, fullrange = TRUE) +
+  stat_smooth(color = 'dodgerblue3', aes(x = predict, y = krnl_cost_pedestrian_events), se=F, method = lm, fullrange = TRUE) +
   scale_y_continuous(breaks = seq(0,5,.5)) +
   ylim(0,5) +
   scale_x_continuous(breaks = seq(0,5,.5)) +
@@ -214,12 +209,11 @@ ggplot(data = RegDataPred) +
 
 
 # Final Full Model from CV
-LRModel.CrossValidatedResultFull <- lm(formula = sum_cost_pedestrian_events ~ access + dblprk + jywalk + 
-                                     lvisib + nobikef + prkint + prkswlk + speed + vrrlss + wlksig + 
-                                     assist + drives + max_walk_score + sum_area + num_streets + 
-                                     num_fire_incd + med_sale_res_n + med_sale_com_y + med_sale_com_n + 
-                                     sum_cost.y + dist + n_object + food + police.property + street_sidewalk + 
-                                     trees_plants + water.leak + zoning_parking + xwalk + n_request, 
+LRModel.CrossValidatedResultFull <- lm(formula = krnl_cost_pedestrian_events ~ num_near_misses + access + dblprk + jywalk + other + 
+                                         prkint + vrrlss + other.1 + mean_walk_score + min_walk_score + sum_width + 
+                                         num_streets + med_sale_res_y + med_sale_com_n + med_sale_ind_y + med_sale_pbo_y + dist + 
+                                         n_object + animals_insects + food + others + police.property + trees_plants + 
+                                         water.leak + n_request,
                                    data = RegData)
 
 setwd(home_dir)
@@ -235,18 +229,19 @@ vif(LRModel.CrossValidatedResultFull)
 RegDataPredFull <- RegData
 # Create prediction based on model results 
 RegDataPredFull$predict <- predict(LRModel.CrossValidatedResultFull, RegData)
-RegDataPredFull$Residuals<-RegDataPredFull$sum_cost_pedestrian_events - RegDataPredFull$predict
+RegDataPredFull$Residuals<-RegDataPredFull$krnl_cost_pedestrian_events - RegDataPredFull$predict
 
+RMSE(RegDataPredFull$krnl_cost_pedestrian_events, RegDataPredFull$predict)
 
 
 # Hocus pocus magic line to split the colors
-RegDataPredFull <- RegDataPredFull %>% mutate(cost_gt_pred = if_else(is.negative(RegDataPredFull$Residuals) == FALSE, sum_cost_pedestrian_events, NULL))
+RegDataPredFull <- RegDataPredFull %>% mutate(cost_gt_pred = if_else(is.negative(RegDataPredFull$Residuals) == FALSE, krnl_cost_pedestrian_events, NULL))
 
 
 FullPlot<-ggplot(data = RegDataPredFull) + 
-  geom_point(aes(x = predict, y = sum_cost_pedestrian_events, colour = 'Negative Residuals')) +
+  geom_point(aes(x = predict, y = krnl_cost_pedestrian_events, colour = 'Negative Residuals')) +
   geom_point(aes(x = predict, y = cost_gt_pred, colour = "Positive Residuals")) +
-  stat_smooth(color = 'dodgerblue3', aes(x = predict, y = sum_cost_pedestrian_events), se=F, method = lm, fullrange = TRUE) +
+  stat_smooth(color = 'dodgerblue3', aes(x = predict, y = krnl_cost_pedestrian_events), se=F, method = lm, fullrange = TRUE) +
   scale_y_continuous(breaks = seq(0,5,.5)) +
   ylim(0,5) +
   scale_x_continuous(breaks = seq(0,5,.5)) +
@@ -273,12 +268,10 @@ ggsave(filename = "Linear_Model_Full.png", width = 16, height = 9, units = "in")
 
 
 # Final Reduced Model 
-LRModel.CrossValidatedResultReduced <- lm(sum_cost_pedestrian_events ~ 
-                                            prkint+prkswlk+speed+
-                                            vrrlss+max_walk_score+
-                                            sum_cost.y+food+police.property+trees_plants+
-                                            water.leak+xwalk
-                                          , data = RegData)
+LRModel.CrossValidatedResultReduced <- lm(formula = krnl_cost_pedestrian_events ~ num_near_misses + 
+                                            dblprk + prkint + vrrlss + mean_walk_score + num_streets + 
+                                            med_sale_com_n + dist + animals_insects + food + others + 
+                                            trees_plants, data = RegData)
 
 setwd(home_dir)
 setwd(data_dir)
@@ -295,18 +288,18 @@ vif(LRModel.CrossValidatedResultReduced)
 RegDataPredReduced <- RegData
 # Create prediction based on model results 
 RegDataPredReduced$predict <- predict(LRModel.CrossValidatedResultReduced, RegData)
-RegDataPredReduced$Residuals<-RegDataPredReduced$sum_cost_pedestrian_events - RegDataPredReduced$predict
+RegDataPredReduced$Residuals<-RegDataPredReduced$krnl_cost_pedestrian_events - RegDataPredReduced$predict
 
 
 
 # Hocus pocus magic line to split the colors
-RegDataPredReduced <- RegDataPredReduced %>% mutate(cost_gt_pred = if_else(is.negative(RegDataPredReduced$Residuals) == FALSE, sum_cost_pedestrian_events, NULL))
+RegDataPredReduced <- RegDataPredReduced %>% mutate(cost_gt_pred = if_else(is.negative(RegDataPredReduced$Residuals) == FALSE, krnl_cost_pedestrian_events, NULL))
 
 
 ReducedPlot <- ggplot(data = RegDataPredReduced) + 
-  geom_point(aes(x = predict, y = sum_cost_pedestrian_events, colour = 'Negative Residuals')) +
+  geom_point(aes(x = predict, y = krnl_cost_pedestrian_events, colour = 'Negative Residuals')) +
   geom_point(aes(x = predict, y = cost_gt_pred, colour = "Positive Residuals")) +
-  #stat_smooth(color = 'dodgerblue3', aes(x = predict, y = sum_cost_pedestrian_events), se=F, method = lm, fullrange = TRUE) +
+  #stat_smooth(color = 'dodgerblue3', aes(x = predict, y = krnl_cost_pedestrian_events), se=F, method = lm, fullrange = TRUE) +
   scale_y_continuous(breaks = seq(0,5,.5)) +
   ylim(0,5) +
   scale_x_continuous(breaks = seq(0,5,.5)) +
@@ -334,7 +327,7 @@ ggsave(plot = ReducedDiags, filename = "Linear_Model_Reduced_Diagnostics.png", w
 
 
 #Output residual and cells for visualization later
-PSIFullFinalResiduals <- RegDataPredReduced$sum_cost_pedestrian_events - RegDataPredReduced$predict
+PSIFullFinalResiduals <- RegDataPredReduced$krnl_cost_pedestrian_events - RegDataPredReduced$predict
 PSIFullFinalcell_id <- RegDataPredReduced$cell_id
 
 setwd(home_dir)

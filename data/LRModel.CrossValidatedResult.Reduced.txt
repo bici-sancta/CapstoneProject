@@ -1,31 +1,33 @@
 
 Call:
-lm(formula = sum_cost_pedestrian_events ~ prkint + prkswlk + 
-    speed + vrrlss + max_walk_score + sum_cost.y + food + police.property + 
-    trees_plants + water.leak + xwalk, data = RegData)
+lm(formula = krnl_cost_pedestrian_events ~ num_near_misses + 
+    dblprk + prkint + vrrlss + mean_walk_score + num_streets + 
+    med_sale_com_n + dist + animals_insects + food + others + 
+    trees_plants, data = RegData)
 
 Residuals:
     Min      1Q  Median      3Q     Max 
--1.6894 -0.5290 -0.2362  0.4228  3.5710 
+-3.3905 -0.1863 -0.1167  0.0271  5.5879 
 
 Coefficients:
                   Estimate Std. Error t value Pr(>|t|)    
-(Intercept)      3.104e-01  9.052e-02   3.429 0.000635 ***
-prkint          -1.463e-01  8.288e-02  -1.766 0.077807 .  
-prkswlk          2.572e-01  1.473e-01   1.746 0.081174 .  
-speed           -6.270e-02  3.413e-02  -1.837 0.066576 .  
-vrrlss           5.033e-02  2.429e-02   2.072 0.038560 *  
-max_walk_score   5.638e-03  1.758e-03   3.207 0.001392 ** 
-sum_cost.y       2.665e-04  3.176e-05   8.391  < 2e-16 ***
-food             3.980e-02  8.189e-03   4.860  1.4e-06 ***
-police.property  1.444e-02  5.850e-03   2.469 0.013765 *  
-trees_plants     3.998e-03  2.158e-03   1.853 0.064285 .  
-water.leak      -7.214e-02  2.478e-02  -2.912 0.003691 ** 
-xwalk            1.176e-01  4.585e-02   2.565 0.010478 *  
+(Intercept)     -8.715e-02  3.137e-02  -2.778 0.005491 ** 
+num_near_misses  1.109e-01  3.459e-02   3.206 0.001358 ** 
+dblprk           2.041e-01  8.429e-02   2.422 0.015492 *  
+prkint           1.127e-01  4.471e-02   2.520 0.011764 *  
+vrrlss           7.557e-02  2.050e-02   3.686 0.000231 ***
+mean_walk_score  6.115e-03  6.312e-04   9.688  < 2e-16 ***
+num_streets     -5.045e-04  2.939e-04  -1.716 0.086164 .  
+med_sale_com_n   1.683e-08  5.075e-09   3.315 0.000923 ***
+dist            -9.965e+00  1.432e+00  -6.957 4.02e-12 ***
+animals_insects  6.060e-03  2.194e-03   2.762 0.005777 ** 
+food             5.221e-02  3.996e-03  13.065  < 2e-16 ***
+others           2.813e-03  2.036e-04  13.817  < 2e-16 ***
+trees_plants    -2.036e-03  1.092e-03  -1.865 0.062260 .  
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-Residual standard error: 0.7834 on 843 degrees of freedom
-Multiple R-squared:  0.2021,	Adjusted R-squared:  0.1917 
-F-statistic: 19.41 on 11 and 843 DF,  p-value: < 2.2e-16
+Residual standard error: 0.5327 on 4183 degrees of freedom
+Multiple R-squared:  0.2619,	Adjusted R-squared:  0.2598 
+F-statistic: 123.7 on 12 and 4183 DF,  p-value: < 2.2e-16
 
