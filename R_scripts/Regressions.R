@@ -6,6 +6,7 @@ library(car)
 library(schoolmath)
 library(ggplot2)
 library(ggfortify)
+library(e1071)
 
 home_dir <- ("G:/JoshuaData/Classes/MSDS61X0 Capstone/CapstoneProject")
 data_dir <- ("./data/")
@@ -47,10 +48,7 @@ df_model_w_cell_id <- read.csv(infile,
 drop <- c("num_pedestrian_events")
 RegData <- df_model_w_cell_id[, !names(df_model_w_cell_id) %in% drop]
 
-# # Drop >5-Cost incidents and 0-cost incidents
-# RegData <- RegData[!RegData$krnl_cost_pedestrian_events == 0,]
-# RegData <- RegData[!RegData$krnl_cost_pedestrian_events > 5,]
-
+RegData$IsZero <- ifelse(RegData$krnl_cost_pedestrian_events !=0, "Not Zero", "Zero")
 
 set.seed(0737)
 
@@ -76,43 +74,7 @@ set.seed(0737)
 ##### Begin Regressions
 #####
 
-# Basic regressions commented out to not waste procesing time. Already examined.
-# Simplest linear regression.
-# LRModel.full <- lm(krnl_cost_pedestrian_events ~ . -cell_id, RegData)
-# sink("LRModel.full.txt")
-# print(summary(LRModel.full))
-# sink()
-
-# Linear regression with every combination of interaction
-# LRModel.fullint <- lm(krnl_cost_pedestrian_events ~ (.)^2, RegData)
-# sink("LRModel.fullint.txt")
-# print(summary(LRModel.fullint))
-# sink()
-
-
-
-
-# Stepwise regressions commented out since we give preference to the CV stepwise regs
-
-# LRModel.Step <- stepAIC(LRModel.full, direction = "both", trace = FALSE)
-# Output results to txt file
-# sink("LRModel.full.step.txt")
-# print(summary(LRModel.step))
-# sink()
-
-# LRModel.forward <- stepAIC(LRModel.full, direction = "forward", trace = FALSE)
-# Output results to txt file
-# sink("LRModel.full.forward.txt")
-# print(summary(LRModel.forward))
-# sink()
-
-# LRModel.backward <- stepAIC(LRModel.full, direction = "backward", trace = FALSE)
-# Output results to txt file
-# sink("LRModel.full.backward.txt")
-# print(summary(LRModel.backward))
-# sink()
-## Stepwise is currently best preforming model.
-
+# Logistic Regression
 
 
 
@@ -120,10 +82,22 @@ set.seed(0737)
 
 RegData.control <- trainControl(method = "cv", number=10)
 
-LRModel.Step.Train <- train(krnl_cost_pedestrian_events ~ . -cell_id, data=RegData,
+LogRModel <- train(IsZero ~ . -krnl_cost_pedestrian_events -cell_id, data=RegData,
+                   method = "glm", family="binomial", trControl = RegData.control)
+
+LogRModel$results
+
+
+# Create prediction based on model results 
+RegData$predictlogistic <- predict(LogRModel, RegData)
+
+
+
+LRModel.Step.Train <- train(krnl_cost_pedestrian_events ~ . -cell_id -IsZero -predictlogistic, data=RegData,
                             method = "leapSeq",
                             tuneGrid = data.frame(nvmax = 1:40),
-                            trControl = RegData.control)
+                            trControl = RegData.control,
+                            subset = RegData$predictlogistic == "Not Zero")
 
 LRModel.Step.Train$results
 LRModel.Step.Train$bestTune
@@ -133,19 +107,16 @@ LRModel.Step.Train$bestTune
 #########################################################################################################################################
 
 # Set the number equal to the number output from the last line of code: LRModel.Step.Train$bestTune
-coef(LRModel.Step.Train$finalModel, 36)
+coef(LRModel.Step.Train$finalModel, 40)
 # Manually write all coeficients into the model below
 
 
 # Run linear model of chosen predictors - CV Output
 LRModel.CrossValidatedResult <- lm(formula = krnl_cost_pedestrian_events ~ num_near_misses + 
-                                     access + dblprk + dnotyld + jywalk + lwfws + noswlk + prkint + 
-                                     prkswlk + vrrlss + xwalk + bikes + other.1 + n_rqst + mean_walk_score + 
-                                     min_walk_score + sum_lane_cnt + sum_area + num_streets + 
-                                     med_sale_res_y + med_sale_res_n + med_sale_com_y + med_sale_com_n + 
-                                     med_sale_ind_y + med_sale_ind_n + med_sale_pbo_y + dist + 
-                                     n_object + animals_insects + food + others + police.property + 
-                                     trash + trees_plants + water.leak + n_request, data = RegData)
+                                     dblprk + dnotyld + prkint + speed + vrrlss + other.1 + mean_walk_score + 
+                                     sum_lane_cnt + sum_area + med_sale_com_y + med_sale_com_n + 
+                                     sum_cost_non_pedestrian_events + dist + animals_insects + 
+                                     construction + food + others + traffic_signal, data = RegData)
 
 sink("LRModel.CrossValidatedResult.txt")
 summary(LRModel.CrossValidatedResult)
@@ -165,6 +136,8 @@ RegDataPred <- RegData
 
 # Create prediction based on model results 
 RegDataPred$predict <- predict(LRModel.CrossValidatedResult, RegData)
+# Re-add zeros from logistic model
+RegDataPred$predict[RegDataPred$predictlogistic == "Zero"] <- 0
 
 
 # Un-loggify (exponentiate) prediction which was generated in log scale - unused
@@ -208,58 +181,64 @@ ggplot(data = RegDataPred) +
 #######################################################################################################################
 
 
-# Final Full Model from CV
-LRModel.CrossValidatedResultFull <- lm(formula = krnl_cost_pedestrian_events ~ num_near_misses + access + dblprk + jywalk + other + 
-                                         prkint + vrrlss + other.1 + mean_walk_score + min_walk_score + sum_width + 
-                                         num_streets + med_sale_res_y + med_sale_com_n + med_sale_ind_y + med_sale_pbo_y + dist + 
-                                         n_object + animals_insects + food + others + police.property + trees_plants + 
-                                         water.leak + n_request,
-                                   data = RegData)
-
-setwd(home_dir)
-setwd(data_dir)
-
-sink("LRModel.CrossValidatedResult.Full.txt")
-summary(LRModel.CrossValidatedResultFull)
-sink()
-vif(LRModel.CrossValidatedResultFull)
-
-
-# Create prediction dataset
-RegDataPredFull <- RegData
-# Create prediction based on model results 
-RegDataPredFull$predict <- predict(LRModel.CrossValidatedResultFull, RegData)
-RegDataPredFull$Residuals<-RegDataPredFull$krnl_cost_pedestrian_events - RegDataPredFull$predict
-
-RMSE(RegDataPredFull$krnl_cost_pedestrian_events, RegDataPredFull$predict)
-
-
-# Hocus pocus magic line to split the colors
-RegDataPredFull <- RegDataPredFull %>% mutate(cost_gt_pred = if_else(is.negative(RegDataPredFull$Residuals) == FALSE, krnl_cost_pedestrian_events, NULL))
-
-
-FullPlot<-ggplot(data = RegDataPredFull) + 
-  geom_point(aes(x = predict, y = krnl_cost_pedestrian_events, colour = 'Negative Residuals')) +
-  geom_point(aes(x = predict, y = cost_gt_pred, colour = "Positive Residuals")) +
-  stat_smooth(color = 'dodgerblue3', aes(x = predict, y = krnl_cost_pedestrian_events), se=F, method = lm, fullrange = TRUE) +
-  scale_y_continuous(breaks = seq(0,5,.5)) +
-  ylim(0,5) +
-  scale_x_continuous(breaks = seq(0,5,.5)) +
-  xlim(0,5) +
-  ylab("Actual Sum Cost ($ in Millions)") +
-  xlab("Predicted Sum Cost ($ in Millions)") +
-  ggtitle("Predicted vs Actual Cost of Injury", subtitle = "Full Linear Model") +
-  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5), legend.position = c(0.8,0.3)) + #Centers title and subtitle
-  scale_color_manual(values = c('Negative Residuals' = 'springgreen4', 'Positive Residuals' = 'red4'), name = "Points") +
-  theme(text = element_text(size = 25))
-
-FullPlot
-
-setwd(home_dir)
-setwd(plot_dir)
-
-ggsave(filename = "Linear_Model_Full_HD.png", width = 24, height = 13.4, units = "in", dpi = 100.13)
-ggsave(filename = "Linear_Model_Full.png", width = 16, height = 9, units = "in")
+ # Final Full Model from CV
+ LRModel.CrossValidatedResultFull <- lm(formula = krnl_cost_pedestrian_events ~ num_near_misses + 
+                                          access + dblprk + dnotyld + lwfws + nobikef + prkint + prkswlk + 
+                                          speed + vrrlss + xwalk + bikes + drives + other.1 + mean_walk_score + 
+                                          min_walk_score + sum_lane_cnt + sum_area + num_streets + 
+                                          med_sale_res_y + med_sale_res_n + med_sale_com_y + med_sale_com_n + 
+                                          med_sale_ind_y + med_sale_ind_n + med_sale_pbo_y + sum_cost_non_pedestrian_events + 
+                                          dist + n_object + animals_insects + construction + food + 
+                                          others + police.property + service.complaint + traffic_signal + 
+                                          trash + trees_plants + zoning_parking + n_request, data = RegData)
+ 
+ setwd(home_dir)
+ setwd(data_dir)
+ 
+ sink("LRModel.CrossValidatedResult.Full.txt")
+ summary(LRModel.CrossValidatedResultFull)
+ sink()
+ vif(LRModel.CrossValidatedResultFull)
+ 
+ 
+ # Create prediction dataset
+ RegDataPredFull <- RegData
+ # Create prediction based on model results 
+ RegDataPredFull$predict <- predict(LRModel.CrossValidatedResultFull, RegData)
+ # Re-add zeros from logistic model
+ RegDataPredFull$predict[RegDataPred$predictlogistic == "Zero"] <- 0
+ 
+ RegDataPredFull$Residuals<-RegDataPredFull$krnl_cost_pedestrian_events - RegDataPredFull$predict
+ 
+ RMSE(RegDataPredFull$krnl_cost_pedestrian_events, RegDataPredFull$predict)
+ 
+ 
+ # Hocus pocus magic line to split the colors
+ RegDataPredFull <- RegDataPredFull %>% mutate(cost_gt_pred = if_else(is.negative(RegDataPredFull$Residuals) == FALSE, krnl_cost_pedestrian_events, NULL))
+ 
+ 
+ FullPlot<-ggplot(data = RegDataPredFull) + 
+   geom_point(aes(x = predict, y = krnl_cost_pedestrian_events, colour = 'Negative Residuals')) +
+   geom_point(aes(x = predict, y = cost_gt_pred, colour = "Positive Residuals")) +
+   stat_smooth(color = 'dodgerblue3', aes(x = predict, y = krnl_cost_pedestrian_events), se=F, method = lm, fullrange = TRUE) +
+   scale_y_continuous(breaks = seq(0,5,.5)) +
+   ylim(0,5) +
+   scale_x_continuous(breaks = seq(0,5,.5)) +
+   xlim(0,5) +
+   ylab("Actual Sum Cost ($ in Millions)") +
+   xlab("Predicted Sum Cost ($ in Millions)") +
+   ggtitle("Predicted vs Actual Cost of Injury", subtitle = "Full Linear Model") +
+   theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5), legend.position = c(0.8,0.3)) + #Centers title and subtitle
+   scale_color_manual(values = c('Negative Residuals' = 'springgreen4', 'Positive Residuals' = 'red4'), name = "Points") +
+   theme(text = element_text(size = 25))
+ 
+ FullPlot
+ 
+ setwd(home_dir)
+ setwd(plot_dir)
+ 
+ ggsave(filename = "Linear_Model_Full_HD.png", width = 24, height = 13.4, units = "in", dpi = 100.13)
+ ggsave(filename = "Linear_Model_Full.png", width = 16, height = 9, units = "in")
 
 
 
@@ -269,9 +248,10 @@ ggsave(filename = "Linear_Model_Full.png", width = 16, height = 9, units = "in")
 
 # Final Reduced Model 
 LRModel.CrossValidatedResultReduced <- lm(formula = krnl_cost_pedestrian_events ~ num_near_misses + 
-                                            dblprk + prkint + vrrlss + mean_walk_score + num_streets + 
-                                            med_sale_com_n + dist + animals_insects + food + others + 
-                                            trees_plants, data = RegData)
+                                            dblprk + dnotyld + prkint + speed + vrrlss + other.1 + mean_walk_score + 
+                                            sum_lane_cnt + sum_area + med_sale_com_y + med_sale_com_n + 
+                                            sum_cost_non_pedestrian_events + dist + animals_insects + 
+                                            construction + food + others + traffic_signal, data = RegData)
 
 setwd(home_dir)
 setwd(data_dir)
@@ -288,6 +268,9 @@ vif(LRModel.CrossValidatedResultReduced)
 RegDataPredReduced <- RegData
 # Create prediction based on model results 
 RegDataPredReduced$predict <- predict(LRModel.CrossValidatedResultReduced, RegData)
+# Re-add zeros from logistic model
+RegDataPredReduced$predict[RegDataPred$predictlogistic == "Zero"] <- 0
+
 RegDataPredReduced$Residuals<-RegDataPredReduced$krnl_cost_pedestrian_events - RegDataPredReduced$predict
 
 
@@ -306,7 +289,7 @@ ReducedPlot <- ggplot(data = RegDataPredReduced) +
   xlim(0,5) +
   ylab("Observed Sum Cost ($ in Millions)") +
   xlab("Expected Sum Cost ($ in Millions)") +
-  ggtitle("Expected vs Observed Cost of Non-Fatality Incident", subtitle = "Reduced Linear Model") +
+  ggtitle("Expected vs Observed Cost of Non-Fatality Incident", subtitle = "Reduced Logistic - Linear Model") +
   theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5), legend.position = c(0.8,0.3)) + #Centers title and subtitle
   scale_color_manual(values = c('Negative Residuals' = 'springgreen4', 'Positive Residuals' = 'red4'), name = "Points") +
   theme(text = element_text(size = 25)) 

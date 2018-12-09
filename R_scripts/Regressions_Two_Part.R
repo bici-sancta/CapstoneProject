@@ -98,7 +98,7 @@ p <- ggplot(p.dat[y > 0 & y < 10000], aes(x = y, col = lab)) +
   scale_color_manual(values=c(Observed = "black", Normal = "red", 
                               Lognormal = "blue", Gamma = "green")) +
   scale_x_continuous(breaks = seq(0,5,.5)) +
-  xlim(0,10)
+  xlim(0,5)
 
 
 print(p)
@@ -163,3 +163,5 @@ setwd(data_dir)
 
 ResidualCSV <- data.frame(Cell_ID = PSIFullFinalcell_id, Residuals = PSIFullFinalResiduals)
 write.csv(ResidualCSV, "Residuals_by_Gridcell_Two_Part_Model.csv", row.names = FALSE)
+
+

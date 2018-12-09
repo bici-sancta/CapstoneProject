@@ -1,48 +1,66 @@
 
 Call:
 lm(formula = krnl_cost_pedestrian_events ~ num_near_misses + 
-    access + dblprk + jywalk + other + prkint + vrrlss + other.1 + 
-    mean_walk_score + min_walk_score + sum_width + num_streets + 
-    med_sale_res_y + med_sale_com_n + med_sale_ind_y + med_sale_pbo_y + 
-    dist + n_object + animals_insects + food + others + police.property + 
-    trees_plants + water.leak + n_request, data = RegData)
+    access + dblprk + dnotyld + lwfws + nobikef + prkint + prkswlk + 
+    speed + vrrlss + xwalk + bikes + drives + other.1 + mean_walk_score + 
+    min_walk_score + sum_lane_cnt + sum_area + num_streets + 
+    med_sale_res_y + med_sale_res_n + med_sale_com_y + med_sale_com_n + 
+    med_sale_ind_y + med_sale_ind_n + med_sale_pbo_y + sum_cost_non_pedestrian_events + 
+    dist + n_object + animals_insects + construction + food + 
+    others + police.property + service.complaint + traffic_signal + 
+    trash + trees_plants + zoning_parking + n_request, data = RegData)
 
 Residuals:
     Min      1Q  Median      3Q     Max 
--3.3563 -0.1894 -0.1169  0.0280  5.5750 
+-1.7768 -0.1621 -0.0714  0.0281  5.1081 
 
 Coefficients:
-                  Estimate Std. Error t value Pr(>|t|)    
-(Intercept)     -9.487e-02  3.360e-02  -2.823 0.004778 ** 
-num_near_misses  1.091e-01  3.507e-02   3.110 0.001885 ** 
-access          -2.617e-02  1.016e-01  -0.258 0.796802    
-dblprk           1.648e-01  8.712e-02   1.891 0.058684 .  
-jywalk           4.187e-02  5.436e-02   0.770 0.441192    
-other           -1.666e-02  2.569e-02  -0.649 0.516629    
-prkint           9.385e-02  4.606e-02   2.038 0.041648 *  
-vrrlss           6.790e-02  2.246e-02   3.023 0.002519 ** 
-other.1          7.386e-02  3.915e-02   1.887 0.059269 .  
-mean_walk_score  6.060e-03  2.194e-03   2.761 0.005781 ** 
-min_walk_score  -9.132e-05  2.084e-03  -0.044 0.965048    
-sum_width        2.060e-06  1.782e-05   0.116 0.907975    
-num_streets     -5.603e-04  6.245e-04  -0.897 0.369638    
-med_sale_res_y  -1.389e-08  3.704e-08  -0.375 0.707749    
-med_sale_com_n   1.698e-08  5.090e-09   3.337 0.000855 ***
-med_sale_ind_y   1.050e-09  1.337e-08   0.079 0.937416    
-med_sale_pbo_y  -9.344e-08  1.938e-07  -0.482 0.629783    
-dist            -9.998e+00  1.446e+00  -6.914 5.43e-12 ***
-n_object         2.597e-03  1.923e-03   1.350 0.176938    
-animals_insects  6.116e-03  2.252e-03   2.716 0.006642 ** 
-food             5.126e-02  4.066e-03  12.605  < 2e-16 ***
-others           2.792e-03  3.179e-04   8.782  < 2e-16 ***
-police.property -1.043e-04  2.550e-03  -0.041 0.967367    
-trees_plants    -1.991e-03  1.341e-03  -1.485 0.137700    
-water.leak       2.717e-03  1.092e-02   0.249 0.803583    
-n_request        4.506e-06  1.447e-04   0.031 0.975153    
+                                 Estimate Std. Error t value Pr(>|t|)    
+(Intercept)                    -3.812e-02  3.221e-02  -1.183 0.236701    
+num_near_misses                 8.024e-02  3.290e-02   2.439 0.014770 *  
+access                         -1.565e-02  9.575e-02  -0.163 0.870138    
+dblprk                          1.546e-01  8.384e-02   1.844 0.065215 .  
+dnotyld                         6.124e-02  2.496e-02   2.454 0.014180 *  
+lwfws                           7.380e-02  8.595e-02   0.859 0.390589    
+nobikef                        -5.345e-02  9.622e-02  -0.556 0.578578    
+prkint                          1.133e-01  4.755e-02   2.382 0.017274 *  
+prkswlk                         1.687e-02  4.012e-02   0.421 0.674100    
+speed                          -4.276e-02  2.020e-02  -2.117 0.034299 *  
+vrrlss                          4.467e-02  2.366e-02   1.888 0.059066 .  
+xwalk                          -2.685e-03  3.454e-02  -0.078 0.938045    
+bikes                           4.588e-02  6.473e-02   0.709 0.478478    
+drives                         -1.491e-02  1.690e-02  -0.882 0.377770    
+other.1                         6.628e-02  3.811e-02   1.739 0.082096 .  
+mean_walk_score                 4.792e-03  2.063e-03   2.323 0.020211 *  
+min_walk_score                 -1.374e-03  1.958e-03  -0.702 0.482940    
+sum_lane_cnt                   -3.701e-04  1.863e-04  -1.987 0.046958 *  
+sum_area                       -1.175e-08  8.182e-09  -1.436 0.151130    
+num_streets                     6.578e-05  5.773e-04   0.114 0.909284    
+med_sale_res_y                  2.766e-08  3.511e-08   0.788 0.430836    
+med_sale_res_n                  1.422e-08  1.667e-08   0.853 0.393664    
+med_sale_com_y                  1.843e-08  5.101e-09   3.613 0.000306 ***
+med_sale_com_n                  1.168e-08  5.096e-09   2.293 0.021906 *  
+med_sale_ind_y                 -1.298e-08  1.262e-08  -1.029 0.303630    
+med_sale_ind_n                 -3.808e-08  3.402e-08  -1.119 0.263002    
+med_sale_pbo_y                 -7.838e-08  1.819e-07  -0.431 0.666531    
+sum_cost_non_pedestrian_events  2.871e-04  1.495e-05  19.210  < 2e-16 ***
+dist                           -5.749e+00  1.371e+00  -4.195 2.79e-05 ***
+n_object                       -3.241e-04  1.814e-03  -0.179 0.858185    
+animals_insects                 1.394e-04  2.317e-03   0.060 0.952027    
+construction                    1.857e-02  1.298e-02   1.431 0.152420    
+food                            1.917e-02  4.085e-03   4.694 2.77e-06 ***
+others                         -1.797e-03  5.305e-04  -3.388 0.000711 ***
+police.property                -2.159e-03  2.419e-03  -0.893 0.372106    
+service.complaint               6.379e-04  5.908e-03   0.108 0.914030    
+traffic_signal                  4.011e-02  1.133e-02   3.541 0.000403 ***
+trash                          -2.602e-03  4.386e-04  -5.933 3.21e-09 ***
+trees_plants                   -2.580e-03  1.346e-03  -1.917 0.055342 .  
+zoning_parking                 -3.868e-03  3.686e-03  -1.049 0.294100    
+n_request                       2.371e-03  3.866e-04   6.134 9.39e-10 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-Residual standard error: 0.5331 on 4170 degrees of freedom
-Multiple R-squared:  0.263,	Adjusted R-squared:  0.2586 
-F-statistic: 59.54 on 25 and 4170 DF,  p-value: < 2.2e-16
+Residual standard error: 0.4999 on 4155 degrees of freedom
+Multiple R-squared:  0.3542,	Adjusted R-squared:  0.348 
+F-statistic: 56.97 on 40 and 4155 DF,  p-value: < 2.2e-16
 
