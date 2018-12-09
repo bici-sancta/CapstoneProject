@@ -84,7 +84,7 @@ Dallas, TX 75275 USA\\
 \maketitle              % typeset the title of the contribution
 
 \begin{abstract}
-In this paper, we present a method to identify urban areas with a higher likelihood of pedestrian safety related events. Pedestrian safety related events are pedestrian–-vehicle interactions that result in fatalities, injuries, accidents without injury, or a near--miss between pedestrian and vehicle. To develop a solution to this problem of identifying likely locations of events, we assemble data sets, primarily from the City of Cincinnati, that include safety reports from a 5 year period, geographic information for these events, a citizen survey that identifies pedestrian reported concerns, and a database of all requests for service for any cause in the city. From this assembled data set we complete unsupervised learning. The results identify locations in urban areas for prioritized remediation enabling a proactive approach to improved pedestrian safety.
+In this paper, we present a method to identify urban areas with a higher likelihood of pedestrian safety related events. Pedestrian safety related events are pedestrian-vehicle interactions that result in fatalities, injuries, accidents without injury, or near--misses between pedestrians and vehicles. To develop a solution to this problem of identifying likely event locations, we assemble data, primarily from the City of Cincinnati and Hamilton County, that include safety reports from a five year period, geographic information for these events, citizen survey of pedestrian reported concerns, non-emergency requests for service for any cause in the city, property values and public transportation accessibility. We augment the data from Cincinnati with walkability scores obtained from public sources. From this assembled data set we complete both supervised learning and unsupervised learning. The supervised learning, two-part regression, identifies specific areas within the city that have the highest potential for safety improvement. It is these regions that are recommended to be prioritized for resource allocation and remedial action. The unsupervised learning, k-means cluster, is conducted to augment the overall understanding of how different neighborhoods present differing opportunities for improvement with regard to walkability and consequently pedestrian safety.
 \end{abstract}
 %
 \section{Introduction}
@@ -123,7 +123,7 @@ The subject pedestrian safety is supported by terminology specific to this domai
 
 Prime measurements that are used to report pedestrian safety events are fatalities, injuries, and near misses. The statistics in these categories are quoted in number of events and are typically stated on an annualized and per capita basis.
 
-There are a range of severities associated to the outcomes of pedestrian--vehicle accidents. A continuous real valued response variable that accounts for the both the severity and the frequency of events can be established by accounting for this relative severity. We implement a response variable that is a multiple of the number of events and the cost of the event. The cost basis that we use is based on average severity costs for 5 levels of events, as established by the National Safety Council \footnote{https://www.nsc.org/Portals/0/Documents/NSCDocuments_Corporate/estimating-costs.pdf}\cite{nsc2012estimating} as shown in Table ~\ref{table:eventseverity}.
+There are a range of severities associated to the outcomes of pedestrian--vehicle accidents. A continuous real valued response variable that accounts for the both the severity and the frequency of events can be established by accounting for this relative severity. We implement a response variable that is a multiple of the number of events and the cost of the event. The cost basis that we use is based on average severity costs for 5 levels of events, as established by the National Safety Council\footnote{https://www.nsc.org/Portals/0/Documents/NSCDocuments_Corporate/estimating-costs.pdf} as shown in Table ~\ref{table:eventseverity}. As identified in the NSC estimating method are not the actual incurred economic costs, but also include estimations for lost quality of life. The values in the Table \ref{eventseverity} are for a per-injured person basis. For our purposes, the actual costs are not used to establish an actual economic impact, but are used to represent a relative severity among the injury types. For instance, a fatality is assessed to be ten times more severe than a disabling injury and two hundred times more negatively impactful than an event where no injury was observed.
 
 %
 \FloatBarrier
@@ -155,7 +155,7 @@ Table ~\ref{table:terminology} provides definitions of  pedestrian safety relate
 \caption{Pedestrian safety terminology}
 \label{table:terminology}
 \begin{center}
-\begin{tabular}{p{40mm}  p{80mm}}
+\begin{tabular}{ p{.50\textwidth}  p{.50\textwidth} }
 \hline
 \rule{0pt}{12pt}
 Attribute & Description\\[2pt]
@@ -168,7 +168,26 @@ Hotspot & Areas with higher density or frequency of pedestrian related accidents
 \end{table}
 \FloatBarrier	
 
-The focus of many pedestrian safety studies is the interaction between pedestrians and vehicles. Prior works have created statistical models to determine the likelihood of crashes, given information about the time of day, victim's age, gender, and other features \cite{brude1993models} \cite{lascala2000demographic} \cite{lyon2002pedestrian} \cite{ladron2004forecasting} \cite{pulugurtha2011pedestrian} \cite{ukkusuri2011random}. The study done by Guo \cite{guo2017effect}, et al examined the patterning and structure of road networks as a factor of pedestrian vehicle interactions (PVIs). Zhang et al \cite{zhang2017quantitative} created a statistical model that classified different types of street crossings to determine which type of crossing was the safest, and gain insight to the relationships between the factors that contribute to a PVI. In our study, we address the issue of pedestrian safety in regard to PVIs by proactively identifying intersections which are of high risk, as opposed to prior studies which have only identified the contributing factors.
+The focus of many pedestrian safety studies is the interaction between pedestrians and vehicles. Prior works have created statistical models to determine the likelihood of crashes, given information about the time of day, victim's age, gender, and other features \cite{brude1993models} \cite{lascala2000demographic} \cite{lyon2002pedestrian} \cite{ladron2004forecasting} \cite{pulugurtha2011pedestrian} \cite{ukkusuri2011random}. The study done by Guo \cite{guo2017effect}, et al examined the patterning and structure of road networks as a factor of pedestrian vehicle interactions (PVIs). Zhang et al \cite{zhang2017quantitative} created a statistical model that classified different types of street crossings to determine which type of crossing was the safest, and gain insight to the relationships between the factors that contribute to a PVI. 
+
+
+In our study, we address the issue of pedestrian safety in a manner that is generally consistent with traffic safety analysis methods, which develop a model, typically via linear regression,  and then use the variance between expected and observed to determine the areas with potential for improvement as the areas in which the observed number (or cost severity) of events most greatly exceeds the model expected values. Common in highway traffic studies is the implementation of an empirical Bayesian adjustment to the regression model estimations.
+
+\begin{equation} Expected_{Bayesian} = \eta \cdot P(E)  + (1 - \eta) \cdot O(E),
+\end{equation} \newline
+where $0 < \eta < 1$, $P(E)$ = expected accidents (either in severity or number) from the model for similar locations, and
+$O(E)$ is the observed accidents (either in severity or number) for a specific location. $\eta$ is determined empirically from existing models or published standards from, for example, the National Highway Transportation Association. (NEED REFERENCE HERE)
+
+We do not implement that additional step, as our purpose is restricted to identifying locations that have greatest positive variance (observed - expected) in comparison to all of the other grid cells in the modeled region. For this purpose, it is not additional added value to include the adjustment associated to the empirical Bayesian procedure.
+
+<Place holder for supervized learning solution>
+The unsupervized learning we have generated clusters of pedestrian safety issues and visualized them on the grid map of Cincinnati
+<Place holder for supervized learning results>
+unsupervized learning results
+<Place holder for supervized learning conclusion>
+unsupervized learning conclusion
+
+The remainder of this paper is organized as follows. In Section 2 we provide general information about pedestrian safety, terminology used in subsequent sections of the study, and a valuation associated to the costs incurred in pedestrian accidents. In Section 3 we describe the data sources and data sets used in this study, a description of a grid cell approach to modeling geographic data, the development of model features from the source data, and some graphical representations of the distribution of these features viewed geographically. In section 4 we describe the various models implemented, the results and analysis of the results are presented in Sections 5 and 6. Ethical considerations of this study are provided in Section 7. The Conclusion is presented in Section 8. 
 
 % ...		-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 \section{Data Sets}
@@ -299,7 +318,7 @@ Cost_{g} = \sum_{i=1}^{n} \rho_{i} \left [ 1 - \left ( \frac{d_{ig}}{r} \right )
 
 where $Cost_{g}$ is the crash cost assigned to grid cell $g$, $d_{ig}$    is the distance from the identified pedestrian accident site to the local grid cell centroids, $r$ is the (constant) search radius, $C_{i}$ is the cost severity of the accident ${i}$, and $\rho_{i}$ is a normalizing factor for each accident such that the distributed costs for each accident sum to the nominal severity value of that event. For our model, the implementation of this kernel density function was implemented within the R code.
 
-The distribution that results from the application of this data set onto the grid cell domain with the kernel density function applied are shown in below figure \ref{figure : PedestrianCosts}. The experience is that approximately $\frac{1}{4}$th of the grid cells have no contribution from the cost severity allocation and the remaining $\frac{3}{4}$ths demonstrate a reasonable approximation to a log-normal distribution of allocated costs. For clarity in the figures, the cost values in Figure  \ref{figure : pedestrianAccidentCostsHistogram} are shown log-transformed [log10(cost)], and the zero values scaled as log10(0.1).
+The distribution that results from the application of this data set onto the grid cell domain with the kernel density function applied are shown in figure \ref{figure : PedestrianCosts}. The experience is that approximately $\frac{1}{4}$th of the grid cells have no contribution from the cost severity allocation and the remaining $\frac{3}{4}$ths demonstrate a reasonable approximation to a log-normal distribution of allocated costs. For clarity in the figures, the cost values in Figure  \ref{figure : pedestrianAccidentCostsHistogram} are shown log-transformed [log10(cost)], and the zero values scaled as log10(0.1).
 
 
 % ... pedestrian accident distributions
@@ -328,7 +347,7 @@ This motivates us to consider the supervised learning model as a two-part model 
 
 \subsubsection{Traffic Accidents}
 
-Similar to the pedestrian accident data set in the previous section, the same data set from the the Open Data Cincinnati portal, Traffic Crash Reports (CPD), also includes a definition of every non-pedestrian involved traffic accident that occurred in the same time period.  There are more than 190,000 reported traffic accidents that do not involve pedestrians in the years 2013 through 2018. As a candidate independent feature characteristic for this model, we distribute each of the events to the appropriate grid cell, apply the same comprehensive cost severity factor as identified in Table \ref{table : eventseverity}, aggregate the total experience in each grid cell as a dollar severity amount. We do not apply a kernel function to distribute the cost severity over the local geographic region for the independent predictor featues. In this case, the density of the actual experience is sufficiently distributed that a kernel function for density diffusion is not needed to achieve wide distribution and sufficient coverage of the accident experience among all of the grid cells. The distribution of the cost severity function for the non-pedestrian involved accidents are shown in below Figure \ref{figure : trafficAccidentsNonPedestrian}
+Similar to the pedestrian accident data set in the previous section, the same data set from the the Open Data Cincinnati portal, Traffic Crash Reports (CPD), also includes a definition of every non-pedestrian involved traffic accident that occurred in the same time period.  There are more than 190,000 reported traffic accidents that do not involve pedestrians in the years 2013 through 2018. As a candidate independent feature characteristic for this model, we distribute each of the events to the appropriate grid cell, apply the same comprehensive cost severity factor as identified in Table \ref{table : eventseverity}, aggregate the total experience in each grid cell as a dollar severity amount. We do not apply a kernel function to distribute the cost severity over the local geographic region for the independent predictor featues. In this case, the density of the actual experience is sufficiently distributed that a kernel function for density diffusion is not needed to achieve wide distribution and sufficient coverage of the accident experience among all of the grid cells. The distribution of the cost severity function for the non-pedestrian involved accidents are shown in Figure \ref{figure : trafficAccidentsNonPedestrian}
 % ... bus stop distances
 
 \FloatBarrier
@@ -343,22 +362,23 @@ Similar to the pedestrian accident data set in the previous section, the same da
 
 \subsubsection{Streets Infrastructure}
 
-Typical traffic safety models include data features to characterize the density of local traffic conditions. For this model in The Open Data Cincinnati portal provides a data set Street Centerlines (w/ PCI rating). This data set includes a description of each street segment in the city and includes the characteristics : geo-locations of the street segment, surface area, surface length, surface width, number of traffic lanes, and the surface type (asphalt, concrete, etc.). We use this data set to develop a set of features as shown in Table \ref{table : streetFeatures}
+Typical traffic safety models include data features to characterize the density of local traffic conditions. For this model in The Open Data Cincinnati portal provides a data set Street Centerlines (w/ PCI rating). This data set includes a description of each street segment in the city and includes the characteristics : geo-locations of the street segment, surface area, surface length, surface width, number of traffic lanes, and the surface type (asphalt, concrete, etc.). We use this data set to develop a set of features as shown in Table \ref{table : streetFeatures}. The statistics shown are summary statistics for the sample of data across all of the grid cells.
 
 \FloatBarrier
 \begin{table}[!h]
 \begin{center}
 \caption{Street surface features}
 \label{table : streetFeatures}
-\begin{tabular}{ p{.9\textwidth}}
+\begin{tabular}{lrrr}
+%{ p{.9\textwidth}}
 \hline
 \rule{0pt}{12pt}
-Street surface features\\[2pt]
+Charactertistic	&	1st Quartile	&	Median	&	3rd Quartile	\\[2pt]
 \hline
-Sum of lane counts\\
-Sum of lane widths\\
-Sum of street surface area\\
-Number of streets\\[2pt]
+Lane Counts	&	24	&	53	&	108	\\
+Sum Widths	&	250	&	563	&	1152	\\
+Sum Areas	&	131805	&	284640	&	787812	\\
+Number Streets	&	8	&	19	&	38	\\[2pt]
 \hline
 \end{tabular}
 \end{center}
@@ -366,7 +386,8 @@ Number of streets\\[2pt]
 \FloatBarrier
 %
 
-The distribution of the sum of street surface area distributed among the grid cells of this model are shown in below Figure \ref{figure : streetsSumArea}
+
+The distribution of the sum of street surface area distributed among the grid cells of this model are shown in Figure \ref{figure : streetsSumArea}
 
 \FloatBarrier
 \begin{figure}
@@ -506,6 +527,7 @@ Category	&	Description & Number			\\
 \subsection{Neighborhoods}
 
 For some elements of this project we relied on descriptions of neighborhoods, neighborhood boundaries, and real estate market valuation. To support those elements we used data sources available from Zillow. Zillow is an on-line real estate based service providing information about residential properties for sale, for rent, or recently sold\footnote{https://www.zillow.com/}. Zillow provides on-line access to real estate information and services to consumers. A part of the resources made available by Zillow are neighborhood boundary shapefiles. These files are shared under a Creative Commons license, allowing freedom to use the data sets provided attribution is made to Zillow. For our purposes, we used the neighborhood boundaries for three purposes. First, the neighborhood boundary shapefiles for the City of Cincinnati were used to identify grid cells and experiences that were strictly within the boundaries of the city using the latitude and longitude coordinates of the shapefiles. In addition, each grid cell in the model was attributed to one of the forty-six neighborhoods included in the Zillow defined boundaries. These neighborhood assignments were then used to support imputation for grid cells that had missing values for property value information. The grid cells without property value assignment were imputed using median values within a neighborhood. Additionally, the neighborhood boundaries were used following the unsupervised learning to differentiate clustering analysis results in the context of named neighborhoods. We observe that the Zillow neighborhood definitions include two neighborhoods, Fruit Hill and Forestville, on the eastern boundary of the city which are not, in fact, within the city incorporation limits. We dropped those neighborhoods from our model. An additional resource that we use from Zillow is the Cincinnati Market Overview, which provides an aggregate relative change in market valuation for the Cincinnati residential market for the years 2008 through 2018.  In the next section we describe the property valuation information that we use in our model that is acquired from the Hamilton County (OH) Auditor. We adjust the historical information from that source using the relative market valuation change that is available from the Zillow web-site. The relative values are shown in the below Table \ref{table : marketappreciation}.
+For some elements of this project we relied on descriptions of neighborhoods, neighborhood boundaries, and real estate market valuation. To support those elements we used data sources available from Zillow. Zillow is an on-line real estate based service providing information about residential properties for sale, for rent, or recently sold\footnote{https://www.zillow.com/}. Zillow provides on-line access to real estate information and services to consumers. A part of the resources made available by Zillow are neighborhood boundary shapefiles. These files are shared under a Creative Commons license, allowing freedom to use the data sets provided attribution is made to Zillow. For our purposes, we used the neighborhood boundaries for three purposes. First, the neighborhood boundary shapefiles for the City of Cincinnati were used to identify grid cells and experiences that were strictly within the boundaries of the city using the latitude and longitude coordinates of the shapefiles. In addition, each grid cell in the model was attributed to one of the forty-six neighborhoods included in the Zillow defined boundaries. These neighborhood assignments were then used to support imputation for grid cells that had missing values for property value information. The grid cells without property value assignment were imputed using median values within a neighborhood. Additionally, the neighborhood boundaries were used following the non-supervised learning to differentiate clustering analysis results in the context of named neighborhoods. We observe that the Zillow neighborhood definitions include two neighborhoods, Fruit Hill and Forestville, on the eastern boundary of the city which are not, in fact, within the city incorporation limits. We dropped those neighborhoods from our model. An additional resource that we use from Zillow is the Cincinnati Market Overview, which provides an aggregate relative change in market valuation for the Cincinnati residential market for the years 2008 through 2018.  In the next section we describe the property valuation information that we use in our model that is acquired from the Hamilton County (OH) Auditor. We adjust the historical information from that source using the relative market valuation change that is available from the Zillow web-site. The relative values are shown in Table \ref{table : marketappreciation}.
 
 \FloatBarrier
 \begin{table}[!h]
@@ -567,7 +589,7 @@ Median sale price – public owned – non-valid sale \\[2pt]
 \FloatBarrier
 %
 
-An example of the distribution of the property values for this model are shown in below Figure \ref{figure : medianpropertyvalues}
+An example of the distribution of the property values for this model are shown in Figure \ref{figure : medianpropertyvalues}
 
 % ... Median residential property values
 \FloatBarrier
@@ -584,7 +606,7 @@ An example of the distribution of the property values for this model are shown i
 
 Additionally, the date of the issue created, typical mode of user (walk, drive, bicycle), and intersection of the location selected are captured. There are 3788 records in our survey dataset with 8 usable columns. There are missing data and categorical data in incorrect format which require clean-up and updating of missing information. Other than the survey data, we have various sources of data which would be combined to form the dataset for the project. All acquired from the City of Cincinnati are listed in Table ~\ref{table:cincinnatidatasets}. Datasets that originated from the Open Data Cincinnati are listed in Table ~\ref{table:cincinnatiopendata}.  Supplementary data sets from external sources are listed in Table ~\ref{table:supplementarydatasets}.
 
-An example of the distribution of the property values for this model are shown in below Figure \ref{figure : walkScore}
+An example of the distribution of the property values for this model are shown in Figure \ref{figure : walkScore}
 
 % ... Median residential property values
 \FloatBarrier
