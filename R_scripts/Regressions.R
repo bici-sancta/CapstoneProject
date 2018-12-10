@@ -74,9 +74,10 @@ roc_plot <- ggplot(df_roc, aes(x = FPR, y = TPR)) +
   #geom_point(color = "#354ca1") +
   geom_line(color = "#354ca1", size = 2) +
   #    geom_smooth() +
-  ggtitle("AUC of Predicted Class Probabilities") +
+  ggtitle("ROC of Predicted Class Probabilities") +
   xlab("False Positive Rate") + ylab("True Positive Rate") +
-  theme(text = element_text(size = 15))
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5), legend.position = c(0.8,0.3)) + #Centers title and subtitle
+  theme(text = element_text(size = 25))
 
 roc_plot
 
@@ -298,7 +299,7 @@ ReducedPlot
 ggsave(filename = "Linear_Model_Reduced_HD.png", width = 24, height = 13.4, units = "in", dpi = 100.13)
 ggsave(filename = "Linear_Model_Reduced.png", width = 16, height = 9, units = "in")
 
-ReducedDiags <- autoplot(LRModel.CrossValidatedResultReduced, which = 1:6)
+ReducedDiags <- autoplot(LRModel.CrossValidatedResultReduced, which = 1:6) + theme(text = element_text(size = 18))
 ReducedDiags
 
 ggsave(plot = ReducedDiags, filename = "Linear_Model_Reduced_Diagnostics.png", width = 16, height = 9, units ="in")
