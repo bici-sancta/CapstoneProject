@@ -1,33 +1,41 @@
 
 Call:
 lm(formula = krnl_cost_pedestrian_events ~ num_near_misses + 
-    dblprk + prkint + vrrlss + mean_walk_score + num_streets + 
-    med_sale_com_n + dist + animals_insects + food + others + 
-    trees_plants, data = RegData)
+    dblprk + dnotyld + prkint + speed + vrrlss + other.1 + mean_walk_score + 
+    sum_lane_cnt + sum_area + med_sale_com_y + med_sale_com_n + 
+    sum_cost_non_pedestrian_events + dist + animals_insects + 
+    construction + food + others + traffic_signal, data = RegData)
 
 Residuals:
     Min      1Q  Median      3Q     Max 
--3.3905 -0.1863 -0.1167  0.0271  5.5879 
+-1.9704 -0.1646 -0.0763  0.0277  5.1314 
 
 Coefficients:
-                  Estimate Std. Error t value Pr(>|t|)    
-(Intercept)     -8.715e-02  3.137e-02  -2.778 0.005491 ** 
-num_near_misses  1.109e-01  3.459e-02   3.206 0.001358 ** 
-dblprk           2.041e-01  8.429e-02   2.422 0.015492 *  
-prkint           1.127e-01  4.471e-02   2.520 0.011764 *  
-vrrlss           7.557e-02  2.050e-02   3.686 0.000231 ***
-mean_walk_score  6.115e-03  6.312e-04   9.688  < 2e-16 ***
-num_streets     -5.045e-04  2.939e-04  -1.716 0.086164 .  
-med_sale_com_n   1.683e-08  5.075e-09   3.315 0.000923 ***
-dist            -9.965e+00  1.432e+00  -6.957 4.02e-12 ***
-animals_insects  6.060e-03  2.194e-03   2.762 0.005777 ** 
-food             5.221e-02  3.996e-03  13.065  < 2e-16 ***
-others           2.813e-03  2.036e-04  13.817  < 2e-16 ***
-trees_plants    -2.036e-03  1.092e-03  -1.865 0.062260 .  
+                                 Estimate Std. Error t value Pr(>|t|)    
+(Intercept)                    -4.283e-02  2.936e-02  -1.459  0.14463    
+num_near_misses                 7.769e-02  3.281e-02   2.368  0.01794 *  
+dblprk                          1.559e-01  8.069e-02   1.932  0.05342 .  
+dnotyld                         6.132e-02  2.409e-02   2.546  0.01094 *  
+prkint                          1.026e-01  4.362e-02   2.353  0.01868 *  
+speed                          -4.387e-02  1.560e-02  -2.811  0.00495 ** 
+vrrlss                          4.596e-02  2.161e-02   2.127  0.03345 *  
+other.1                         6.943e-02  3.567e-02   1.947  0.05165 .  
+mean_walk_score                 3.788e-03  6.042e-04   6.269 3.99e-10 ***
+sum_lane_cnt                   -2.976e-04  1.151e-04  -2.585  0.00976 ** 
+sum_area                       -1.457e-08  8.110e-09  -1.796  0.07252 .  
+med_sale_com_y                  1.658e-08  5.093e-09   3.254  0.00115 ** 
+med_sale_com_n                  1.472e-08  4.804e-09   3.063  0.00220 ** 
+sum_cost_non_pedestrian_events  2.930e-04  1.442e-05  20.314  < 2e-16 ***
+dist                           -6.159e+00  1.353e+00  -4.553 5.43e-06 ***
+animals_insects                 6.426e-03  2.051e-03   3.133  0.00174 ** 
+construction                    3.051e-02  1.275e-02   2.392  0.01678 *  
+food                            2.330e-02  3.942e-03   5.912 3.66e-09 ***
+others                          1.303e-03  1.768e-04   7.367 2.10e-13 ***
+traffic_signal                  4.919e-02  1.113e-02   4.421 1.01e-05 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-Residual standard error: 0.5327 on 4183 degrees of freedom
-Multiple R-squared:  0.2619,	Adjusted R-squared:  0.2598 
-F-statistic: 123.7 on 12 and 4183 DF,  p-value: < 2.2e-16
+Residual standard error: 0.5015 on 4176 degrees of freedom
+Multiple R-squared:  0.3469,	Adjusted R-squared:  0.3439 
+F-statistic: 116.7 on 19 and 4176 DF,  p-value: < 2.2e-16
 
