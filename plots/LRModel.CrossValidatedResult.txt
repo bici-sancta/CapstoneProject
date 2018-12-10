@@ -1,0 +1,40 @@
+
+Call:
+lm(formula = krnl_cost_pedestrian_events ~ num_near_misses + 
+    dblprk + dnotyld + prkint + speed + vrrlss + other.1 + mean_walk_score + 
+    sum_lane_cnt + med_sale_com_y + med_sale_com_n + sum_cost_non_pedestrian_events + 
+    dist + animals_insects + construction + food + others + traffic_signal, 
+    data = RegData)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.9798 -0.1647 -0.0751  0.0260  5.1322 
+
+Coefficients:
+                                 Estimate Std. Error t value Pr(>|t|)    
+(Intercept)                    -4.560e-02  2.932e-02  -1.555  0.12002    
+num_near_misses                 7.746e-02  3.282e-02   2.360  0.01832 *  
+dblprk                          1.553e-01  8.071e-02   1.924  0.05440 .  
+dnotyld                         6.210e-02  2.409e-02   2.578  0.00998 ** 
+prkint                          1.037e-01  4.363e-02   2.378  0.01747 *  
+speed                          -4.320e-02  1.560e-02  -2.769  0.00565 ** 
+vrrlss                          4.495e-02  2.160e-02   2.081  0.03753 *  
+other.1                         7.005e-02  3.567e-02   1.964  0.04963 *  
+mean_walk_score                 3.824e-03  6.041e-04   6.330 2.71e-10 ***
+sum_lane_cnt                   -4.357e-04  8.571e-05  -5.083 3.87e-07 ***
+med_sale_com_y                  1.655e-08  5.095e-09   3.248  0.00117 ** 
+med_sale_com_n                  1.489e-08  4.804e-09   3.100  0.00195 ** 
+sum_cost_non_pedestrian_events  2.940e-04  1.441e-05  20.400  < 2e-16 ***
+dist                           -6.114e+00  1.353e+00  -4.519 6.37e-06 ***
+animals_insects                 6.426e-03  2.052e-03   3.132  0.00175 ** 
+construction                    3.149e-02  1.275e-02   2.470  0.01353 *  
+food                            2.336e-02  3.943e-03   5.924 3.39e-09 ***
+others                          1.329e-03  1.763e-04   7.539 5.75e-14 ***
+traffic_signal                  4.986e-02  1.112e-02   4.482 7.59e-06 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.5016 on 4177 degrees of freedom
+Multiple R-squared:  0.3464,	Adjusted R-squared:  0.3436 
+F-statistic:   123 on 18 and 4177 DF,  p-value: < 2.2e-16
+

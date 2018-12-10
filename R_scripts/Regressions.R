@@ -8,6 +8,7 @@ library(ggplot2)
 library(ggfortify)
 library(e1071)
 library(ROCR)
+library(data.table)
 
 
 home_dir <- ("G:/JoshuaData/Classes/MSDS61X0 Capstone/CapstoneProject")
@@ -28,7 +29,7 @@ df_model_w_cell_id <- read.csv(infile,
 drop <- c("num_pedestrian_events")
 RegData <- df_model_w_cell_id[, !names(df_model_w_cell_id) %in% drop]
 
-RegData$IsZero <- ifelse(RegData$krnl_cost_pedestrian_events !=0, "0", "1")
+RegData$IsZero <- ifelse(RegData$krnl_cost_pedestrian_events !=0, "1", "0")
 
 set.seed(0737)
 
@@ -70,8 +71,8 @@ colnames(df_roc) <- c("FPR", "TPR")
 
 
 roc_plot <- ggplot(df_roc, aes(x = FPR, y = TPR)) +
-  geom_point(color = "#666666") +
-  geom_line(color = "#5577FF", size = 2) +
+  #geom_point(color = "#354ca1") +
+  geom_line(color = "#354ca1", size = 2) +
   #    geom_smooth() +
   ggtitle("AUC of Predicted Class Probabilities") +
   xlab("False Positive Rate") + ylab("True Positive Rate") +
@@ -91,13 +92,25 @@ auc
 
 ###################################################################################################
 
+RegData <- as.data.table(RegData)
+RegData <- RegData[, logkrnl_cost_pedestrian_events := ifelse(krnl_cost_pedestrian_events > 0, log(krnl_cost_pedestrian_events), NA)]
+
+ggplot(RegData, aes(x = krnl_cost_pedestrian_events)) + 
+  geom_histogram(aes(y = ..density..), colour = "black", fill = "White") +
+  stat_function(fun = dnorm, args = fitdistr(RegData[krnl_cost_pedestrian_events > 0 , krnl_cost_pedestrian_events],
+                                             "normal")$estimate)
+
+ggplot(RegData, aes(x = logkrnl_cost_pedestrian_events)) + 
+  geom_histogram(aes(y = ..density..), colour = "black", fill = "White") +
+  stat_function(fun = dnorm, args = fitdistr(RegData[krnl_cost_pedestrian_events > 0 , logkrnl_cost_pedestrian_events],
+                                             "normal")$estimate)
 
 # 10-fold CV Stepwise Regression
-LRModel.Step.Train <- train(krnl_cost_pedestrian_events ~ . -cell_id -IsZero -predictlogistic, data=RegData,
+LRModel.Step.Train <- train(logkrnl_cost_pedestrian_events ~ . -krnl_cost_pedestrian_events -cell_id -IsZero -predictlogistic, data=RegData,
                             method = "leapSeq",
                             tuneGrid = data.frame(nvmax = 1:40),
                             trControl = RegData.control,
-                            subset = RegData$predictlogistic == "Not Zero")
+                            subset = is.na(RegData$logkrnl_cost_pedestrian_events))
 
 LRModel.Step.Train$results
 LRModel.Step.Train$bestTune
@@ -114,7 +127,7 @@ coef(LRModel.Step.Train$finalModel, 40)
 # Run linear model of chosen predictors - CV Output
 LRModel.CrossValidatedResult <- lm(formula = krnl_cost_pedestrian_events ~ num_near_misses + 
                                      dblprk + dnotyld + prkint + speed + vrrlss + other.1 + mean_walk_score + 
-                                     sum_lane_cnt + sum_area + med_sale_com_y + med_sale_com_n + 
+                                     sum_lane_cnt + med_sale_com_y + med_sale_com_n + 
                                      sum_cost_non_pedestrian_events + dist + animals_insects + 
                                      construction + food + others + traffic_signal, data = RegData)
 
@@ -232,7 +245,7 @@ ggplot(data = RegDataPred) +
 # Final Reduced Model 
 LRModel.CrossValidatedResultReduced <- lm(formula = krnl_cost_pedestrian_events ~ num_near_misses + 
                                             dblprk + dnotyld + prkint + speed + vrrlss + other.1 + mean_walk_score + 
-                                            sum_lane_cnt + sum_area + med_sale_com_y + med_sale_com_n + 
+                                            sum_lane_cnt + med_sale_com_y + med_sale_com_n + 
                                             sum_cost_non_pedestrian_events + dist + animals_insects + 
                                             construction + food + others + traffic_signal, data = RegData)
 

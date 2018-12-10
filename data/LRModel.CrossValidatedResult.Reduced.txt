@@ -2,40 +2,39 @@
 Call:
 lm(formula = krnl_cost_pedestrian_events ~ num_near_misses + 
     dblprk + dnotyld + prkint + speed + vrrlss + other.1 + mean_walk_score + 
-    sum_lane_cnt + sum_area + med_sale_com_y + med_sale_com_n + 
-    sum_cost_non_pedestrian_events + dist + animals_insects + 
-    construction + food + others + traffic_signal, data = RegData)
+    sum_lane_cnt + med_sale_com_y + med_sale_com_n + sum_cost_non_pedestrian_events + 
+    dist + animals_insects + construction + food + others + traffic_signal, 
+    data = RegData)
 
 Residuals:
     Min      1Q  Median      3Q     Max 
--1.9704 -0.1646 -0.0763  0.0277  5.1314 
+-1.9798 -0.1647 -0.0751  0.0260  5.1322 
 
 Coefficients:
                                  Estimate Std. Error t value Pr(>|t|)    
-(Intercept)                    -4.283e-02  2.936e-02  -1.459  0.14463    
-num_near_misses                 7.769e-02  3.281e-02   2.368  0.01794 *  
-dblprk                          1.559e-01  8.069e-02   1.932  0.05342 .  
-dnotyld                         6.132e-02  2.409e-02   2.546  0.01094 *  
-prkint                          1.026e-01  4.362e-02   2.353  0.01868 *  
-speed                          -4.387e-02  1.560e-02  -2.811  0.00495 ** 
-vrrlss                          4.596e-02  2.161e-02   2.127  0.03345 *  
-other.1                         6.943e-02  3.567e-02   1.947  0.05165 .  
-mean_walk_score                 3.788e-03  6.042e-04   6.269 3.99e-10 ***
-sum_lane_cnt                   -2.976e-04  1.151e-04  -2.585  0.00976 ** 
-sum_area                       -1.457e-08  8.110e-09  -1.796  0.07252 .  
-med_sale_com_y                  1.658e-08  5.093e-09   3.254  0.00115 ** 
-med_sale_com_n                  1.472e-08  4.804e-09   3.063  0.00220 ** 
-sum_cost_non_pedestrian_events  2.930e-04  1.442e-05  20.314  < 2e-16 ***
-dist                           -6.159e+00  1.353e+00  -4.553 5.43e-06 ***
-animals_insects                 6.426e-03  2.051e-03   3.133  0.00174 ** 
-construction                    3.051e-02  1.275e-02   2.392  0.01678 *  
-food                            2.330e-02  3.942e-03   5.912 3.66e-09 ***
-others                          1.303e-03  1.768e-04   7.367 2.10e-13 ***
-traffic_signal                  4.919e-02  1.113e-02   4.421 1.01e-05 ***
+(Intercept)                    -4.560e-02  2.932e-02  -1.555  0.12002    
+num_near_misses                 7.746e-02  3.282e-02   2.360  0.01832 *  
+dblprk                          1.553e-01  8.071e-02   1.924  0.05440 .  
+dnotyld                         6.210e-02  2.409e-02   2.578  0.00998 ** 
+prkint                          1.037e-01  4.363e-02   2.378  0.01747 *  
+speed                          -4.320e-02  1.560e-02  -2.769  0.00565 ** 
+vrrlss                          4.495e-02  2.160e-02   2.081  0.03753 *  
+other.1                         7.005e-02  3.567e-02   1.964  0.04963 *  
+mean_walk_score                 3.824e-03  6.041e-04   6.330 2.71e-10 ***
+sum_lane_cnt                   -4.357e-04  8.571e-05  -5.083 3.87e-07 ***
+med_sale_com_y                  1.655e-08  5.095e-09   3.248  0.00117 ** 
+med_sale_com_n                  1.489e-08  4.804e-09   3.100  0.00195 ** 
+sum_cost_non_pedestrian_events  2.940e-04  1.441e-05  20.400  < 2e-16 ***
+dist                           -6.114e+00  1.353e+00  -4.519 6.37e-06 ***
+animals_insects                 6.426e-03  2.052e-03   3.132  0.00175 ** 
+construction                    3.149e-02  1.275e-02   2.470  0.01353 *  
+food                            2.336e-02  3.943e-03   5.924 3.39e-09 ***
+others                          1.329e-03  1.763e-04   7.539 5.75e-14 ***
+traffic_signal                  4.986e-02  1.112e-02   4.482 7.59e-06 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-Residual standard error: 0.5015 on 4176 degrees of freedom
-Multiple R-squared:  0.3469,	Adjusted R-squared:  0.3439 
-F-statistic: 116.7 on 19 and 4176 DF,  p-value: < 2.2e-16
+Residual standard error: 0.5016 on 4177 degrees of freedom
+Multiple R-squared:  0.3464,	Adjusted R-squared:  0.3436 
+F-statistic:   123 on 18 and 4177 DF,  p-value: < 2.2e-16
 
