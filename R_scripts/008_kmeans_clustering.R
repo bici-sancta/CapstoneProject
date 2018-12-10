@@ -39,11 +39,12 @@ printf <- function(...) invisible(cat(sprintf(...)))
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 home_dir <- ("C:/Users/Preeti/Github/CapstoneProject/")
-data_dir <- ("./data/")
+data_dir <- ("C:/Users/Preeti/Github/CapstoneProject/data/")
 grid_mapped_dir <- ("./data/grid_mapped")
 plot_dir <- ("./plots/clustering/")
-src_dir <- ("./R_scripts")
-zillow_dir <- ("./data/ZillowNeighborhoods-OH")
+src_dir <- ("C:/Users/Preeti/Github/CapstoneProject/R_scripts")
+zillow_dir <- ("C:/Users/Preeti/Github/CapstoneProject/data/ZillowNeighborhoods-OH")
+#C:\Users\Preeti\Github\CapstoneProject\data\ZillowNeighborhoods-OH
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # ...   define some utility functions
@@ -68,12 +69,13 @@ setwd(data_dir)
 
 grid_file <- "grid_points_250m_w_neighborhood"
 grid_centroid <- read.csv(paste0('./', grid_file, '.csv'), stringsAsFactors = FALSE, header = TRUE)
+grid_centroid
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 infile <- "unsupervised_df_model_with_labels"
-kmeans <- read.csv(paste0('./', infile, '.csv'),
-                     stringsAsFactors = FALSE, header = TRUE)
+kmeans <- read.csv(paste0('./', infile, '.csv'),stringsAsFactors = FALSE, header = TRUE)
+kmeans
 
 cincy_min_latitude <- 39.0
 cincy_max_latitude <- 39.3
@@ -86,6 +88,8 @@ kmeans <- kmeans[kmeans$long > cincy_min_longitude & kmeans$long < cincy_max_lon
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # ...   read in shapefile of neighborhoods for plotting
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+zillow_dir <- ("./data/ZillowNeighborhoods-OH")
+
 
 setwd(home_dir)
 setwd(zillow_dir)
@@ -97,6 +101,9 @@ cvg_shapefile <- oh_shapefile[oh_shapefile$City == "Cincinnati", ]
 
 cvg_shapefile <- cvg_shapefile[cvg_shapefile$Name != "Fruit Hill", ]
 cvg_shapefile <- cvg_shapefile[cvg_shapefile$Name != "Forestville", ]
+
+
+
 
 # ...   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # ...   assign data values to grid cell
@@ -117,9 +124,10 @@ kmeans_agg <- df_mapped %>%
   summarize(kmeans_labels = mean(kmeans_labels))
 
 # ...   make a plot to visualize result
-
+kmeans_agg
 setwd(home_dir)
 setwd(plot_dir)
+
 
 hoods <- ggplot() +  geom_point(data=cvg_shapefile, aes(x=long, y=lat, group=group), size = 0.1, alpha = 0.4)
 
