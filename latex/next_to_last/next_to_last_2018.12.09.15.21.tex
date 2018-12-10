@@ -181,9 +181,9 @@ $O(E)$ is the observed accidents (either in severity or number) for a specific l
 We do not implement that additional step, as our purpose is restricted to identifying locations that have greatest positive variance (observed - expected) in comparison to all of the other grid cells in the modeled region. For this purpose, it is not additional added value to include the adjustment associated to the empirical Bayesian procedure.
 
 <Place holder for supervized learning solution>
-The unsupervized learning we have generated clusters of pedestrian safety issues and visualized them on the grid map of Cincinnati
+The unsupervized learning we have generated clusters of neighborhood and top issues and visualized them on the grid map of Cincinnati
 <Place holder for supervized learning results>
-unsupervized learning results
+Specifically looking for pedestrian safety, Cluster 2/ Red have Walk signal is too short, Parking too close to intersection, Vehicles do not yield at crosswalks are top issues. Cluster 1/ Green have issues related to No Sidewalks, Jaywalking and Speeding. Cluster 0/ Blue top issues are Long wait for walk signal, Lack of Visibility, Lack of	Crosswalk.
 <Place holder for supervized learning conclusion>
 unsupervized learning conclusion
 
@@ -657,11 +657,12 @@ Once the full model is selected, it is then manually pruned based on the varianc
 
 With the reduced model, the cost of non-fatality incidents to pedestrians is predicted for each event, and the resulting prediction is compared against the actual cost of incident. The difference between the predicted and actual cost is the residual, and the residuals are then mapped back to the Cincinnati map to visualize areas with potential for safety improvement.
 
-\subsection{Unsupervised Learning - Neighborhood Characterization}
+
 
 To develop the models in a way that supports an assessment of the generalizability of the models,  the dataset is shuffle split into 80:20, 20\% holdout for cross-validation, using the 10-fold cross-validation stratified shuffle split function from the scikit-learn library for Python. The 80\% is then split into a further 80:20 for training and testing. Machine learning and deep learning algorithms are used as listed in Table ~\ref{table:algorithmsandmethods}. Models are compared with each other on different performance metrics, such as the area under curve and brier score.
 %
-For unsupervized learning, a dataset is used which does not contain the response variable and is run through the t-sne algorithm, using perplexities 10 to 500 to obtain optimal cluster groupings. Each perpexity returns in its own t-sne outputs of X1 and X2. We picked perplexity 50 to run unsupervised algorithms, as shown in Figure ~\ref{figure:perplexity} . Using the 2 outputs of the t-sne algorithm and combining it with the original dataset, Kmeans and hierarchical clustering approaches were able to be applied.  Optimal clusters were chosen based on silhouette score, which is determined that 3 clusters are optimal to use in k-mean clustering.  The labels are then plotted on the Cincinnati grid map to create visualization. 
+\subsection{Unsupervised Learning - Neighborhood Characterization}
+Data for unsupervised learning has one additional component, average population density per grid. The population density was available at neighborhood level, this was averaged out to grid per neighborhood, giving us the average population density per grid. Naturally, high population area correlated with number of requests in that grid. The data is run through the t-sne algorithm for variying perplexity of 10 to 500 to obtain optimal cluster groupings. Each perpexity returns in its own t-sne outputs of X1 and X2. We picked perplexity 20 to visualize the dataset in 2 dimension, as shown in Figure ~\ref{figure:perplexity} . Using the 2 outputs of the t-sne algorithm and combining it with the original dataset, Kmeans and hierarchical clustering approaches were attempted. Optimal clusters were chosen based on silhouette score, which is determined that three clusters are optimal to use in k-mean clustering. The model is rerun again for this optimal cluster and labels are obtained. We then went on to combine the original dataset and the Kmeans labels to visualize how clusters are formed on neighborhood.
 
 \FloatBarrier
 \begin{figure}
@@ -844,17 +845,28 @@ Figure ~\ref{figure:ResidualsPlot} shows the residuals mapped back to the map of
 
 \subsection{Unsupervised learning - Neighborhood characterization}
 
-For each attribute, distribution and scatter plots are generated to visualize the impact of it in the cluster. Attributes like property type commercial was heavily clustered in 1 or the green areas as in Figure ~\ref{figure:kmeansongrid}, while residential and industrial were lot more distributed. Issues like metal trash were more in industrial areas which was in the cluster 2 or red neighborhoods. Water leak was more an issue in cluster 0 or blue areas.
-
-Combining attribute behavior and clusters on the map, pedestrian saftey issues in each cluster are identified. These issues are then mapped to the actual locality or neighborhood to draw conclusions.
+Combining attribute behavior and clusters on the map as Figure ~\ref{figure:kmeansongrid}, issues in each cluster are identified. These issues are then mapped to the actual locality or neighborhood to identify top issues in each locality. 
+Looking closely at service related issues, Cluster 0/ Blue cluster are highly populated areas and cluster 2/ Red are low population areas. Main concerns of cluster 0/ Blue are water leak, traffic signal, Construction related, Street sidewalks, while cluster 1/Green issues are Trees and plants, building related, Food related, Police property related. Low population cluster 2/Red have main issues around  Zoning Parking, animals and insects, Thrash and service complaints. 
+Specifically looking for pedestrian safety, Cluster 2/ Red have Walk signal is too short, Parking too close to intersection, Vehicles do not yield at crosswalks are top issues. Cluster 1/ Green have issues related to No Sidewalks, Jaywalking and Speeding. Cluster 0/ Blue top issues are Long wait for walk signal, Lack of Visibility, Lack of Crosswalk.
 
 \FloatBarrier
 \begin{figure}
- 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{kmeansongrid.png}
- 	\caption{Cluster results on map of Cincinatti}
-	\label{figure:kmeansongrid}
+\caption{Cluster results on map of Cincinnati}
+\label{figure : PedestrianCosts}
+\begin{subfigure}[b]{0.5\textwidth}
+\includegraphics[width = \textwidth, height = \textheight, keepaspectratio]{kmeansongrid.png}
+\subcaption{Cluster results on map of Cincinnati}
+\label{figure : kmeansongrid}
+\end{subfigure}
+%
+\begin{subfigure}[b]{0.5\textwidth}
+\includegraphics[width = \textwidth, height = \textheight, keepaspectratio]{cinci.png}
+\subcaption{Cincinnati Neighborhood}
+\label{figure : cinci}
+\end{subfigure}
 \end{figure}
 \FloatBarrier
+
 
 
 Initial results from part 1 of our methodology have produced graphs as shown in Figure ~\ref{figure:SumCrashPlot}. \newline
@@ -879,17 +891,10 @@ The results from the prior section provide a numerical and visual way to interpr
 Figure ~\ref{figure:LinearModelReduced} illustrates the model’s predictive capability as compared to the cost of incident in reality. Points which are colored in red have positive residuals, meaning the model has underestimated the cost. Green points have negative residuals, which mean the model has overestimated the cost. The further away a point is, the larger its absolute residual value is. These distances are displayed on Figure ~\ref{figure:ResidualsPlot}, where the red colored areas correspond to the distant red points. These areas within the city in which the model has underestimated the cost the most have the most potential for safety improvement, because all other factors being equal, there is something about that area which is causing a higher amount of damage to pedestrians.
 
 \subsection{Unsupervised Learning - Neighborhood Characterization}
-For each attribute, distribution and scatter plots are generated to visualize the impact of it within the cluster. Attributes like property type: commercial were heavily clustered in 1, or the green areas as in Figure ~\ref{figure:kmeansongrid}, while residential and industrial were lot more distributed. Issues like metal trash were more in industrial areas which was in the cluster 2 or red neighborhoods. Water leak was more an issue in cluster 0 or blue areas.
+For unsupervised learning, the goal was to identify pedestrian related issues by neighborhood. To achieve this data at grid level was collected and average population in each grid was combined to form the base dataset. This dataset was run through t- SNE dimensionality reduction algorithm to visualize data in 2D. T-distributed Stochastic Neighbor Embedding (t-SNE) \cite{tsne} is a machine learning algorithm for visualization developed by Laurens van der Maaten and Geoffrey Hinton. It is a nonlinear dimensionality reduction technique well-suited for embedding high-dimensional data for visualization in a low-dimensional space of two or three dimensions. t-SNE returns two dimensions for each record of the original dataset. 
 
-Combining attribute behavior and clusters on the map, pedestrian saftey issues in each cluster are identified. These issues are then mapped to the actual locality or neighborhood to draw conclusions.
+Next step, we use the original data to run cluster algorithms Kmeans and hierarchical and chose the one with high silhouette score, in our case Kmeans three clusters. We now combine the labels created with t-SNE dimensions and plot distribution of data for each attribute in the cluster. Additionally, We use the grid_cell, latitude and longitude combining the Kmeans labels to plot the clusters on the Cincinnati shape file as in Figure ~\ref{figure:kmeansongrid}
 
-\FloatBarrier
-\begin{figure}
- 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{kmeansongrid.png}
- 	\caption{Cluster results on map of Cincinatti}
-	\label{figure:kmeansongrid}
-\end{figure}
-\FloatBarrier
 
 %
 \section{Ethics}
