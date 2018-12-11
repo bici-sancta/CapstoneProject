@@ -183,7 +183,7 @@ We do not implement that additional step, as our purpose is restricted to identi
 <Place holder for supervized learning solution>
 The unsupervized learning we have generated clusters of neighborhood and top issues and visualized them on the grid map of Cincinnati
 <Place holder for supervized learning results>
-Specifically looking for pedestrian safety, Cluster 2/ Red have Walk signal is too short, Parking too close to intersection, Vehicles do not yield at crosswalks are top issues. Cluster 1/ Green have issues related to No Sidewalks, Jaywalking and Speeding. Cluster 0/ Blue top issues are Long wait for walk signal, Lack of Visibility, Lack of	Crosswalk.
+Specifically looking for pedestrian safety, Cluster 2/ Red have Walk signal is too short, Parking too close to intersection, Vehicles do not yield at crosswalks are top issues. Cluster 1/ Yellow have issues related to No Sidewalks, Jaywalking and Speeding. Cluster 0/ Blue top issues are Long wait for walk signal, Lack of Visibility, Lack of	Crosswalk.
 <Place holder for supervized learning conclusion>
 unsupervized learning conclusion
 
@@ -846,8 +846,8 @@ Figure ~\ref{figure:ResidualsPlot} shows the residuals mapped back to the map of
 \subsection{Unsupervised learning - Neighborhood characterization}
 
 Combining attribute behavior and clusters on the map as Figure ~\ref{figure:kmeansongrid}, issues in each cluster are identified. These issues are then mapped to the actual locality or neighborhood to identify top issues in each locality. 
-Looking closely at service related issues, Cluster 0/ Blue cluster are highly populated areas and cluster 2/ Red are low population areas. Main concerns of cluster 0/ Blue are water leak, traffic signal, Construction related, Street sidewalks, while cluster 1/Green issues are Trees and plants, building related, Food related, Police property related. Low population cluster 2/Red have main issues around  Zoning Parking, animals and insects, Thrash and service complaints. 
-Specifically looking for pedestrian safety, Cluster 2/ Red have Walk signal is too short, Parking too close to intersection, Vehicles do not yield at crosswalks are top issues. Cluster 1/ Green have issues related to No Sidewalks, Jaywalking and Speeding. Cluster 0/ Blue top issues are Long wait for walk signal, Lack of Visibility, Lack of Crosswalk.
+Looking closely at service related issues, Cluster 0/ Blue cluster are highly populated areas and cluster 2/ Red are low population areas. Main concerns of cluster 0/ Blue are water leak, traffic signal, Construction related, Street sidewalks, while cluster 1/Yellow issues are Trees and plants, building related, Food related, Police property related. Low population cluster 2/Red have main issues around  Zoning Parking, animals and insects, Thrash and service complaints. 
+Specifically looking for pedestrian safety, Cluster 2/ Red have Walk signal is too short, Parking too close to intersection, Vehicles do not yield at crosswalks are top issues. Cluster 1/ Yellow have issues related to No Sidewalks, Jaywalking and Speeding. Cluster 0/ Blue top issues are Long wait for walk signal, Lack of Visibility, Lack of Crosswalk.
 
 \FloatBarrier
 \begin{figure}
@@ -919,7 +919,10 @@ The ethical considerations associated to this project are adequately assessed in
 
 This study demonstrates a methodology to identify areas within the city of Cincinnati, Ohio with the largest potential for safety improvement, based on many open-source datasets made public by the city. Over twenty 250 meter by 250 meter plots of land within the city have been identified for further investigation to determine why the cost of incident within that area are abnormally high as compared to our models. These locations include several areas in the Westwood neighborhood, Clifton, Avondale, Walnut Hills, Bond Hill, and more. Our unsupervised learning techniques… Placeholder sentences about how our unsupervised learning techniques have outlined areas which have potential for safety improvement. These areas demonstrate these qualities which are related to pedestrian safety in the city of Cincinnati, Ohio.
 
-For our unsupervised learning we look at the top pedestrian safety issues in each cluster. Vehicles running red lights or stop signs is a concern for the blue cluster neighborhoods, including: Westwood, Mt. Washington and East End. Heavy traffic is a prominent issue in the green cluster and affects Over-The-Rhine, Mt. Auburn and Central Business District neighborhoods. There is a need for increased number of sidewalks in Clifton, Madisonville, Walnut Hills and Mt. Washington. Over-the-Rhine, Downtown and Clifton need more bike friendly zones.
+For our unsupervised learning we lare very focused on the pedestrian safety issues. From the Figure ~\ref{figure:kmeansongrid} combining the results of our analysis and neighborhoods to make our observations.
+Cluster 0/ Blue areas College Hill, Clifton, Central business district, Over-the-Rhine have more people walking. The issues are Long wait for walk signal, Lack of Visibility, Lack of Crosswalk.
+Cluster 1/ Yellow: West Wood, West Price hill, Pleasant Ridge, Kennedy Heights have issues like No Sidewalks, Jaywalking and Speeding. Speeding has been the biggest issue in these areas.
+Cluster 2/ Red: Sayler Park, East End, Mt. Washington, Winston Hill, Cartage main concerns are Walk signal is too short, Vehicles run red lights or stop signs, Vehicles do not yield at crosswalks. Walk signal too short might be the reason vehicles are getting too close to pedestrians. 
 
 Future work to further this project could involve the use of other regression modelling techniques to improve accuracy, such as tobit models. Other improvements which could be made include Stuff goes here from Patrick and Preeti about ways to improve your techniques and models.
 
