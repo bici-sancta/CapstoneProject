@@ -1,0 +1,31 @@
+
+
+\subsection{Two-Part Model - Cost Model}
+
+As identified in Section \ref{subsectionPedestrianAccidents} and shown in Figure \ref{figure : pedestrianAccidentCostsHistogram}, the bifurcated distribution of cost severity as distributed among the grid cells encourages the idea to develop a two-part model for the supervised learning element of this evaluation. We consider the two-part model as (a) a method to develop a binary estimator to model the presence / absence of pedestrian accident costs, and (b) for the positive case of (a), develop an estimator of the magnitude of the cost severity function.
+For the binary estimator we utilize a binary logistic regression model. The model is used to estimate the absence (no cost) and presence (cost $>$ 0). For the second step in the two-part model, we use a multi-variate linear regression model (on the log-transformed costs) to provide an estimation of the expected cost for the case that the cost is greater than zero. The description of this two-part model is expressed in the following relation : 
+% 
+\begin{align}
+E[Y| X] &= \Pr(Y > 0 | X)\times E(Y | Y > 0,  X), where
+\end{align}
+
+$E{Y|X]$ represents the model estimated cost severity, $Pr(Y > 0 | X)$ is the resulted produced from the binary logistic regression (either 0 or 1) and $E(Y | Y > 0,  X)$ is the continuous valued cost severity estimation from the linear regression for the subset of grid cells that are estimated to have non-zero cost severity from the binary logistic regression.
+
+This approach to modeling is commonly used in processes that have elements that may or may not participate in an experience, and for this samples that do participate there are a wide range of level of response, often log-normally distributed. Examples of this include health care cost studies, in which some participants in a study just do not visit medical facilities and of the participants who do participate in health care programs, some just did not incur expenses in the study period. The two-part model allows that there are two underlying populations : one of the populations is never likely to incur costs, while the second population does incur expenditures and sometimes they happen to be zero \cite{bun2004too}. For a pedestrian safety model, we can consider similarly that two population zones exist, and the purpose of the two-part model is to identify segregation of the two populations (via the binary logistic model) and then provide estimates of cost severity among the zones that have some likelihood of event occurrence.
+
+After the observed pedestrian events are mapped to the grid cells with the kernel function,  approximately 25 \% of the grid cells have zero cost.  It is this population in contrast to the remaining $\frac{3}{4}$\{nth}s of the grid cells that are modeled with the binary logistic regression. The grid cells with expected non-zero values from the binary logistic model are then modeled using a linear regression model. 
+
+In both cases, the model are built using the software R with the caret package to support cross validation and with stepwise selection for feature selection.
+
+The 10-fold cross validation is used to reduce over-fitting and improve the generalizability of the model. The 10-fold cross validation splits the data into 10 folds. In each of the 10 iterations, one fold is selected to be the testing dataset, and the other 9 are used to train the model. This methodology is iterated throughout so that each of the 10 folds has a chance to be the testing dataset. The result of these 10 iterations is averaged and compared against the cross validation results as the number of variables included in the model varies from 1 to 40. The preliminary linear regression model chosen is the model with the lowest average root mean square error value, and in this study, is determined to be the model with all 40 variables
+
+This task is accomplished with the logistic regression function from the caret package. 
+
+Cells with a predicted non-zero value are then used to create the linear model through the use of 10-fold cross validated stepwise selection of the caret package in R, in order to determine the best complex model, ranging from 1 to 40 predictor variables. The function i T. Model over-fitting can occur when a model is trained on a particular dataset to the degree that it performs extraordinarily well in predicting on the dataset, but it fails to achieve that same level of prediction capability on other datasets. The parameters in an overly fit model do not generalize to the population at large because they are fine tuned to only reflect the dataset on which they were trained. T.
+
+After this preliminary model is defined,  the number of features in the model is then further  selectively pruned based on the variance inflation factor values and significance. For this model, variance inflation factor values larger than 5 are considered to be sufficiently collinear that they are removed from the set of mode predictors.
+
+
+Variable significance is determined through the use of p-values. For this model, variables at or below the .05 p-value threshold are determined to be statistically significant to the model, while those above it are not. Variables with large p-values are removed from the model due to not contributing to the predictive capability.  ~\ref{table:RegressionAnalysis}. 
+
+With this final linear regression model, the cost of PVIs is predicted for each grid cell. The resulting prediction is then compared against the actual cost of observed incidents. The difference between the predicted and actual cost is the residual. For the evaluation of PSI, the grid cells with greatest positive residual (observed – expected) are determined to be the grid cells with the greatest potential for safety improvement. This determination is based on the fact that the cells with positive residual observed a higher severity cost than did other « similar » cells. « Similar » in this case being defined by similarity of the vector of defining independent predictor variables. To complete the evaluation, the residuals are then mapped back to the geographic map of Cincinnati to visualize the areas with greatest potential for safety improvement.
