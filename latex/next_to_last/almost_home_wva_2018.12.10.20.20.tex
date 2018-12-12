@@ -221,7 +221,8 @@ Augmenting the data sets available from the City of Cincinnati, we also use data
 
 \afterpage{
 \begin{longtable}{ p{0.35\textwidth} p{0.65\textwidth}}
-\caption{Data sets supporting model}\\
+\caption{Data sets supporting model}
+\label{table : cincinnatidatasets}\\
 \hline
 \rule{0pt}{12pt}
 Data Set & Description\\[2pt]
@@ -279,26 +280,15 @@ Cost_{g} = \sum_{i=1}^{n} \rho_{i} \left [ 1 - \left ( \frac{d_{ig}}{r} \right )
 
 where $Cost_{g}$ is the crash cost assigned to grid cell $g$, $d_{ig}$    is the distance from the identified pedestrian accident site to the local grid cell centroids, $r$ is the (constant) search radius, $C_{i}$ is the cost severity of the accident ${i}$, and $\rho_{i}$ is a normalizing factor for each accident such that the distributed costs for each accident sum to the nominal severity value of that event. For our model, the implementation of this kernel density function was implemented within the R code.
 
-The distribution that results from the application of this data set onto the grid cell domain with the kernel density function applied are shown in figure \ref{figure : PedestrianCosts}. The experience is that approximately $\frac{1}{4}$th of the grid cells have no contribution from the cost severity allocation and the remaining $\frac{3}{4}$ths demonstrate a reasonable approximation to a log-normal distribution of allocated costs. For clarity in the figures, the cost values in Figure  \ref{figure:pedestrianAccidentCostsHistogram} are shown log-transformed [log10(cost)], and the zero values scaled as log10(0.1).
+The distribution that results from the application of this data set onto the grid cell domain with the kernel density function applied are shown in figure \ref{figure:PedestrianCosts}. The experience is that approximately one fourth of the grid cells have no contribution from the cost severity allocation.
 
 
 % ... pedestrian accident distributions
-
 \FloatBarrier
 \begin{figure}
+ 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{TrafficCrashReports20180918SumCostMapped2Grid.png}
  	\caption{Pedestrian Accidents - Comprehensive Cost Severity (\$ Millions)}
-    \label{figure : PedestrianCosts}
-  \begin{subfigure}[b]{0.5\textwidth}
-    \includegraphics[width = \textwidth, height = \textheight, keepaspectratio]{trafficAccidentsPedestrianCosts.png}
-    \subcaption{Geographic Distribution}
-    \label{figure : trafficAccidentsPedestrianCosts}
-  \end{subfigure}
-  %
-  \begin{subfigure}[b]{0.5\textwidth}
-    \includegraphics[width = \textwidth, height = \textheight, keepaspectratio]{pedestrianAccidentCostsHistogram.png}
-    \subcaption{Distribution}
-    \label{figure:pedestrianAccidentCostsHistogram}
-  \end{subfigure}
+	\label{figure:PedestrianCosts}
 \end{figure}
 \FloatBarrier
 
@@ -308,7 +298,7 @@ This motivates us to consider the supervised learning model as a two-part model 
 
 \subsection{Traffic Accidents}
 
-Similar to the pedestrian accident data set in the previous section, the same data set from the the Open Data Cincinnati portal, Traffic Crash Reports (CPD), also includes a definition of every non-pedestrian involved traffic accident that occurred in the same time period.  There are more than 190,000 reported traffic accidents that do not involve pedestrians in the years 2013 through 2018. As a candidate independent feature characteristic for this model, we distribute each of the events to the appropriate grid cell, apply the same comprehensive cost severity factor as identified in Table \ref{table : eventseverity}, aggregate the total experience in each grid cell as a dollar severity amount. We do not apply a kernel function to distribute the cost severity over the local geographic region for the independent predictor featues. In this case, the density of the actual experience is sufficiently distributed that a kernel function for density diffusion is not needed to achieve wide distribution and sufficient coverage of the accident experience among all of the grid cells. The distribution of the cost severity function for the non-pedestrian involved accidents are shown in Figure \ref{figure : trafficAccidentsNonPedestrian}
+Similar to the pedestrian accident data set in the previous section, the same data set from the the Open Data Cincinnati portal, Traffic Crash Reports (CPD), also includes a definition of every non-pedestrian involved traffic accident that occurred in the same time period.  There are more than 190,000 reported traffic accidents that do not involve pedestrians in the years 2013 through 2018. As a candidate independent feature characteristic for this model, we distribute each of the events to the appropriate grid cell, apply the same comprehensive cost severity factor as identified in Table \ref{table:eventseverity}, aggregate the total experience in each grid cell as a dollar severity amount. We do not apply a kernel function to distribute the cost severity over the local geographic region for the independent predictor featues. In this case, the density of the actual experience is sufficiently distributed that a kernel function for density diffusion is not needed to achieve wide distribution and sufficient coverage of the accident experience among all of the grid cells. The distribution of the cost severity function for the non-pedestrian involved accidents are shown in Figure \ref{figure : trafficAccidentsNonPedestrian}
 % ... bus stop distances
 
 \FloatBarrier
@@ -586,7 +576,7 @@ An example of the distribution of the Walk Scores as aggregated for the grid spa
 \section{Methods and Experiments}
 % ...		-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-As identified in the discussion around Figure \ref{figure : PedestrianCosts}, the bifurcated distribution of cost severity as distributed among the grid cells encourages the idea to develop a two-part model for the supervised learning element of this evaluation. We consider the two-part model as (a) a method to develop a binary estimator to model the presence / absence of pedestrian accident costs, and (b) for the positive case of (a), develop an estimator of the magnitude of the cost severity function.
+As identified in the discussion around Figure \ref{figure:PedestrianCosts}, the bifurcated distribution of cost severity as distributed among the grid cells encourages the idea to develop a two-part model for the supervised learning element of this evaluation. We consider the two-part model as (a) a method to develop a binary estimator to model the presence / absence of pedestrian accident costs, and (b) for the positive case of (a), develop an estimator of the magnitude of the cost severity function.
 
 We consider two possibilities for the binary estimator : (a) binary logistic regression model, and (b) a random forest model. In both cases, we assess the capability to estimate the absence (no cost) and presence (cost $>$ 0).
 
@@ -598,7 +588,7 @@ E[Y| X] &= \Pr(Y > 0 | X)\times E(Y | Y > 0,  X).
 
 \subsection{Two-Part Model - Cost Model}
 
-As identified in Section \ref{subsectionPedestrianAccidents} and shown in Figure \ref{figure : pedestrianAccidentCostsHistogram}, the bifurcated distribution of cost severity as distributed among the grid cells encourages the idea to develop a two-part model for the supervised learning element of this evaluation. We consider the two-part model as (a) a method to develop a binary estimator to model the presence / absence of pedestrian accident costs, and (b) for the positive case of (a), develop an estimator of the magnitude of the cost severity function.
+As identified in Section \ref{subsectionPedestrianAccidents} and shown in Figure \ref{figure:pedestrianAccidentCostsHistogram}, the bifurcated distribution of cost severity as distributed among the grid cells encourages the idea to develop a two-part model for the supervised learning element of this evaluation. We consider the two-part model as (a) a method to develop a binary estimator to model the presence / absence of pedestrian accident costs, and (b) for the positive case of (a), develop an estimator of the magnitude of the cost severity function.
 For the binary estimator we utilize a binary logistic regression model. The model is used to estimate the absence (no cost) and presence (cost $>$ 0). For the second step in the two-part model, we use a multi-variate linear regression model (on the log-transformed costs) to provide an estimation of the expected cost for the case that the cost is greater than zero. The description of this two-part model is expressed in the following relation : 
 % 
 \begin{align}
@@ -626,39 +616,30 @@ Variable significance is determined through the use of p-values. For this model,
 
 With this final linear regression model, the cost of PVIs is predicted for each grid cell. The resulting prediction is then compared against the actual cost of observed incidents. The difference between the predicted and actual cost is the residual. For the evaluation of PSI, the grid cells with greatest positive residual (observed – expected) are determined to be the grid cells with the greatest potential for safety improvement. This determination is based on the fact that the cells with positive residual observed a higher severity cost than did other  similar  cells. Similar in this case being defined by similarity of the vector of defining independent predictor variables. To complete the evaluation, the residuals are then mapped back to the geographic map of Cincinnati to visualize the areas with greatest potential for safety improvement.
 
-\FloatBarrier
-\begin{figure}
- 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{000LinearModelReducedDiagnostics.png}
- 	\caption{Diagnostic plots for the simplified linear model.}
-	\label{figure:Diags}
-
-\end{figure}
-\FloatBarrier
-
 \subsection{Unsupervised Learning - Neighborhood Characterization}
-Data for unsupervised learning has one additional component, average population density per grid. The population density was available at neighborhood level, this was averaged out to grid per neighborhood, giving us the average population density per grid. Naturally, high population area correlated with number of requests in that grid. The data is run through the t-sne algorithm for variying perplexity of 10 to 500 to obtain optimal cluster groupings. Each perpexity returns in its own t-sne outputs of X1 and X2. We picked perplexity 20 to visualize the dataset in 2 dimension, as shown in Figure ~\ref{figure:perplexity} . Using the 2 outputs of the t-sne algorithm and combining it with the original dataset, Kmeans and hierarchical clustering approaches were attempted. Optimal clusters were chosen based on silhouette score, which is determined that three clusters are optimal to use in k-mean clustering. The model is rerun again for this optimal cluster and labels are obtained. We then went on to combine the original dataset and the Kmeans labels to visualize how clusters are formed on neighborhood.
+For unsupervised learning, the goal was to identify pedestrian related issues by neighborhood. T-distributed Stochastic Neighbor Embedding (t-SNE) \cite{tsne} is a machine learning algorithm for visualization developed by Laurens van der Maaten and Geoffrey Hinton. It is a nonlinear dimensionality reduction technique well-suited for embedding high-dimensional data into low-dimensional space of two or three dimensions  for visualization. The data is run through the t- SNE dimensionality reduction algorithm to visualize data in two dimensions and was run for varying perplexities of 10 to 500 in order to obtain optimal cluster groupings. Perplexity 20 is chosen to visualize the dataset........because....... !!!!!!!!!WHY WAS 20 CHOSEN COMPARED TO THE OTHER 489???????.
 
-\FloatBarrier
-\begin{figure}
- 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{perplexity.png}
- 	\caption{Spread of data visulized using t-sne.}
-	\label{figure:perplexity}
+After reducing the dimensionality of the dataset with t-SNE, the original data is run through cluster algorithms such as k-means and hierarchical clustering. The k-means clustering with three clusters reported the highest silhouette score, PLACEHOLDER WHAT IS SHILOUETTE SCORE???. The labels created with the t-SNE algorithm are combined with the clustering labels of k-means, to generate a map of the city with three color-coded clusters, with each cluster representing the prevalence of different issues throughout the city. 
 
-\end{figure}
-\FloatBarrier
 %
-\section{Results}
+\section{Results and Analysis}
 %
+The focus of this effort is to identify locations within the city that indicate highest potential for safety improvement. Consistent with the concept as defined and implemented in other works, the model incidents for which the observed experience exceeds the expected (model output) response are the regions with potential for safety improvement. The regions of PSI are the false negative points on the grid map. For these grid cells, the model result was no expected pedestrian events, yet the observed experience exceeded this expected response.
+
 \subsection{Multi-variate linear regression - Cost Model}
+
+The results from the this section provide a numerical and visual way to interpret the model. The first part of the modelling involved the binary logistic regression, whose receiver operating characteristic (ROC) curve is shown below in Figure ~\ref{figure:LogisticROC}. The ROC curve has an 88\% area under the curve, which suggests this model has good predictive capabilities, and is backed up with a 10-fold cross-validated accuracy of 82\%.
 
 \FloatBarrier
 \begin{figure}
 \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{000LogisticModelROC.png}
 \caption{ROC curve showing predicted class probabilities of the logistic regression.}
 \label{figure:LogisticROC}
-
 \end{figure}
 \FloatBarrier
+
+The regression model is able to explain 34\% of the variance in the cost of PVIs with an R\textsuperscript{2} value of .3464 and an adjusted R\textsuperscript{2} value of .3436. This model consists of many significant variables, such as reports of faulty traffic signals and  the presence of construction, and one suggestively significant variable which make sense practically, but does not meet the p-value threshold of .05. Reports of double parking (p-value = .0544), is when a vehicle parks alongside another vehicle which is aready parked on the side of the road, leading to the double-parked vehicle to taking up a lane on the street. Most variables present within the model are reports to the non-emergency police telephone number, or the city’s online safety survey. For each incident of report within the grid-cell, the predicted total cost of incident changes by the estimated amount. Other non-report variables include the mean Walk Score value of properties within the grid-cell, sum of lanes within the grid-cell, distance to nearest bus stop, and the total cost of damage to people involved in non-pedestrian related (motor vehicle) accidents. All of the model coefficients can be found below in Table ~\ref{table:RegressionAnalysis}.
+
 \begin{table}[!h]
 \begin{center}
 \caption{Analysis of simplified model regression variables.}
@@ -674,22 +655,28 @@ Variable
 & p-value\\[2pt]
 \hline
 Intercept&-45,600&29,300&-1.555&0.12002\\
-Sum Cost of Damage to People in Non-Pedestrian Accidents&294.00&14.40&20.4&< 2e-16\\
+Sum Cost of Damage to People in
+ Non-Pedestrian Accidents&294.00&14.40&20.4&$<$ 2e-16\\
 others&1,330&176&7.539&5.75E-14\\
 Mean Walk Score&3,820&604&6.33&2.71E-10\\
 Unsanitary Food Operations&23,400&3,940&5.924&3.39E-09\\
 Sum of Lane Count&-436.0&85.7&-5.083&3.87E-07\\
 Distance to Nearest Bus Stop&-6,110,000&1,350,000&-4.519&6.37E-06\\
 Reports of Faulty Traffic Signals&49,900&11,100&4.482&7.59E-06\\
-Median Sale Price of Valid Commercial Property Sales&0.02&0.01&3.248&0.00117\\
+Median Sale Price of Valid 
+Commercial Property Sales&0.02&0.01&3.248&0.00117\\
 Reports of Animals, Roadkill, and Insects&6,430&2,050&3.132&0.00175\\
-Median Sale Price of Non-Valid Commercial Property Sales&0.01&0.00&3.1&0.00195\\
+Median Sale Price of Non-Valid 
+Commercial Property Sales&0.01&0.00&3.1&0.00195\\
 Reports of Speeding&-43,200&15,600&-2.769&0.00565\\
-Reports of Vehicles not Yielding at Crosswalks&62,100&24,100&2.578&0.00998\\
+Reports of Vehicles not 
+Yielding at Crosswalks&62,100&24,100&2.578&0.00998\\
 Construction Present&31,500&12,800&2.47&0.01353\\
-Reports of Vehicles Parking Close to Intersection&104,000&43,600&2.378&0.01747\\
+Reports of Vehicles Parking 
+Close to Intersection&104,000&43,600&2.378&0.01747\\
 Number of Near Misses&77,500&32,800&2.36&0.01832\\
-Reports of Vehicles Running Red Lights / Stop Signs&45,000&21,600&2.081&0.03753\\
+Reports of Vehicles Running 
+Red Lights / Stop Signs&45,000&21,600&2.081&0.03753\\
 Reports from Riders of Pedestrian Conveyances&70,100&35,700&1.964&0.04963\\
 Reports of Double Parking&155,000&80,700&1.924&0.0544\\
 [2pt]
@@ -699,81 +686,70 @@ Reports of Double Parking&155,000&80,700&1.924&0.0544\\
 \end{table}
 \FloatBarrier
 
-Table ~\ref{table:RegressionAnalysis} shows the explanatory variables for the simplified multiple linear regression model. This model had an R\textsuperscript{2} value of .3464 and an adjusted R\textsuperscript{2} value of .3436.
-
+Figure ~\ref{figure:LinearModelReduced} illustrates the model’s predictive capability as compared to the cost of incident in reality. Points which are colored in red have positive residuals, meaning the model has underestimated the cost. Green points have negative residuals, which mean the model has overestimated the cost. The further away a point is, the larger its absolute residual value is. These distances are displayed on Figure ~\ref{figure:ResidualsPlot}, where the red colored areas correspond to the distant red points. These represent areas within the city in which the model has underestimated the cost the most have the most potential for safety improvement, because all other factors being equal, there is something about that area which is causing a higher amount of damage to pedestrians.
 \FloatBarrier
 \begin{figure}
 \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{000LinearModelReduced.png}
 \caption{Comparison of expected and observed PVI costs.}
 \label{figure:LinearModelReduced}
-
 \end{figure}
 \FloatBarrier
-
-Figure ~\ref{figure:LinearModelReduced} is a comparison between the predicted and actual cost of a PVIs in Cincinnati per cell.
 
 \FloatBarrier
 \begin{figure}
 \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{000ResidualsPlot.png}
 \caption{A map of Cincinnati identifying areas with PSI in the darkest red.}
 \label{figure:ResidualsPlot}
+\end{figure}
+\FloatBarrier
+
+The diagnostic plots for the simplified model are shown in Figure ~\ref{figure:Diags} and the most evident absurdity is the normal Q-Q plot shown in the top right. While many of the points are along the line, the Standardized residuals taper greatly at the ends of the plot. The residuals vs fitted values plot on the top left shows good evidence of linearity and equal error variance. The phenomenon of the seemingly straight diagonal sheer in the data is explained by the fact that the residual can not be negative for low fitted values because the model can not predict a negative cost. Given an fitted value of .25, the ceiling of numbers is infinity, but the floor of values is .25, which would occur when the actual value is .25 but the model estimates 0, resulting in a -.25 residual. Considering the fact that the lowest possible residual is equal to the fitted value as represented by the line Y = - X , the data are as randomly spread about the horizontal line as possible. 
+
+The parametric linear regression analysis is succeptible to outliers in such a way that highly influential outliers can reduce the predictive capabilities of the regression model. The Cook's distance metric is a representation of how the rest of the model would be affected if the observation were deleted. Deviant Cook's distance points consist of those with values of 1 or greater, and the central right plot in Figure ~\ref{figure:Diags} shows the highest observation having a Cook's distance value around .35. While it has the largest value of points within the dataset, it is not a cause for concern. The lower left plot is the Standardized residuals versus leverage and also aims to view the effect of potentially influential outliers that may curb the regression line towards it. Abnormalities would consist of high leverage values with high Standardized residuals that would appear at the far top right and bottom right areas on the plot. Observation 689 and 2021 are marked as potentially influential cells in our dataset, and need to be considered when taking the model into account.
+
+\FloatBarrier
+\begin{figure}
+ 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{000LinearModelReducedDiagnostics.png}
+ 	\caption{Diagnostic plots for the simplified linear model.}
+	\label{figure:Diags}
 
 \end{figure}
 \FloatBarrier
 
-Figure ~\ref{figure:ResidualsPlot} shows the residuals mapped back to the map of Cincinnati.
+\subsection{Unsupervised Learning - Neighborhood Characterization}
 
-\subsection{Unsupervised learning - Neighborhood characterization}
+Figure ~\ref{figure:kmeansongrid} is the result of the k-means clustering algorithm and is split into three distinct, colored areas. The blue cluster is identified by highly populated areas which are distinguished by a prevalence of water leaks, faulty traffic signals, construction presence, and poor sidewalks compared to the other areas. The red cluster is identified by sparesly populated areas where there are many reports and complaints regarding lack of parking zones, improper or inefficient waste disposal, and reports of animals, roadkill and insects. The third cluster, yellow, is differentiated by reports of unsanity food conditions, improper or inefficient vegtation removal, !!!!WHAT ARE BUILDING RELATED PROBLEMS!!!!!!!!!, and have a relatively higher presence of law enforcement facilities.
 
-
-Combining attribute behavior and clusters on the map as Figure ~\ref{figure:kmeansongrid}, issues in each cluster are identified. These issues are then mapped to the actual locality or neighborhood to identify top issues in each locality. 
-Looking closely at service related issues, Cluster 0/ Blue cluster are highly populated areas and cluster 2/ Red are low population areas. Main concerns of cluster 0/ Blue are water leak, traffic signal, Construction related, Street sidewalks, while cluster 1/Yellow issues are Trees and plants, building related, Food related, Police property related. Low population cluster 2/Red have main issues around  Zoning Parking, animals and insects, Thrash and service complaints. 
-Specifically looking for pedestrian safety, Cluster 2/ Red have Walk signal is too short, Parking too close to intersection, Vehicles do not yield at crosswalks are top issues. Cluster 1/ Yellow have issues related to No Sidewalks, Jaywalking and Speeding. Cluster 0/ Blue top issues are Long wait for walk signal, Lack of Visibility, Lack of Crosswalk.
+Narrowing the scope to pedestrian safety related issues, the blue clusters have a higher incidence of reporting long waits for walk signals, low visibility, and lack of crosswalks. The yellow clusters is signified by lack of sidewalks, jaywalking, and speeding, while the red colored cluster areas have a higher rate of reports that walk signals are too short, vehicles are parking too close to intersections, and vehicles not yielding at crosswalks. 
 
 \FloatBarrier
 \begin{figure}
 \caption{Cluster results on map of Cincinnati}
-\label{figure : PedestrianCosts}
+\label{figure:ClusterResults}
 \begin{subfigure}[b]{0.5\textwidth}
 \includegraphics[width = \textwidth, height = \textheight, keepaspectratio]{kmeansongrid.png}
 \subcaption{Cluster results on map of Cincinnati}
-\label{figure : kmeansongrid}
+\label{figure:kmeansongrid}
 \end{subfigure}
 %
 \begin{subfigure}[b]{0.5\textwidth}
 \includegraphics[width = \textwidth, height = \textheight, keepaspectratio]{cinci.png}
 \subcaption{Cincinnati Neighborhood}
-\label{figure : cinci}
+\label{figure:cinci}
 \end{subfigure}
 \end{figure}
 \FloatBarrier
 
-Initial results from part 1 of our methodology have produced graphs as shown in Figure ~\ref{figure:SumCrashPlot}. \newline
 \FloatBarrier
 \begin{figure}
- 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{TrafficCrashReports20180918SumCostMapped2Grid.png}
- 	\caption{Sum cost of traffic crashes reported from 2012 to October 2018 involving pedestrians by grid cells.}
-	\label{figure:SumCrashPlot}
+ 	\includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{perplexity.png}
+ 	\caption{Spread of data visulized using t-sne. MARKED FOR POTENTIAL DELETION. CAN WE WRITE ABOUT THIS?}
+	\label{figure:perplexity}
+
 \end{figure}
 \FloatBarrier
-%
-\section{Analysis}
-%
-The focus of this effort is to identify locations within the city that indicate highest potential for safety improvement. Consistent with the concept as defined and implemented in other works, the model incidents for which the observed experience exceeds the expected (model output) response are the regions with potential for safety improvement. The regions of PSI are the false negative points on the grid map. For these grid cells, the model result was no expected pedestrian events, yet the observed experience exceeded this expected response.
 
 %
-
-\subsection{Two-Part Model - Cost Model}
-The results from the prior section provide a numerical and visual way to interpret the model. The regression model is able to explain 34\% of the variance in the cost of PVIs. This model consists of many significant variables, such as reports of faulty traffic signals and  the presence of construction, and one suggestively significant variables which make sense practically, but does not meet the p-value threshold of .05. Reports of double parking (p-value = .0544), is when a vehicle parks alongside another vehicle which is aready parked on the side of the road, leading to the double-parked vehicle to taking up a lane on the street. Most variables present within the model are reports to the non-emergency police telephone number, or the city’s online safety survey. For each incident of report within the grid-cell, the predicted total cost of incident changes by the estimated amount. Other non-report variables include the mean Walk Score value of properties within the grid-cell, sum of lanes within the grid-cell, distance to nearest bus stop, and the total cost of damage to people involved in non-pedestrian related (motor vehicle) accidents. 
-
-Figure ~\ref{figure:LinearModelReduced} illustrates the model’s predictive capability as compared to the cost of incident in reality. Points which are colored in red have positive residuals, meaning the model has underestimated the cost. Green points have negative residuals, which mean the model has overestimated the cost. The further away a point is, the larger its absolute residual value is. These distances are displayed on Figure ~\ref{figure:ResidualsPlot}, where the red colored areas correspond to the distant red points. These areas within the city in which the model has underestimated the cost the most have the most potential for safety improvement, because all other factors being equal, there is something about that area which is causing a higher amount of damage to pedestrians.
-
-\subsection{Unsupervised Learning - Neighborhood Characterization}
-For unsupervised learning, the goal was to identify pedestrian related issues by neighborhood. To achieve this data at grid level was collected and average population in each grid was combined to form the base dataset. This dataset was run through t- SNE dimensionality reduction algorithm to visualize data in 2D. T-distributed Stochastic Neighbor Embedding (t-SNE) \cite{tsne} is a machine learning algorithm for visualization developed by Laurens van der Maaten and Geoffrey Hinton. It is a nonlinear dimensionality reduction technique well-suited for embedding high-dimensional data for visualization in a low-dimensional space of two or three dimensions. t-SNE returns two dimensions for each record of the original dataset. 
-
-Next step, we use the original data to run cluster algorithms Kmeans and hierarchical and chose the one with high silhouette score, in our case Kmeans three clusters. We now combine the labels created with t-SNE dimensions and plot distribution of data for each attribute in the cluster. Additionally, We use the grid_cell, latitude and longitude combining the Kmeans labels to plot the clusters on the Cincinnati shape file as in Figure ~\ref{figure:kmeansongrid}
-
-
 %
 \section{Ethics}
 %
