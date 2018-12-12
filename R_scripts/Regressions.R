@@ -286,7 +286,7 @@ ReducedPlot <- ggplot(data = RegDataPredReduced) +
   xlim(0,5) +
   ylab("Observed Sum Cost ($ in Millions)") +
   xlab("Expected Sum Cost ($ in Millions)") +
-  ggtitle("Expected vs Observed Cost of Non-Fatality Incident", subtitle = "Reduced Logistic - Linear Model") +
+  ggtitle("Expected vs Observed Cost of Non-Fatality Incident", subtitle = "Logistic-Linear Two-Part Model") +
   theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5), legend.position = c(0.8,0.3)) + #Centers title and subtitle
   scale_color_manual(values = c('Negative Residuals' = 'springgreen4', 'Positive Residuals' = 'red4'), name = "Points") +
   theme(text = element_text(size = 25)) 
